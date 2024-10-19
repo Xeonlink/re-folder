@@ -55,7 +55,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
-        roboto: ["Roboto", "sans-serif"]
+        roboto: ["Roboto", "sans-serif"],
+        gothic: ["'Gothic A1'", "sans-serif"]
       },
       keyframes: {
         "accordion-down": {

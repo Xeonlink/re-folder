@@ -1,11 +1,4 @@
-import {
-  DotFilledIcon,
-  DotsHorizontalIcon,
-  DotsVerticalIcon,
-  DragHandleDots2Icon,
-  DragHandleVerticalIcon,
-  HamburgerMenuIcon
-} from "@radix-ui/react-icons";
+import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
 import { useDeleteWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
 import { Button } from "@renderer/components/ui/button";
@@ -14,15 +7,6 @@ import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
-import {
-  CircleDotDashedIcon,
-  FolderDotIcon,
-  Grid2x2CheckIcon,
-  Grid2x2PlusIcon,
-  Grid3X3Icon,
-  HandPlatterIcon,
-  SquareDotIcon
-} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Rule } from "src/main/schema";
 
