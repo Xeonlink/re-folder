@@ -5,7 +5,11 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    publicDir: resolve("src/main/assets"),
+    build: {
+      copyPublicDir: true
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]

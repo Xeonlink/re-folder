@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
-import fs from "fs";
+import { existsSync, readdirSync, rename, watch } from "fs";
+import type { FSWatcher } from "fs";
 import path from "path";
 import { db } from "../db";
 import { Rule, ruleTable, watcherTable } from "../schema";
@@ -24,7 +25,7 @@ function rule2RegEx(rule: Rule) {
 
 // ----------------------------------------------------------------
 // 현재 활성화된 감시자들을 저장하는 Map 객체.
-const watcherMap = new Map<string, fs.FSWatcher>();
+const watcherMap = new Map<string, FSWatcher>();
 
 /**
  * 주어진 감시자 ID에 해당하는 감시자를 비활성화합니다.
@@ -81,7 +82,7 @@ export function createWatcher(watcherId: string): boolean {
     return false;
   }
 
-  const fsWatcher = fs.watch(watcher.path, (eventType, filename) => {
+  const fsWatcher = watch(watcher.path, (eventType, filename) => {
     if (eventType !== "rename") {
       console.log("eventType is not rename");
       // TODO: save error log to db
@@ -93,7 +94,7 @@ export function createWatcher(watcherId: string): boolean {
       return;
     }
     const fullPath = path.join(watcher.path, filename);
-    if (!fs.existsSync(fullPath)) {
+    if (!existsSync(fullPath)) {
       console.log("file does not exist");
       // TODO: save error log to db
       return;
@@ -109,7 +110,7 @@ export function createWatcher(watcherId: string): boolean {
       if (regEx.test(filename.normalize("NFC"))) {
         console.log("filename is matched");
         const exportedFilename = path.join(rule.path, filename);
-        fs.rename(fullPath, exportedFilename, (err) => {
+        rename(fullPath, exportedFilename, (err) => {
           if (err) {
             console.error(err);
             // TODO: save error log to db
@@ -123,7 +124,7 @@ export function createWatcher(watcherId: string): boolean {
   });
   watcherMap.set(watcherId, fsWatcher);
 
-  const readResults = fs.readdirSync(watcher.path);
+  const readResults = readdirSync(watcher.path);
   for (const filename of readResults) {
     const fullPath = path.join(watcher.path, filename);
 
@@ -135,7 +136,7 @@ export function createWatcher(watcherId: string): boolean {
       if (regEx.test(filename.normalize("NFC"))) {
         console.log("filename is matched");
         const exportedFilename = path.join(rule.path, filename);
-        fs.rename(fullPath, exportedFilename, (err) => {
+        rename(fullPath, exportedFilename, (err) => {
           if (err) {
             console.error(err);
             // TODO: save error log to db
