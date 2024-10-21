@@ -8,7 +8,8 @@ import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({
   routeTree,
-  history: createHashHistory()
+  history: createHashHistory(),
+  defaultViewTransition: true
 });
 
 declare module "@tanstack/react-router" {

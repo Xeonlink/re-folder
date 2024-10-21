@@ -35,3 +35,19 @@ export function invertHexColor(hex: string) {
   // 반전된 R, G, B 값을 다시 HEX로 결합
   return `#${invertedR}${invertedG}${invertedB}`;
 }
+
+export function testPromise<T>(
+  promise: Promise<T>,
+  delay: number = 3000,
+  fail: boolean = false
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (fail) {
+        reject(new Error("Promise rejected after delay"));
+      } else {
+        promise.then(resolve).catch(reject);
+      }
+    }, delay);
+  });
+}

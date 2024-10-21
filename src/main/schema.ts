@@ -94,8 +94,12 @@ export const ruleTable = sqliteTable("rule", {
     .$defaultFn(() => app.getPath("home"))
     .notNull(),
   order: integer("order", { mode: "number" }).notNull(),
-  watcherId: text("watcherId", { mode: "text" }).notNull()
-  // .references(() => watcherTable.id)
+  watcherId: text("watcherId", { mode: "text" })
+    .notNull()
+    .references(() => watcherTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade"
+    })
 });
 
 export const logTable = sqliteTable("log", {
@@ -115,22 +119,13 @@ export const logTable = sqliteTable("log", {
   // 0 : main process log, other : 감시자 로그
   watcherId: text("watcherId", { mode: "text" })
     .notNull()
-    .references(() => watcherTable.id)
+    .references(() => watcherTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade"
+    })
 });
 
 // Type ------------------------------------------------------------
 export type Watcher = InferSelectModel<typeof watcherTable>;
 export type Rule = InferSelectModel<typeof ruleTable>;
 export type Log = InferSelectModel<typeof logTable>;
-
-// Relations ------------------------------------------------------------
-// export const watcherRelation = relations(watcherTable, ({ many }) => ({
-//   rules: many(ruleTable)
-// }));
-
-// export const ruleRelation = relations(ruleTable, ({ one }) => ({
-//   watcher: one(watcherTable, {
-//     fields: [ruleTable.id],
-//     references: [watcherTable.id]
-//   })
-// }));

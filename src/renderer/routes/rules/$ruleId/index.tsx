@@ -1,32 +1,41 @@
-import { useDeleteRule, useRule, useUpdateRule } from "@renderer/api/rules";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { useDeleteRule, useUpdateRule } from "@renderer/api/rules";
 import { AutoSizeInput } from "@renderer/components/AutoSizeInput";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronDownIcon } from "lucide-react";
 
-export const Route = createFileRoute("/watchers/$watcherId/rules/$ruleId/")({
+export const Route = createFileRoute("/rules/$ruleId/")({
+  loader: async ({ params }) => ({
+    rule: await window.api.getRule(params.ruleId)
+  }),
   component: Page
 });
 
 function Page() {
-  const { watcherId, ruleId } = Route.useParams();
+  const { ruleId } = Route.useParams();
+  const { rule } = Route.useLoaderData();
   const router = useRouter();
 
-  const rule = useRule(watcherId, ruleId);
-  const updateRule = useUpdateRule(watcherId, ruleId);
-  const deleteRule = useDeleteRule(watcherId, ruleId);
+  const updateRule = useUpdateRule(ruleId);
+  const deleteRule = useDeleteRule(ruleId);
 
   const onNameChange = (e: React.FocusEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    if (name === rule.data?.name) return;
+    if (name === rule.name) return;
     updateRule.mutate({ name });
   };
 
+  const onDescriptionChange = (e: React.FocusEvent<HTMLInputElement>) => {
+    const description = e.target.value;
+    if (description === rule.description) return;
+    updateRule.mutate({ description });
+  };
+
   const onSelectFolderClick = async () => {
-    const results = await window.dialog.selectFolder();
+    const results = await window.api.selectFolder();
     if (results.canceled) return;
     updateRule.mutate({ path: results.filePaths[0] });
   };
@@ -34,24 +43,24 @@ function Page() {
   const onCreatePrefixBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "") return;
-    if (rule.data!.prefix.includes(value)) return;
+    if (rule.prefix.includes(value)) return;
 
     e.target.value = "";
-    updateRule.mutate({ prefix: [...rule.data!.prefix, value] });
+    updateRule.mutate({ prefix: [...rule.prefix, value] });
   };
 
   const modiftPrefix = (index: number) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // 삭제
     if (value === "") {
-      const prefix = [...rule.data!.prefix];
+      const prefix = [...rule.prefix];
       prefix.splice(index, 1);
       updateRule.mutate({ prefix });
       return;
     }
     // 수정
-    if (value !== rule.data?.prefix[index]) {
-      const prefix = [...rule.data!.prefix];
+    if (value !== rule.prefix[index]) {
+      const prefix = [...rule.prefix];
       prefix[index] = value;
       updateRule.mutate({ prefix });
       return;
@@ -61,24 +70,24 @@ function Page() {
   const onCreateSuffixBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "") return;
-    if (rule.data!.suffix.includes(value)) return;
+    if (rule.suffix.includes(value)) return;
 
     e.target.value = "";
-    updateRule.mutate({ suffix: [...rule.data!.suffix, value] });
+    updateRule.mutate({ suffix: [...rule.suffix, value] });
   };
 
   const modiftSuffix = (index: number) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // 삭제
     if (value === "") {
-      const suffix = [...rule.data!.suffix];
+      const suffix = [...rule.suffix];
       suffix.splice(index, 1);
       updateRule.mutate({ suffix });
       return;
     }
     // 수정
-    if (value !== rule.data?.suffix[index]) {
-      const suffix = [...rule.data!.suffix];
+    if (value !== rule.suffix[index]) {
+      const suffix = [...rule.suffix];
       suffix[index] = value;
       updateRule.mutate({ suffix });
       return;
@@ -88,24 +97,24 @@ function Page() {
   const onCreateExtensionBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "") return;
-    if (rule.data!.extensions.includes(value)) return;
+    if (rule.extensions.includes(value)) return;
 
     e.target.value = "";
-    updateRule.mutate({ extensions: [...rule.data!.extensions, value] });
+    updateRule.mutate({ extensions: [...rule.extensions, value] });
   };
 
   const modiftExtensions = (index: number) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // 삭제
     if (value === "") {
-      const extensions = [...rule.data!.extensions];
+      const extensions = [...rule.extensions];
       extensions.splice(index, 1);
       updateRule.mutate({ extensions });
       return;
     }
     // 수정
-    if (value !== rule.data?.extensions[index]) {
-      const extensions = [...rule.data!.extensions];
+    if (value !== rule.extensions[index]) {
+      const extensions = [...rule.extensions];
       extensions[index] = value;
       updateRule.mutate({ extensions });
       return;
@@ -121,8 +130,17 @@ function Page() {
             <Input
               className="bg-secondary border-none w-56"
               size="sm"
-              defaultValue={rule.data?.name}
+              defaultValue={rule.name}
               onBlur={(e) => onNameChange(e)}
+            />
+          </li>
+          <li className="flex items-center">
+            <Label className="flex-1">설명</Label>
+            <Input
+              className="bg-secondary border-none w-56"
+              size="sm"
+              defaultValue={rule.description}
+              onBlur={(e) => onDescriptionChange(e)}
             />
           </li>
           <li className="flex items-center">
@@ -133,7 +151,7 @@ function Page() {
               className="w-56 justify-start"
               onClick={onSelectFolderClick}
             >
-              {rule.data?.path}
+              {rule.path}
             </Button>
           </li>
           <li className="flex items-center">
@@ -142,9 +160,9 @@ function Page() {
               <Button
                 className="w-full rounded-tr-none rounded-br-none"
                 size="sm"
-                variant={rule.data?.enabled ? "default" : "secondary"}
+                variant={rule.enabled ? "default" : "secondary"}
                 onClick={() => {
-                  if (!rule.data?.enabled) {
+                  if (!rule.enabled) {
                     updateRule.mutate({ enabled: true });
                   }
                 }}
@@ -154,9 +172,9 @@ function Page() {
               <Button
                 className="w-full rounded-tl-none rounded-bl-none"
                 size="sm"
-                variant={rule.data?.enabled ? "secondary" : "default"}
+                variant={rule.enabled ? "secondary" : "default"}
                 onClick={() => {
-                  if (rule.data?.enabled) {
+                  if (rule.enabled) {
                     updateRule.mutate({ enabled: false });
                   }
                 }}
@@ -187,7 +205,7 @@ function Page() {
           <ChevronDownIcon size={24} />
         </Button>
         <ul className="mt-2 mx-2 flex flex-row flex-wrap w-full gap-1">
-          {rule.data?.prefix.map((prefix, index) => (
+          {rule.prefix.map((prefix, index) => (
             <AutoSizeInput
               key={prefix}
               className="min-w-14 h-8"
@@ -209,7 +227,7 @@ function Page() {
           <ChevronDownIcon size={24} />
         </Button>
         <ul className="mt-2 mx-2 flex flex-row flex-wrap w-full gap-1">
-          {rule.data?.suffix.map((suffix, index) => (
+          {rule.suffix.map((suffix, index) => (
             <AutoSizeInput
               key={suffix}
               className="min-w-14 h-8"
@@ -231,7 +249,7 @@ function Page() {
           <ChevronDownIcon size={24} />
         </Button>
         <ul className="mt-2 mx-2 flex flex-row flex-wrap w-full gap-1">
-          {rule.data?.extensions.map((extension, index) => (
+          {rule.extensions.map((extension, index) => (
             <AutoSizeInput
               key={extension}
               className="min-w-14 h-8"

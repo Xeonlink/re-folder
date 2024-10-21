@@ -1,8 +1,7 @@
-import type { api, dialog } from "./index";
+import type { api } from "./index";
 
 declare global {
   interface Window {
     api: typeof api;
-    dialog: typeof dialog;
   }
 }

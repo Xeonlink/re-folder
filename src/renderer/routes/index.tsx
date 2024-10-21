@@ -1,55 +1,76 @@
-import { useCreateWatcher, useWatchers } from "@renderer/api/watchers";
+import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
+import { useCreateWatcher } from "@renderer/api/watchers";
 import { Button } from "@renderer/components/ui/button";
 import { Skeleton } from "@renderer/components/ui/skeleton";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Textarea } from "@renderer/components/ui/textarea";
+import { testPromise } from "@renderer/lib/utils";
+import { createFileRoute, ErrorComponentProps, Link, useRouter } from "@tanstack/react-router";
+import { PlusIcon } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  component: Page
+  component: Page,
+  loader: async () => await testPromise(window.api.getWatchers(), 0, false),
+  pendingComponent: Pending,
+  errorComponent: Fail
 });
 
 function Page() {
-  const watchers = useWatchers();
-  const mutate = useCreateWatcher();
+  const watchers = Route.useLoaderData();
+  const create = useCreateWatcher();
 
-  if (watchers.isLoading) {
-    return (
-      <main className="w-full h-auto px-2 flex justify-center gap-4 flex-wrap">
-        {watchers.isLoading
-          ? new Array(5).fill(0).map((_, i) => <Skeleton key={i} className="w-36 h-36" />)
-          : null}
-      </main>
-    );
-  }
-
-  if (watchers.isError) {
-    return (
-      <main className="w-full h-auto px-2 flex justify-center gap-4 flex-wrap">
-        <div>{watchers.error.message}</div>
-      </main>
-    );
-  }
-
-  if (watchers.isSuccess) {
-    return (
-      <main className="w-full h-auto px-2 flex justify-center gap-4 flex-wrap">
-        {watchers.data.map((watcher) => (
-          <Link to="/watchers/$watcherId" params={{ watcherId: watcher.id }} key={watcher.id}>
-            <Button type="button" variant="outline" className="w-36 h-36">
-              {watcher.name}
-            </Button>
+  return (
+    <main className="w-full grid grid-cols-2 px-2 gap-2 mb-2 mt-1">
+      {watchers.map((watcher) => (
+        <Button variant="outline" className="w-full h-28" asChild key={watcher.id}>
+          <Link to="/watchers/$watcherId" params={{ watcherId: watcher.id }}>
+            {watcher.name}
           </Link>
-        ))}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-36 h-36 border-dashed"
-          onClick={() => mutate.mutate()}
-        >
-          감시 추가
         </Button>
-      </main>
-    );
-  }
+      ))}
+      <Button
+        variant="outline"
+        className="h-28 border-dashed w-full"
+        onClick={() => create.mutate()}
+      >
+        <PlusIcon />
+      </Button>
+    </main>
+  );
+}
 
-  return null;
+function Pending() {
+  return (
+    <main className="w-full grid grid-cols-2 px-2 gap-2 mb-2 mt-1">
+      {new Array(4).fill(0).map((_, i) => (
+        <Skeleton key={i} className="h-28" />
+      ))}
+      <Button variant="outline" className="h-28 border-dashed w-full">
+        <DotsHorizontalIcon className="w-8 h-8" />
+      </Button>
+    </main>
+  );
+}
+
+function Fail(props: ErrorComponentProps) {
+  const { error, reset, info } = props;
+  const { message, name, cause, stack } = error;
+  const componentStack = info?.componentStack ?? "";
+  const errorString = JSON.stringify({ message, name, cause, stack, componentStack }, null, 2);
+
+  const router = useRouter();
+
+  const onResetClick = () => {
+    router.invalidate();
+    reset();
+  };
+
+  return (
+    <main className="w-full px-2 mb-2 mt-1 text-end">
+      <Textarea className="w-full" id="message" rows={20} value={errorString} readOnly />
+      <Button onClick={onResetClick} variant="outline" size="lg" className="mt-2">
+        <UpdateIcon />
+        &nbsp;새로고침
+      </Button>
+    </main>
+  );
 }

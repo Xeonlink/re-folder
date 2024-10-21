@@ -1,17 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import type { Rule } from "src/main/schema";
 
 const api = window.api;
 
 export function useCreateRule(watcherId: string) {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
-    mutationFn: () => api.createRule(watcherId),
+    mutationFn: async () => await api.createRule(watcherId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["watchers", watcherId, "rules"]
       });
+      router.invalidate();
     }
   });
 }
@@ -23,21 +26,21 @@ export function useRules(watcherId: string) {
   });
 }
 
-export function useRule(watcherId: string, ruleId: string) {
+export function useRule(ruleId: string) {
   return useQuery({
-    queryKey: ["watchers", watcherId, "rules", ruleId],
+    queryKey: ["rules", ruleId],
     queryFn: () => api.getRule(ruleId)
   });
 }
 
-export function useUpdateRule(watcherId: string, ruleId: string) {
+export function useUpdateRule(ruleId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: Partial<Rule>) => api.updateRule(ruleId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["watchers", watcherId, "rules"]
+        queryKey: ["rules"]
       });
     }
   });
@@ -45,6 +48,7 @@ export function useUpdateRule(watcherId: string, ruleId: string) {
 
 export function useUpdateRuleOrder(watcherId: string) {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: (data: { [key: string]: number }) => api.updateRuleOrder(watcherId, data),
@@ -52,18 +56,19 @@ export function useUpdateRuleOrder(watcherId: string) {
       queryClient.invalidateQueries({
         queryKey: ["watchers", watcherId, "rules"]
       });
+      router.invalidate();
     }
   });
 }
 
-export function useDeleteRule(watcherId: string, ruleId: string) {
+export function useDeleteRule(ruleId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => api.deleteRule(ruleId),
+    mutationFn: async () => await api.deleteRule(ruleId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["watchers", watcherId, "rules"]
+        queryKey: ["rules"]
       });
     }
   });

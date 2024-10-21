@@ -1,7 +1,6 @@
 import { contextBridge } from "electron";
 import type { ipcDef } from "../main/ipc";
 import { createApiSelector } from "./utils";
-import { ipcRenderer } from "electron/renderer";
 
 export const api = createApiSelector<typeof ipcDef>()({
   // watcher ----------------
@@ -16,25 +15,22 @@ export const api = createApiSelector<typeof ipcDef>()({
   getRule: true,
   updateRule: true,
   updateRuleOrder: true,
-  deleteRule: true
+  deleteRule: true,
+  // dialog ----------------
+  selectFolder: true,
+  // window ----------------
+  closeSelf: true,
+  minimizeSelf: true
 });
-
-export const dialog = {
-  selectFolder: () =>
-    ipcRenderer.invoke("dialog:selectFolder") as Promise<Electron.OpenDialogReturnValue>
-};
 
 // --------------------------------------------------------------
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld("api", api);
-    contextBridge.exposeInMainWorld("dialog", dialog);
   } catch (error) {
     console.error(error);
   }
 } else {
   // @ts-ignore (define in dts)
   window.api = api;
-  // @ts-ignore (define in dts)
-  windwo.dialog = dialog;
 }

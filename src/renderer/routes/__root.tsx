@@ -1,8 +1,10 @@
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, Cross1Icon } from "@radix-ui/react-icons";
 import ImgLogo from "@renderer/assets/logo.png";
 import { ModeChanger } from "@renderer/components/ModeChanger";
 import { Button } from "@renderer/components/ui/button";
-import { Link, Outlet, createRootRoute, useRouter } from "@tanstack/react-router";
+import { Toaster } from "@renderer/components/ui/toaster";
+import { createRootRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
+import { MinusIcon } from "lucide-react";
 
 export const Route = createRootRoute({
   component: Page
@@ -13,24 +15,29 @@ function Page() {
 
   return (
     <>
-      <header className="w-full p-2 flex justify-between">
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => router.history.back()}>
+      <header className="w-full flex sticky top-0 bg-background rounded-b-sm">
+        <div className="flex py-2 pl-2">
+          <Button variant="ghost" size="sm_icon" onClick={() => router.history.back()}>
             <ArrowLeftIcon />
           </Button>
-        </div>
-        <div className="flex gap-2">
-          <Link to="/">
-            <Button variant="ghost" size="icon">
-              <img src={ImgLogo} alt="re-folder" className="w-8 h-8" />
-            </Button>
-          </Link>
-        </div>
-        <div className="flex gap-2">
           <ModeChanger />
+        </div>
+        <div className="flex-1 window-handle"></div>
+        <Link to="/" className="py-3">
+          <img src={ImgLogo} alt="re-folder" className="w-6 h-6" />
+        </Link>
+        <div className="flex-1 window-handle"></div>
+        <div className="flex pr-2 py-2">
+          <Button variant="ghost" size="sm_icon" onClick={() => window.api.closeSelf()}>
+            <MinusIcon className="w-4 h-4 relative top-1" />
+          </Button>
+          <Button variant="ghost" size="sm_icon" onClick={() => window.api.closeSelf()}>
+            <Cross1Icon />
+          </Button>
         </div>
       </header>
       <Outlet />
+      <Toaster />
     </>
   );
 }

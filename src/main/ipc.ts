@@ -1,7 +1,8 @@
 import { and, asc, count, eq, gt } from "drizzle-orm";
-import { db } from "./db";
+import { BrowserWindow, dialog } from "electron/main";
+import { createWatcher, invalidateWatcher, removeWatcher } from "./exec";
 import { Rule, ruleTable, Watcher, watcherTable } from "./schema";
-import { createWatcher, invalidateWatcher, removeWatcher } from "./utils/WatchManager";
+import { db } from "./storage";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 
@@ -121,5 +122,29 @@ export const ipcDef = {
     invalidateWatcher(watcherId);
 
     return results.length;
+  },
+  // dialog -----------------------------------------------------
+  selectFolder: async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory", "createDirectory", "dontAddToRecent"]
+    });
+    return result;
+  },
+  // window -----------------------------------------------------
+  closeSelf: async () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (!win) {
+      console.log("no focused window");
+      return;
+    }
+    win.close();
+  },
+  minimizeSelf: async () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (!win) {
+      console.log("no focused window");
+      return;
+    }
+    win.minimize();
   }
 } satisfies IpcDef;

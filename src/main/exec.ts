@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
-import { existsSync, readdirSync, rename, watch } from "fs";
 import type { FSWatcher } from "fs";
+import { existsSync, readdirSync, rename, watch } from "fs";
 import path from "path";
-import { db } from "../db";
-import { Rule, ruleTable, watcherTable } from "../schema";
+import { Rule, ruleTable, watcherTable } from "./schema";
+import { db } from "./storage";
 
 /**
  * 규칙 객체를 정규 표현식으로 변환합니다.
@@ -160,4 +160,13 @@ export function invalidateWatcher(watcherId: string): boolean {
 
   // 모든 결과가 true일 때만, true를 반환
   return removeWatcher(watcherId) && createWatcher(watcherId);
+}
+
+export async function initializeWatcher() {
+  const results = await db.select().from(watcherTable);
+  for (const watcher of results) {
+    if (watcher.enabled) {
+      createWatcher(watcher.id);
+    }
+  }
 }

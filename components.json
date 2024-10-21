@@ -11,8 +11,8 @@
   "tsx": true,
   "aliases": {
     "utils": "@renderer/lib/utils",
-    "components": "src/renderer//components",
-    "ui": "src/renderer//components/ui",
+    "components": "src/renderer/components",
+    "ui": "src/renderer/components/ui",
     "lib": "src/renderer/lib",
     "hooks": "src/renderer/hooks"
   }
