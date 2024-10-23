@@ -54,3 +54,26 @@ export function createTypedProxy<T extends object>(
 
   return new Proxy(target, handler);
 }
+
+export function resolveErrorMessage(error: any): string {
+  if (error instanceof Error) {
+    // Error 객체인 경우
+    return JSON.stringify({
+      type: "Error",
+      message: error.message,
+      stack: error.stack
+    });
+  } else if (typeof error === "object" && error !== null) {
+    // 객체인 경우
+    return JSON.stringify({
+      type: "Object",
+      ...error // 객체 자체를 복사
+    });
+  } else {
+    // 그 이외의 경우 (문자열, 숫자 등)
+    return JSON.stringify({
+      type: "Other",
+      value: String(error)
+    });
+  }
+}
