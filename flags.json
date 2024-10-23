@@ -1,3 +1,5 @@
 {
-  "dbInitialized": true
+  "dbInitialized": true,
+  "dbVersion": "0.0.0",
+  "isDarkMode": false
 }
