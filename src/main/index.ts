@@ -26,7 +26,7 @@ function createWindow(): void {
       sandbox: false
     }
   });
-  win.setWindowButtonVisibility(false);
+  win.setWindowButtonVisibility?.(false);
 
   win.on("ready-to-show", () => {
     win.show();
