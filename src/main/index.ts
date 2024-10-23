@@ -26,7 +26,9 @@ function createWindow(): void {
       sandbox: false
     }
   });
-  win.setWindowButtonVisibility?.(false);
+  if (process.platform === "darwin") {
+    win.setWindowButtonVisibility(false);
+  }
 
   win.on("ready-to-show", () => {
     win.show();
