@@ -43,7 +43,7 @@
     --popover: 0 0% 14%; /* 2 */
     --popover-foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0 95%; /* 3 primary color위에 올라가는 글자의 색 */
+    --primary-foreground: 0 0 95%; /* 3 primarycolor위에 올라가는 글자의 색 */
     --secondary: 0 0% 20%; /* 1 */
     --secondary-foreground: 210 40% 98%;
     --muted: 0 0% 20%; /* 1 */

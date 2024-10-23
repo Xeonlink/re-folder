@@ -1,200 +1,116 @@
-import { Cross1Icon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { useCreateRule, useUpdateRuleOrder } from "@renderer/api/rules";
-import { useDeleteWatcher, useUpdateWatcher } from "@renderer/api/watchers";
+import { DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
+import { useDeleteWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
 import { DraggableItem } from "@renderer/components/DraggableItme";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
-import { ToastAction } from "@renderer/components/ui/toast";
-import { useToast } from "@renderer/hooks/use-toast";
+import { Skeleton } from "@renderer/components/ui/skeleton";
+import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { Reorder } from "framer-motion";
-import { Power, PowerOff, Trash2Icon } from "lucide-react";
+import { motion, Reorder } from "framer-motion";
+import { PlusIcon, Power, PowerOff, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { Rule } from "src/main/schema";
+import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/watchers/$watcherId/")({
   component: Page,
-  loader: async ({ params }) => ({
-    watcher: await window.api.getWatcher(params.watcherId),
-    rules: await window.api.getRules(params.watcherId)
-  })
+  pendingComponent: Pending
 });
+
+type NormalKey = "name" | "description";
 
 function Page() {
   const { watcherId } = Route.useParams();
-  const { watcher, rules } = Route.useLoaderData();
-  const router = useRouter();
+  const { data: watcher } = useWatcher(watcherId);
+  const { data: rules } = useRules(watcherId);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { toast } = useToastWithDismiss();
+  const router = useRouter();
 
   const deleteWatcher = useDeleteWatcher(watcherId);
   const updateWatcher = useUpdateWatcher(watcherId);
   const createRule = useCreateRule(watcherId);
   const updateRuleOrder = useUpdateRuleOrder(watcherId);
-  const [ruleOrder, setRuleOrder] = useState(rules);
-  const [enabled, setEnabled] = useState(watcher.enabled);
+  const [ruleOrder, setRuleOrder] = useState<Rule[]>(rules);
+  useEffect(() => setRuleOrder(rules), [rules]);
 
-  useEffect(() => {
-    setRuleOrder(rules);
-  }, [rules]);
-
-  const onNameBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    try {
-      const name = e.target.value;
-      if (name === watcher.name) return;
-      await updateWatcher.mutateAsync({ name });
-    } catch (error: any) {
-      const { message } = error;
-      e.target.value = watcher.name;
-      const toastResult = toast({
-        title: "수정 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
-      });
-    }
+  const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === watcher[key]) return;
+    await updateWatcher.mutateAsync({
+      data: { [key]: value },
+      onError: (error) => {
+        toast(error.name, error.message);
+        e.target.value = watcher[key];
+      }
+    });
   };
 
-  const onSelectFolderClick = async () => {
-    try {
-      const results = await window.api.selectFolder();
-      if (results.canceled) return;
-      await updateWatcher.mutateAsync({ path: results.filePaths[0] });
-    } catch (error: any) {
-      const { message } = error;
-      const toastResult = toast({
-        title: "폴더 선택 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
-      });
-    }
+  const onSelectFolderClick = async (e: React.MouseEvent<HTMLInputElement>) => {
+    const results = await window.api.selectFolder();
+    if (results.canceled) return;
+    const target = e.target as HTMLInputElement;
+    target.value = results.filePaths[0];
+    await updateWatcher.mutateAsync({
+      data: { path: results.filePaths[0] },
+      onError: (error) => {
+        toast(error.name, error.message);
+        target.value = watcher.path;
+      }
+    });
   };
 
   const onRuleDragEnd = async () => {
-    try {
-      const reOrderMap = {};
-      for (let i = 0; i < ruleOrder.length; i++) {
-        if (ruleOrder[i].id !== rules[i].id) {
-          reOrderMap[ruleOrder[i].id] = i;
-        }
-      }
-      if (Object.keys(reOrderMap).length === 0) {
-        return;
-      }
-      // await Promise.reject(new Error("테스트 에러"));
-      await updateRuleOrder.mutateAsync(reOrderMap);
-    } catch (error: any) {
-      const { message } = error;
-      const toastResult = toast({
-        title: "순서 변경 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
-      });
-      setRuleOrder(rules);
+    const data = {};
+    for (let i = 0; i < ruleOrder.length; i++) {
+      if (ruleOrder[i].id === rules[i].id) continue;
+      data[ruleOrder[i].id] = i;
     }
+    if (Object.keys(data).length === 0) return;
+
+    await updateRuleOrder.mutateAsync({
+      data,
+      onError: (error) => {
+        toast(error.name, error.message);
+        setRuleOrder(rules);
+      }
+    });
   };
 
   const gotoRule = (ruleId: string) => {
     navigate({ to: "/rules/$ruleId", params: { ruleId } });
   };
 
-  const onDeleteClick = async () => {
-    try {
-      await deleteWatcher.mutateAsync();
-      router.history.back();
-    } catch (error: any) {
-      const { message } = error;
-      const toastResult = toast({
-        title: "삭제 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
-      });
-    }
+  const onDeleteClick = () => {
+    deleteWatcher.mutate({
+      onError: (error) => {
+        toast(error.name, error.message);
+      }
+    });
+    router.history.back();
   };
 
-  const onEnableClick = async () => {
-    try {
-      if (!enabled) {
-        setEnabled(true);
-        // await Promise.reject(new Error("테스트 에러"));
-        await updateWatcher.mutateAsync({ enabled: true });
-      }
-    } catch (error: any) {
-      const { message } = error;
-      const toastResult = toast({
-        title: "변경 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
+  const enable = (isEnable: boolean) => async (_: React.MouseEvent<HTMLButtonElement>) => {
+    if (watcher.enabled !== isEnable) {
+      await updateWatcher.mutateAsync({
+        data: { enabled: isEnable },
+        onError: (error) => {
+          const action = isEnable ? "활성화" : "비활성화";
+          toast(`${action} 실패`, error.message);
+        }
       });
-      setEnabled(watcher.enabled);
-    }
-  };
-
-  const onDisableClick = async () => {
-    try {
-      if (enabled) {
-        setEnabled(false);
-        // await Promise.reject(new Error("테스트 에러"));
-        await updateWatcher.mutateAsync({ enabled: false });
-      }
-    } catch (error: any) {
-      const { message } = error;
-      const toastResult = toast({
-        title: "변경 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
-      });
-      setEnabled(watcher.enabled);
     }
   };
 
   const onCreateRuleClick = async () => {
-    try {
-      // await Promise.reject(new Error("테스트 에러"));
-      await createRule.mutateAsync();
-    } catch (error: any) {
-      const { message } = error;
-      const toastResult = toast({
-        title: "생성 실패",
-        description: message,
-        className: "h-16",
-        action: (
-          <ToastAction altText="닫기" onClick={() => toastResult.dismiss()}>
-            <Cross1Icon />
-          </ToastAction>
-        )
-      });
-    }
+    await createRule.mutateAsync({
+      onError: (error) => {
+        toast(error.name, error.message);
+      }
+    });
   };
 
   return (
@@ -211,19 +127,35 @@ function Page() {
               size="sm"
               name="name"
               defaultValue={watcher.name}
-              onBlur={onNameBlur}
+              onBlur={onModifyBlur("name")}
             />
           </li>
           <li className="flex items-center">
-            <Label className="flex-1">감시경로</Label>
-            <Button
-              variant="secondary"
+            <Label htmlFor="description" className="flex-1">
+              설명
+            </Label>
+            <Input
+              id="description"
+              className="bg-secondary border-none w-56"
               size="sm"
-              className="w-56 justify-start"
+              name="description"
+              defaultValue={watcher.description}
+              onBlur={onModifyBlur("description")}
+            />
+          </li>
+          <li className="flex items-center">
+            <Label htmlFor="path" className="flex-1">
+              감시경로
+            </Label>
+            <Input
+              id="path"
+              name="path"
+              className="bg-secondary border-none w-56"
+              size="sm"
               onClick={onSelectFolderClick}
-            >
-              {watcher.path}
-            </Button>
+              defaultValue={watcher.path}
+              readOnly
+            />
           </li>
           <li className="flex items-center">
             <Label className="flex-1">활성화</Label>
@@ -231,16 +163,16 @@ function Page() {
               <Button
                 className="w-full rounded-tr-none rounded-br-none"
                 size="sm"
-                variant={enabled ? "default" : "secondary"}
-                onClick={onEnableClick}
+                variant={watcher.enabled ? "default" : "secondary"}
+                onClick={enable(true)}
               >
                 <Power className="w-5 h-5" />
               </Button>
               <Button
                 className="w-full rounded-tl-none rounded-bl-none"
                 size="sm"
-                variant={enabled ? "secondary" : "default"}
-                onClick={onDisableClick}
+                variant={watcher.enabled ? "secondary" : "default"}
+                onClick={enable(false)}
               >
                 <PowerOff className="w-5 h-5" />
               </Button>
@@ -264,7 +196,7 @@ function Page() {
                   variant={rule.enabled ? "secondary" : "outline"}
                   onClick={() => gotoRule(rule.id)}
                 >
-                  <div className="flex-1 text-left">
+                  <div className="flex-1 text-left overflow-hidden">
                     <span>{rule.name}</span>
                     &nbsp;&nbsp;
                     <span className="text-xs">{rule.path}</span>
@@ -280,13 +212,25 @@ function Page() {
           ))}
         </Reorder.Group>
       ) : null}
-      <Button
-        className="w-96 justify-between h-12 border-dashed"
-        variant="outline"
-        onClick={onCreateRuleClick}
-      >
-        <span>규칙 만들기</span>
-      </Button>
+      {createRule.isPending ? (
+        <motion.div
+          initial={{ scale: 0.3 }}
+          animate={{ scale: 1 }}
+          transition={{ ease: "linear", type: "spring", duration: 0.5 }}
+        >
+          <Skeleton className="w-96 h-12 flex justify-center items-center">
+            <PlusIcon className="animate-spin" />
+          </Skeleton>
+        </motion.div>
+      ) : (
+        <Button
+          className="w-96 justify-between h-12 border-dashed"
+          variant="outline"
+          onClick={onCreateRuleClick}
+        >
+          규칙 만들기
+        </Button>
+      )}
     </main>
   );
 }

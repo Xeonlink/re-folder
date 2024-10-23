@@ -5,6 +5,7 @@ import { createHashHistory, createRouter, RouterProvider } from "@tanstack/react
 import ReactDOM from "react-dom/client";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { routeTree } from "./routeTree.gen";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const router = createRouter({
   routeTree,
@@ -27,6 +28,7 @@ reactRoot.render(
   <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </ThemeProvider>
 );

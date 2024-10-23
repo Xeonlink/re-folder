@@ -2,6 +2,7 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: ["class"],
   content: ["./src/renderer/**/*.{js,ts,jsx,tsx,html}"],
   theme: {
     container: {
@@ -50,7 +51,7 @@ const config: Config = {
       borderRadius: {
         lg: `var(--radius)`,
         md: `calc(var(--radius) - 2px)`,
-        sm: "calc(var(--radius) - 4px)"
+        sm: `calc(var(--radius) - 4px)`
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
@@ -59,12 +60,20 @@ const config: Config = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" }
+          from: {
+            height: "0"
+          }
+          // to: {
+          //   height: "var(--radix-accordion-content-height)"
+          // }
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" }
+          from: {
+            height: "var(--radix-accordion-content-height)"
+          },
+          to: {
+            height: "0"
+          }
         }
       },
       animation: {

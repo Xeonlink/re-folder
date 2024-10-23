@@ -11,25 +11,43 @@
 // Import Routes
 
 import { Route as rootRoute } from "./routes/__root"
+import { Route as WatchersImport } from "./routes/watchers"
+import { Route as RulesImport } from "./routes/rules"
 import { Route as IndexImport } from "./routes/index"
+import { Route as WatchersIndexImport } from "./routes/watchers/index"
 import { Route as WatchersWatcherIdIndexImport } from "./routes/watchers/$watcherId/index"
 import { Route as RulesRuleIdIndexImport } from "./routes/rules/$ruleId/index"
 
 // Create/Update Routes
+
+const WatchersRoute = WatchersImport.update({
+  path: "/watchers",
+  getParentRoute: () => rootRoute,
+} as any)
+
+const RulesRoute = RulesImport.update({
+  path: "/rules",
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: "/",
   getParentRoute: () => rootRoute,
 } as any)
 
+const WatchersIndexRoute = WatchersIndexImport.update({
+  path: "/",
+  getParentRoute: () => WatchersRoute,
+} as any)
+
 const WatchersWatcherIdIndexRoute = WatchersWatcherIdIndexImport.update({
-  path: "/watchers/$watcherId/",
-  getParentRoute: () => rootRoute,
+  path: "/$watcherId/",
+  getParentRoute: () => WatchersRoute,
 } as any)
 
 const RulesRuleIdIndexRoute = RulesRuleIdIndexImport.update({
-  path: "/rules/$ruleId/",
-  getParentRoute: () => rootRoute,
+  path: "/$ruleId/",
+  getParentRoute: () => RulesRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -43,33 +61,83 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    "/rules": {
+      id: "/rules"
+      path: "/rules"
+      fullPath: "/rules"
+      preLoaderRoute: typeof RulesImport
+      parentRoute: typeof rootRoute
+    }
+    "/watchers": {
+      id: "/watchers"
+      path: "/watchers"
+      fullPath: "/watchers"
+      preLoaderRoute: typeof WatchersImport
+      parentRoute: typeof rootRoute
+    }
+    "/watchers/": {
+      id: "/watchers/"
+      path: "/"
+      fullPath: "/watchers/"
+      preLoaderRoute: typeof WatchersIndexImport
+      parentRoute: typeof WatchersImport
+    }
     "/rules/$ruleId/": {
       id: "/rules/$ruleId/"
-      path: "/rules/$ruleId"
+      path: "/$ruleId"
       fullPath: "/rules/$ruleId"
       preLoaderRoute: typeof RulesRuleIdIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof RulesImport
     }
     "/watchers/$watcherId/": {
       id: "/watchers/$watcherId/"
-      path: "/watchers/$watcherId"
+      path: "/$watcherId"
       fullPath: "/watchers/$watcherId"
       preLoaderRoute: typeof WatchersWatcherIdIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof WatchersImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface RulesRouteChildren {
+  RulesRuleIdIndexRoute: typeof RulesRuleIdIndexRoute
+}
+
+const RulesRouteChildren: RulesRouteChildren = {
+  RulesRuleIdIndexRoute: RulesRuleIdIndexRoute,
+}
+
+const RulesRouteWithChildren = RulesRoute._addFileChildren(RulesRouteChildren)
+
+interface WatchersRouteChildren {
+  WatchersIndexRoute: typeof WatchersIndexRoute
+  WatchersWatcherIdIndexRoute: typeof WatchersWatcherIdIndexRoute
+}
+
+const WatchersRouteChildren: WatchersRouteChildren = {
+  WatchersIndexRoute: WatchersIndexRoute,
+  WatchersWatcherIdIndexRoute: WatchersWatcherIdIndexRoute,
+}
+
+const WatchersRouteWithChildren = WatchersRoute._addFileChildren(
+  WatchersRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute
+  "/rules": typeof RulesRouteWithChildren
+  "/watchers": typeof WatchersRouteWithChildren
+  "/watchers/": typeof WatchersIndexRoute
   "/rules/$ruleId": typeof RulesRuleIdIndexRoute
   "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   "/": typeof IndexRoute
+  "/rules": typeof RulesRouteWithChildren
+  "/watchers": typeof WatchersIndexRoute
   "/rules/$ruleId": typeof RulesRuleIdIndexRoute
   "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute
 }
@@ -77,29 +145,45 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   "/": typeof IndexRoute
+  "/rules": typeof RulesRouteWithChildren
+  "/watchers": typeof WatchersRouteWithChildren
+  "/watchers/": typeof WatchersIndexRoute
   "/rules/$ruleId/": typeof RulesRuleIdIndexRoute
   "/watchers/$watcherId/": typeof WatchersWatcherIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: "/" | "/rules/$ruleId" | "/watchers/$watcherId"
+  fullPaths:
+    | "/"
+    | "/rules"
+    | "/watchers"
+    | "/watchers/"
+    | "/rules/$ruleId"
+    | "/watchers/$watcherId"
   fileRoutesByTo: FileRoutesByTo
-  to: "/" | "/rules/$ruleId" | "/watchers/$watcherId"
-  id: "__root__" | "/" | "/rules/$ruleId/" | "/watchers/$watcherId/"
+  to: "/" | "/rules" | "/watchers" | "/rules/$ruleId" | "/watchers/$watcherId"
+  id:
+    | "__root__"
+    | "/"
+    | "/rules"
+    | "/watchers"
+    | "/watchers/"
+    | "/rules/$ruleId/"
+    | "/watchers/$watcherId/"
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  RulesRuleIdIndexRoute: typeof RulesRuleIdIndexRoute
-  WatchersWatcherIdIndexRoute: typeof WatchersWatcherIdIndexRoute
+  RulesRoute: typeof RulesRouteWithChildren
+  WatchersRoute: typeof WatchersRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  RulesRuleIdIndexRoute: RulesRuleIdIndexRoute,
-  WatchersWatcherIdIndexRoute: WatchersWatcherIdIndexRoute,
+  RulesRoute: RulesRouteWithChildren,
+  WatchersRoute: WatchersRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -115,18 +199,37 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/rules/$ruleId/",
-        "/watchers/$watcherId/"
+        "/rules",
+        "/watchers"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/rules": {
+      "filePath": "rules.tsx",
+      "children": [
+        "/rules/$ruleId/"
+      ]
+    },
+    "/watchers": {
+      "filePath": "watchers.tsx",
+      "children": [
+        "/watchers/",
+        "/watchers/$watcherId/"
+      ]
+    },
+    "/watchers/": {
+      "filePath": "watchers/index.tsx",
+      "parent": "/watchers"
+    },
     "/rules/$ruleId/": {
-      "filePath": "rules/$ruleId/index.tsx"
+      "filePath": "rules/$ruleId/index.tsx",
+      "parent": "/rules"
     },
     "/watchers/$watcherId/": {
-      "filePath": "watchers/$watcherId/index.tsx"
+      "filePath": "watchers/$watcherId/index.tsx",
+      "parent": "/watchers"
     }
   }
 }

@@ -1,76 +1,45 @@
-import { DotsHorizontalIcon, UpdateIcon } from "@radix-ui/react-icons";
-import { useCreateWatcher } from "@renderer/api/watchers";
-import { Button } from "@renderer/components/ui/button";
-import { Skeleton } from "@renderer/components/ui/skeleton";
-import { Textarea } from "@renderer/components/ui/textarea";
-import { testPromise } from "@renderer/lib/utils";
-import { createFileRoute, ErrorComponentProps, Link, useRouter } from "@tanstack/react-router";
-import { PlusIcon } from "lucide-react";
+import ImgLogo from "@renderer/assets/logo3.png";
+import { wait } from "@renderer/lib/utils";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
-  component: Page,
-  loader: async () => await testPromise(window.api.getWatchers(), 0, false),
-  pendingComponent: Pending,
-  errorComponent: Fail
+  component: Page
 });
 
 function Page() {
-  const watchers = Route.useLoaderData();
-  const create = useCreateWatcher();
+  const navigate = useNavigate();
 
   return (
-    <main className="w-full grid grid-cols-2 px-2 gap-2 mb-2 mt-1">
-      {watchers.map((watcher) => (
-        <Button variant="outline" className="w-full h-28" asChild key={watcher.id}>
-          <Link to="/watchers/$watcherId" params={{ watcherId: watcher.id }}>
-            {watcher.name}
-          </Link>
-        </Button>
-      ))}
-      <Button
-        variant="outline"
-        className="h-28 border-dashed w-full"
-        onClick={() => create.mutate()}
+    <main className="w-full px-2 gap-2 mb-2 mt-1">
+      <motion.div
+        onAnimationComplete={async () => {
+          await wait(1000);
+          navigate({ to: "/watchers", replace: true });
+        }}
+        className="fixed"
+        initial={{
+          translateY: "-50%",
+          translateX: "-50%",
+          left: "50%",
+          top: 25,
+          scale: 1,
+          rotate: 0
+        }}
+        animate={{
+          top: "50%",
+          scale: 4,
+          rotate: 360
+        }}
+        transition={{
+          type: "spring",
+          ease: "linear",
+          duration: 1.8,
+          delay: 0
+        }}
       >
-        <PlusIcon />
-      </Button>
-    </main>
-  );
-}
-
-function Pending() {
-  return (
-    <main className="w-full grid grid-cols-2 px-2 gap-2 mb-2 mt-1">
-      {new Array(4).fill(0).map((_, i) => (
-        <Skeleton key={i} className="h-28" />
-      ))}
-      <Button variant="outline" className="h-28 border-dashed w-full">
-        <DotsHorizontalIcon className="w-8 h-8" />
-      </Button>
-    </main>
-  );
-}
-
-function Fail(props: ErrorComponentProps) {
-  const { error, reset, info } = props;
-  const { message, name, cause, stack } = error;
-  const componentStack = info?.componentStack ?? "";
-  const errorString = JSON.stringify({ message, name, cause, stack, componentStack }, null, 2);
-
-  const router = useRouter();
-
-  const onResetClick = () => {
-    router.invalidate();
-    reset();
-  };
-
-  return (
-    <main className="w-full px-2 mb-2 mt-1 text-end">
-      <Textarea className="w-full" id="message" rows={20} value={errorString} readOnly />
-      <Button onClick={onResetClick} variant="outline" size="lg" className="mt-2">
-        <UpdateIcon />
-        &nbsp;새로고침
-      </Button>
+        <img src={ImgLogo} alt="re-folder" className="h-6" />
+      </motion.div>
     </main>
   );
 }

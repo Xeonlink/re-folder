@@ -9,7 +9,7 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { generateSQLiteDrizzleJson, generateSQLiteMigration } from "drizzle-kit/api";
 
 const dbPath = app.isPackaged //
-  ? join(app.getPath("appData"), "data.db")
+  ? join(app.getPath("userData"), "data.db")
   : "./data.db";
 
 const sqlite = new Database(dbPath);

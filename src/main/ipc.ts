@@ -86,15 +86,18 @@ export const ipcDef = {
 
     return results.length;
   },
-  updateRuleOrder: async (watcherId: string, data: { [key: string]: number }) => {
-    let changes = 0;
-    for (const id in data) {
-      const result = await db
-        .update(ruleTable)
-        .set({ order: data[id] })
-        .where(eq(ruleTable.id, id));
-      changes += result.changes;
-    }
+  updateRuleOrder: async (watcherId: string, data: Record<string, number>) => {
+    const changes = await db.transaction(async (tx) => {
+      let changes = 0;
+      for (const id in data) {
+        const result = await tx
+          .update(ruleTable)
+          .set({ order: data[id] })
+          .where(eq(ruleTable.id, id));
+        changes += result.changes;
+      }
+      return changes;
+    });
 
     invalidateWatcher(watcherId);
 

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";
 import { existsSync, readdirSync, rename, watch } from "fs";
-import path from "path";
+import { basename, extname, join } from "path";
 import { Rule, ruleTable, watcherTable } from "./schema";
 import { db } from "./storage";
 
@@ -16,11 +16,26 @@ import { db } from "./storage";
  *
  * @author 오지민
  */
-function rule2RegEx(rule: Rule) {
-  const prefix = rule.prefix.length > 0 ? rule.prefix.join("|") : ".*";
-  const suffix = rule.suffix.length > 0 ? rule.suffix.join("|") : ".*";
-  const extensions = rule.extensions.length > 0 ? rule.extensions.join("|") : ".*";
-  return new RegExp(`^(${prefix}).*(${suffix})\\.(${extensions})$`);
+// function rule2RegEx(rule: Rule) {
+//   const prefix = rule.prefix.length > 0 ? rule.prefix.join("|") : ".*";
+//   const suffix = rule.suffix.length > 0 ? rule.suffix.join("|") : ".*";
+//   const extensions = rule.extensions.length > 0 ? rule.extensions.join("|") : ".*";
+//   return new RegExp(`^(${prefix}).*(${suffix})\\.(${extensions})$`);
+// }
+
+function createRuleTester(rule: Rule) {
+  return (filePath: string): boolean => {
+    // 확장자와 파일 이름 분리
+    const extension = extname(filePath).slice(1); // .을 제거한 확장자
+    const baseName = basename(filePath, extname(filePath)); // 확장자 제외한 파일명
+
+    const prefixMatch = rule.prefix.some(baseName.startsWith);
+    const suffixMatch = rule.suffix.some((s) => baseName.endsWith(s));
+    const extensionMatch = rule.extensions.includes(extension);
+
+    // 모든 조건을 만족하면 true 반환
+    return prefixMatch && suffixMatch && extensionMatch;
+  };
 }
 
 // ----------------------------------------------------------------
@@ -82,18 +97,20 @@ export function createWatcher(watcherId: string): boolean {
     return false;
   }
 
-  const fsWatcher = watch(watcher.path, (eventType, filename) => {
+  const fsWatcher = watch(watcher.path);
+  fsWatcher.on("change", (eventType, rawfilename) => {
     if (eventType !== "rename") {
       console.log("eventType is not rename");
       // TODO: save error log to db
       return;
     }
-    if (!filename) {
+    if (!rawfilename) {
       console.log("filename is falsy");
       // TODO: save error log to db
       return;
     }
-    const fullPath = path.join(watcher.path, filename);
+    const filename = rawfilename.toString();
+    const fullPath = join(watcher.path, filename);
     if (!existsSync(fullPath)) {
       console.log("file does not exist");
       // TODO: save error log to db
@@ -104,12 +121,11 @@ export function createWatcher(watcherId: string): boolean {
       if (rule === null) continue;
       if (!rule.enabled) continue;
 
-      const regEx = rule2RegEx(rule);
-      console.log(regEx);
+      const ruleTester = createRuleTester(rule);
       console.log(filename);
-      if (regEx.test(filename.normalize("NFC"))) {
+      if (ruleTester(filename.normalize("NFC"))) {
         console.log("filename is matched");
-        const exportedFilename = path.join(rule.path, filename);
+        const exportedFilename = join(rule.path, filename);
         rename(fullPath, exportedFilename, (err) => {
           if (err) {
             console.error(err);
@@ -122,20 +138,22 @@ export function createWatcher(watcherId: string): boolean {
       }
     }
   });
+
   watcherMap.set(watcherId, fsWatcher);
 
   const readResults = readdirSync(watcher.path);
   for (const filename of readResults) {
-    const fullPath = path.join(watcher.path, filename);
+    const fullPath = join(watcher.path, filename);
 
     for (const rule of rules) {
       if (rule === null) continue;
       if (!rule.enabled) continue;
 
-      const regEx = rule2RegEx(rule);
-      if (regEx.test(filename.normalize("NFC"))) {
+      const ruleTester = createRuleTester(rule);
+      console.log(filename);
+      if (ruleTester(filename.normalize("NFC"))) {
         console.log("filename is matched");
-        const exportedFilename = path.join(rule.path, filename);
+        const exportedFilename = join(rule.path, filename);
         rename(fullPath, exportedFilename, (err) => {
           if (err) {
             console.error(err);
