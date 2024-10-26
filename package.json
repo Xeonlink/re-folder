@@ -22,10 +22,6 @@
     "db:gen": "npx drizzle-kit generate --name=init"
   },
   "repository": "https://github.com/Xeonlink/re-folder",
-  "publish": {
-    "provider": "github",
-    "releaseType": "release"
-  },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
