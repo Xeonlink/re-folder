@@ -4,10 +4,7 @@
     "src/renderer/env.d.ts",
     "src/renderer/**/*",
     "src/renderer/**/*.tsx",
-    "src/preload/*.d.ts",
-    // "src/renderer/components",
-    // "src/renderer/lib"
-    "src/preload/ipc.ch.ts",
+    "src/preload/type.d.ts",
     "src/main/schema/*.ts"
   ],
   "compilerOptions": {

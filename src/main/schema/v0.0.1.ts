@@ -103,6 +103,9 @@ export const logTable = sqliteTable("log", {
   level: text("level", { mode: "text" }) //
     .notNull(),
   // 0 : main process log, other : 감시자 로그
+  test: integer("test", { mode: "number" }) //
+    .$defaultFn(() => 0)
+    .notNull(),
   watcherId: text("watcherId", { mode: "text" })
     .notNull()
     .references(() => watcherTable.id, {
