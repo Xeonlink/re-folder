@@ -8,7 +8,7 @@
     // "src/renderer/components",
     // "src/renderer/lib"
     "src/preload/ipc.ch.ts",
-    "src/main/schema.ts"
+    "src/main/schema/*.ts"
   ],
   "compilerOptions": {
     "composite": true,

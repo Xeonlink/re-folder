@@ -6,30 +6,36 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { cwd } from "process";
 import { z } from "zod";
-import * as schema from "./schema";
+import * as schema_0_0_0 from "./schema/v0.0.0";
+import { VersionRangeMap } from "./utils";
 
 const dbPath = app.isPackaged //
   ? join(app.getPath("userData"), "data.db")
   : join(cwd(), "./data.db");
 
 const sqlite = new Database(dbPath);
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(sqlite, { schema: schema_0_0_0 });
+
+const schemaMap = new VersionRangeMap({
+  "0.0.0 - 0.0.1": schema_0_0_0,
+  "0.0.1 - 0.0.2": schema_0_0_0
+});
 
 export async function autoMigrate() {
-  if (!Settings.data.dbInitialized) {
-    const migrateStates = await generateSQLiteMigration(
-      await generateSQLiteDrizzleJson({}),
-      await generateSQLiteDrizzleJson(schema)
-    );
+  const prevVersion = Settings.data.dbVersion;
+  const version = app.getVersion();
+  const schemaFrom = prevVersion ? (schemaMap.get(prevVersion) ?? {}) : {};
+  const schemaTo = schemaMap.get(version)!;
 
-    for (const query of migrateStates) {
-      db.run(query);
-    }
-
-    Settings.usingSaver((data) => {
-      data.dbInitialized = true;
-    });
+  const migrateStates = await generateSQLiteMigration(
+    await generateSQLiteDrizzleJson(schemaFrom),
+    await generateSQLiteDrizzleJson(schemaTo)
+  );
+  for (const query of migrateStates) {
+    db.run(query);
   }
+
+  Settings.data.dbVersion = version;
 }
 
 // ------------------------------------------------------------
@@ -39,53 +45,54 @@ export class Settings {
     : join(cwd(), "flags.json");
 
   public static schema = z.object({
-    dbInitialized: z.boolean().default(false),
-    dbVersion: z.string().default("0.0.0"),
-    isDarkMode: z.boolean().default(false)
+    dbVersion: z.string().optional()
   });
 
-  private static _data: z.infer<typeof Settings.schema>;
+  private static _instance: Settings;
+  private _data: z.infer<typeof Settings.schema>;
+  private _proxy: z.infer<typeof Settings.schema>;
 
-  public static get data(): Readonly<typeof this._data> {
-    if (!this._data) {
-      this.init();
-    }
-
-    return this._data;
+  private constructor() {
+    this._data = this.loadData();
+    this._proxy = new Proxy(this._data, {
+      set: (target, prop, value) => {
+        target[prop] = value;
+        this.saveData(target);
+        return true;
+      }
+    });
   }
 
-  private static init() {
-    if (!existsSync(this.PATH)) {
-      const { success, data } = this.schema.safeParse({});
-      if (success) {
-        writeFileSync(this.PATH, JSON.stringify(data, null, 2));
-        this._data = data;
-      } else {
-        throw new Error("Failed to parse default settings");
-      }
-    } else {
-      const rawData = readFileSync(this.PATH, "utf-8");
-      const jsonRawData = JSON.parse(rawData);
-      const { success, data } = this.schema.safeParse(jsonRawData);
-      if (success) {
-        this._data = data;
-      } else {
-        throw new Error("Failed to parse settings");
-      }
+  public static get data(): z.infer<typeof Settings.schema> {
+    if (!Settings._instance) {
+      Settings._instance = new Settings();
     }
+    return Settings._instance._proxy;
   }
 
-  private static save(rawData: z.infer<typeof this.schema>) {
-    const { success, data } = this.schema.safeParse(rawData);
+  private loadData(): z.infer<typeof Settings.schema> {
+    if (!existsSync(Settings.PATH)) {
+      const { success, data } = Settings.schema.safeParse({});
+      if (success) {
+        writeFileSync(Settings.PATH, JSON.stringify(data, null, 2));
+        return data;
+      }
+      throw new Error("Failed to parse default settings");
+    }
+
+    const rawData = readFileSync(Settings.PATH, "utf-8");
+    const jsonRawData = JSON.parse(rawData);
+    const { success, data } = Settings.schema.safeParse(jsonRawData);
     if (success) {
-      const jsonRawData = data;
-      const rawData = JSON.stringify(jsonRawData, null, 2);
-      writeFileSync(this.PATH, rawData);
+      return data;
     }
+    throw new Error("Failed to parse settings");
   }
 
-  public static usingSaver(changer: (data: z.infer<typeof this.schema>) => void) {
-    changer(this._data);
-    this.save(this._data);
+  private saveData(data: z.infer<typeof Settings.schema>) {
+    const { success, data: validatedData } = Settings.schema.safeParse(data);
+    if (success) {
+      writeFileSync(Settings.PATH, JSON.stringify(validatedData, null, 2));
+    }
   }
 }

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";
 import { existsSync, readdirSync, rename, watch } from "fs";
 import { basename, extname, join } from "path";
-import { Rule, ruleTable, watcherTable } from "./schema";
+import { Rule, ruleTable, watcherTable } from "./schema/v0.0.0";
 import { db } from "./storage";
 
 /**

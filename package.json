@@ -1,7 +1,7 @@
 {
   "name": "re-folder",
-  "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "version": "0.0.0",
+  "description": "Watch folder and automatic reorganize files",
   "main": "./out/main/index.js",
   "author": "Oh_jimin",
   "homepage": "https://electron-vite.org",
@@ -20,6 +20,11 @@
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "db:gen": "npx drizzle-kit generate --name=init"
+  },
+  "repository": "https://github.com/Xeonlink/re-folder",
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
@@ -41,6 +46,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.34.1",
+    "electron-updater": "^6.3.9",
     "framer-motion": "^11.11.9",
     "lucide-react": "^0.452.0",
     "react-color-palette": "^7.3.0",
