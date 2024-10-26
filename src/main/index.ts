@@ -54,30 +54,37 @@ function createWindow(): void {
 autoUpdater.on("checking-for-update", () => {
   // TODO: 업데이트 확인 중
   // notifier.notify.checkingForUpdate(true);
+  console.log("checking-for-update");
 });
 
 autoUpdater.on("update-available", () => {
   // TODO: 업데이트 가능
+  console.log("update-available");
 });
 
 autoUpdater.on("update-not-available", () => {
   // TODO: 업데이트 불가
+  console.log("update-not-available");
 });
 
 autoUpdater.on("error", (error) => {
   // TODO: 업데이트 오류
+  console.log("error", error);
 });
 
 autoUpdater.on("download-progress", (progress) => {
   // TODO: 업데이트 다운로드 중
+  console.log("download-progress", progress);
 });
 
 autoUpdater.on("update-cancelled", (info) => {
   // TODO: 업데이트 취소
+  console.log("update-cancelled", info);
 });
 
 autoUpdater.on("update-downloaded", () => {
   // TODO: 업데이트 다운로드 완료
+  console.log("update-downloaded");
 });
 
 /* Main ========================================================= */
@@ -107,6 +114,7 @@ async function main() {
     registIpcs(ipcApiDef);
     initializeWatcher();
     createWindow();
+    autoUpdater.checkForUpdates();
   } catch (error: any) {
     const message = resolveErrorMessage(error);
     dialog.showErrorBox("Error", message);
