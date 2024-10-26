@@ -6,7 +6,7 @@ import icon from "../../resources/icon.png?asset";
 import { initializeWatcher } from "./exec";
 import { ipcDef } from "./ipc";
 import { autoMigrate } from "./storage";
-import { registIpcs } from "./utils";
+import { registIpcs, resolveErrorMessage } from "./utils";
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -26,7 +26,9 @@ function createWindow(): void {
       sandbox: false
     }
   });
-  win.setWindowButtonVisibility(false);
+  if (process.platform === "darwin") {
+    win.setWindowButtonVisibility(false);
+  }
 
   win.on("ready-to-show", () => {
     win.show();
@@ -73,7 +75,8 @@ async function main() {
     initializeWatcher();
     createWindow();
   } catch (error: any) {
-    dialog.showErrorBox("Error", JSON.stringify({ ...error }, null, 2));
+    const message = resolveErrorMessage(error);
+    dialog.showErrorBox("Error", message);
   }
 }
 main();

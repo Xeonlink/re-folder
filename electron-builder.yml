@@ -19,7 +19,7 @@ nsis:
   uninstallDisplayName: ${productName}
   oneClick: true
   createDesktopShortcut: always
-  allowToChangeInstallationDirectory: true
+  allowToChangeInstallationDirectory: false
   deleteAppDataOnUninstall: true
   include: build/installer.nsh
 mac:
