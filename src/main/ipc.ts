@@ -1,12 +1,17 @@
 import { and, asc, count, eq, gt } from "drizzle-orm";
 import { BrowserWindow, dialog } from "electron/main";
 import { createWatcher, invalidateWatcher, removeWatcher } from "./exec";
-import { Rule, ruleTable, Watcher, watcherTable } from "./schema";
+import { Rule, ruleTable, Watcher, watcherTable } from "./schema/v0.0.0";
 import { db } from "./storage";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
+type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
 
-export const ipcDef = {
+export const ipcSubscriptionDef = {
+  checkingForUpdate: (_: boolean) => {}
+} satisfies IpcSubscriptionDef;
+
+export const ipcApiDef = {
   // watcher table -----------------------------------------------------
   createWatcher: async (): Promise<string> => {
     const results = await db.insert(watcherTable).values([{}]).returning({
@@ -137,16 +142,14 @@ export const ipcDef = {
   closeSelf: async () => {
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      console.log("no focused window");
-      return;
+      throw new Error("no focused window");
     }
     win.close();
   },
   minimizeSelf: async () => {
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
-      console.log("no focused window");
-      return;
+      throw new Error("no focused window");
     }
     win.minimize();
   }

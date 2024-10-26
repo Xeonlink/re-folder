@@ -1,10 +1,11 @@
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell } from "electron";
+import { autoUpdater } from "electron-updater";
 import { dialog } from "electron/main";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
 import { initializeWatcher } from "./exec";
-import { ipcDef } from "./ipc";
+import { ipcApiDef } from "./ipc";
 import { autoMigrate } from "./storage";
 import { registIpcs, resolveErrorMessage } from "./utils";
 
@@ -47,7 +48,39 @@ function createWindow(): void {
   }
 }
 
-// main --------------------------------------------------------
+/* Updator ====================================================== */
+// const notifier = createNotifier(ipcSubscriptionDef);
+
+autoUpdater.on("checking-for-update", () => {
+  // TODO: 업데이트 확인 중
+  // notifier.notify.checkingForUpdate(true);
+});
+
+autoUpdater.on("update-available", () => {
+  // TODO: 업데이트 가능
+});
+
+autoUpdater.on("update-not-available", () => {
+  // TODO: 업데이트 불가
+});
+
+autoUpdater.on("error", (error) => {
+  // TODO: 업데이트 오류
+});
+
+autoUpdater.on("download-progress", (progress) => {
+  // TODO: 업데이트 다운로드 중
+});
+
+autoUpdater.on("update-cancelled", (info) => {
+  // TODO: 업데이트 취소
+});
+
+autoUpdater.on("update-downloaded", () => {
+  // TODO: 업데이트 다운로드 완료
+});
+
+/* Main ========================================================= */
 electronApp.setAppUserModelId("com.electron");
 
 app.on("browser-window-created", (_, window) => {
@@ -71,12 +104,13 @@ async function main() {
   try {
     await app.whenReady();
     await autoMigrate();
-    registIpcs(ipcDef);
+    registIpcs(ipcApiDef);
     initializeWatcher();
     createWindow();
   } catch (error: any) {
     const message = resolveErrorMessage(error);
     dialog.showErrorBox("Error", message);
+    app.quit();
   }
 }
 main();
