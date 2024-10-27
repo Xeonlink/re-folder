@@ -54,41 +54,56 @@ function createWindow(): void {
 autoUpdater.on("checking-for-update", () => {
   // TODO: 업데이트 확인 중
   // notifier.notify.checkingForUpdate(true);
+  dialog.showErrorBox("Info", "checking-for-update");
   console.log("checking-for-update");
 });
 
 autoUpdater.on("update-available", () => {
   // TODO: 업데이트 가능
+  dialog.showErrorBox("Info", "update-available");
   console.log("update-available");
 });
 
 autoUpdater.on("update-not-available", () => {
   // TODO: 업데이트 불가
+  dialog.showErrorBox("Info", "update-not-available");
   console.log("update-not-available");
 });
 
 autoUpdater.on("error", (error) => {
   // TODO: 업데이트 오류
+  const message = resolveErrorMessage(error);
+  dialog.showErrorBox("Info", message);
   console.log("error", error);
 });
 
 autoUpdater.on("download-progress", (progress) => {
   // TODO: 업데이트 다운로드 중
+  // dialog.showErrorBox("Info", "update-available");
   console.log("download-progress", progress);
 });
 
 autoUpdater.on("update-cancelled", (info) => {
   // TODO: 업데이트 취소
+  dialog.showErrorBox("Info", "update-cancelled");
   console.log("update-cancelled", info);
 });
 
 autoUpdater.on("update-downloaded", () => {
   // TODO: 업데이트 다운로드 완료
+  dialog.showErrorBox("Info", "update-downloaded");
   console.log("update-downloaded");
 });
 
 /* Main ========================================================= */
 electronApp.setAppUserModelId("com.electron");
+
+process.on("uncaughtException", (error) => {
+  const message = resolveErrorMessage(error);
+  dialog.showErrorBox("Info", message);
+  console.log("error", error);
+  app.quit();
+});
 
 app.on("browser-window-created", (_, window) => {
   optimizer.watchWindowShortcuts(window);
