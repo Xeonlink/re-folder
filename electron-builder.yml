@@ -21,6 +21,7 @@ nsis:
   createDesktopShortcut: always
   allowToChangeInstallationDirectory: false
   deleteAppDataOnUninstall: true
+  runAfterFinish: true
   include: build/installer.nsh
 mac:
   entitlementsInherit: build/entitlements.mac.plist
