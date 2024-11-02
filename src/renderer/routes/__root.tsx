@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, ArrowRightIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
-import ImgLogo from "@renderer/assets/logo3.png";
+import ImgLogo from "@renderer/assets/logo.png";
 import { useTheme } from "@renderer/components/ThemeProvider";
 import { Button } from "@renderer/components/ui/button";
 import {

@@ -1,27 +1,28 @@
-import { electronApp, optimizer } from "@electron-toolkit/utils";
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow, dialog, nativeImage, shell, Tray } from "electron";
 import { autoUpdater } from "electron-updater";
-import { dialog } from "electron/main";
 import { join } from "path";
-import icon from "../../resources/icon.png?asset";
+import icon1024_black from "../../resources/icon1024_black.png?asset";
 import { initializeWatcher } from "./exec";
 import { ipcApiDef } from "./ipc";
 import { autoMigrate } from "./storage";
-import { registIpcs, resolveErrorMessage } from "./utils";
+import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils";
 
 function createWindow(): void {
+  const icon = nativeImage.createFromPath(icon1024_black).resize({
+    width: 512,
+    height: 512,
+    quality: "best"
+  });
+
   const win = new BrowserWindow({
     width: 400,
     height: 700,
     show: false,
     resizable: false,
     title: "ReFolder",
-    // titleBarOverlay: false,
     titleBarStyle: "hidden",
-    // autoHideMenuBar: true,
     frame: false,
-    // icon: process.platform === "linux" ? icon : undefined,
-    ...(process.platform === "linux" ? { icon } : {}),
+    icon: icon,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false
@@ -39,13 +40,82 @@ function createWindow(): void {
     shell.openExternal(details.url);
     return { action: "deny" };
   });
-  // win.webContents.openDevTools();
 
-  if (!app.isPackaged && process.env["ELECTRON_RENDERER_URL"]) {
-    win.loadURL(process.env["ELECTRON_RENDERER_URL"]);
+  win.webContents.on("before-input-event", (event, input) => {
+    if (input.type !== "keyDown") return;
+
+    const disableRefreshWhenPackaged = true;
+    if (disableRefreshWhenPackaged && app.isPackaged) {
+      if (input.code === "KeyR" && (input.control || input.meta)) {
+        event.preventDefault();
+      }
+      if (input.code === "F5") {
+        event.preventDefault();
+      }
+    }
+
+    const enableDevToolsWhenDev = true;
+    if (enableDevToolsWhenDev && !app.isPackaged) {
+      if (input.code === "F12") {
+        win.webContents.toggleDevTools();
+      }
+    }
+
+    const escToCloseWindow = false;
+    if (escToCloseWindow) {
+      if (input.code === "Escape" && input.key !== "Process") {
+        window.close();
+        event.preventDefault();
+      }
+    }
+
+    const blockZoom = true;
+    if (blockZoom) {
+      if (input.code === "Minus" && (input.control || input.meta)) {
+        event.preventDefault();
+      }
+      if (input.code === "Equal" && input.shift && (input.control || input.meta)) {
+        event.preventDefault();
+      }
+    }
+  });
+
+  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) {
+    win.loadURL(process.env.ELECTRON_RENDERER_URL);
   } else {
     win.loadFile(join(__dirname, "../renderer/index.html"));
   }
+}
+
+function createOrShowWindow() {
+  const windows = BrowserWindow.getAllWindows();
+  if (windows.length === 0) {
+    createWindow();
+  } else {
+    windows.forEach((win) => win.show());
+  }
+}
+
+/* Tray ========================================================= */
+function createTray() {
+  const trayIcon = nativeImage.createFromPath(icon1024_black).resize({
+    width: 20,
+    height: 20,
+    quality: "best"
+  });
+  trayIcon.setTemplateImage(true);
+
+  const tray = new Tray(trayIcon);
+
+  const menu = new MenuBuilder()
+    .addLabel("ReFolder")
+    .addSeparator()
+    .addButton("Open", createOrShowWindow)
+    .addSeparator()
+    .addButton("Quit", app.quit)
+    .build();
+
+  tray.setContextMenu(menu);
 }
 
 /* Updator ====================================================== */
@@ -83,30 +153,14 @@ function createWindow(): void {
 // });
 
 /* Main ========================================================= */
-electronApp.setAppUserModelId("com.ohjimin.re-folder");
-
-process.on("uncaughtException", (error) => {
-  const message = resolveErrorMessage(error);
-  dialog.showErrorBox("Info", message);
-  console.log("error", error);
-  app.quit();
-});
-
-app.on("browser-window-created", (_, window) => {
-  optimizer.watchWindowShortcuts(window);
-});
+app.setAppUserModelId("com.ohjimin.re-folder");
 
 app.on("activate", () => {
-  const windows = BrowserWindow.getAllWindows();
-  if (windows.length === 0) {
-    createWindow();
-  }
+  createOrShowWindow();
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  app.dock.hide();
 });
 
 async function main() {
@@ -115,8 +169,11 @@ async function main() {
     await autoMigrate();
     registIpcs(ipcApiDef);
     initializeWatcher();
+    createTray();
     createWindow();
-    autoUpdater.checkForUpdates();
+    if (process.env.NODE_ENV === "development") {
+      autoUpdater.checkForUpdates();
+    }
   } catch (error: any) {
     const message = resolveErrorMessage(error);
     dialog.showErrorBox("Error", message);

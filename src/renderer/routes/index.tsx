@@ -1,4 +1,4 @@
-import ImgLogo from "@renderer/assets/logo3.png";
+import ImgLogo from "@renderer/assets/logo.png";
 import { wait } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";

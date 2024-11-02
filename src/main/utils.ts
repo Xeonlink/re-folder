@@ -1,3 +1,4 @@
+import { Menu, MenuItem } from "electron";
 import { BrowserWindow, ipcMain } from "electron/main";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
@@ -141,7 +142,7 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
       const startNum = VersionRangeMap.versionToNumber(startVer);
       const endNum = VersionRangeMap.versionToNumber(endVer);
 
-      if (versionNum < startNum || versionNum >= endNum) continue;
+      if (versionNum < startNum || versionNum > endNum) continue;
 
       return value;
     }
@@ -166,11 +167,50 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
       const startNum = VersionRangeMap.versionToNumber(startVer);
       const endNum = VersionRangeMap.versionToNumber(endVer);
 
-      if (versionNum < startNum || versionNum >= endNum) continue;
+      if (versionNum < startNum || versionNum > endNum) continue;
 
       return true;
     }
 
     return false;
   }
+}
+
+export class MenuBuilder {
+  private items: MenuItem[];
+
+  public constructor() {
+    this.items = [];
+  }
+
+  public addSeparator(): this {
+    this.items.push(new MenuItem({ type: "separator" }));
+    return this;
+  }
+
+  public addLabel(label: string): this {
+    this.items.push(new MenuItem({ label, enabled: false }));
+    return this;
+  }
+
+  public addButton(label: string, click?: () => void): this {
+    this.items.push(new MenuItem({ label, click }));
+    return this;
+  }
+
+  public build(): Menu {
+    return Menu.buildFromTemplate(this.items);
+  }
+}
+
+type BrowserWindowConstructorOptions = Partial<
+  Record<NodeJS.Platform | "all", Electron.BrowserWindowConstructorOptions | undefined>
+>;
+
+export function createBrowserWindow(options: BrowserWindowConstructorOptions): BrowserWindow {
+  const platform = process.platform;
+  const all = options.all ?? {};
+  const platformOptions = options[platform] ?? {};
+
+  return new BrowserWindow({ ...all, ...platformOptions });
 }

@@ -1,5 +1,5 @@
 appId: com.ohjimin.re-folder
-productName: re-folder
+productName: ReFolder
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: re-folder
+  executableName: ReFolder
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

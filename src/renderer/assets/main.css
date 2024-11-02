@@ -68,7 +68,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-roboto;
+    @apply bg-background text-foreground font-roboto min-h-screen;
 
     font-feature-settings:
       "rlig" 1,

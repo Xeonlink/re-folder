@@ -17,7 +17,7 @@ const sqlite = new Database(dbPath);
 export const db = drizzle(sqlite, { schema: schema_0_0_0 });
 
 const schemaMap = new VersionRangeMap({
-  "0.0.0 - 0.0.1": schema_0_0_0
+  "0.0.0 - 0.1.0": schema_0_0_0
 });
 
 export async function autoMigrate() {
