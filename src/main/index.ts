@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, nativeImage, shell, Tray } from "electron";
 import { autoUpdater } from "electron-updater";
 import { join } from "path";
 import icon1024_black from "../../resources/icon1024_black.png?asset";
+import icon1024_primary from "../../resources/icon1024_primary.png?asset";
 import { initializeWatcher } from "./exec";
 import { ipcApiDef } from "./ipc";
 import { autoMigrate } from "./storage";
@@ -97,24 +98,44 @@ function createOrShowWindow() {
 }
 
 /* Tray ========================================================= */
-function createTray() {
-  const trayIcon = nativeImage.createFromPath(icon1024_black).resize({
+function createTrayIcon() {
+  if (process.platform === "darwin") {
+    const trayIcon = nativeImage.createFromPath(icon1024_black).resize({
+      width: 20,
+      height: 20,
+      quality: "best"
+    });
+    trayIcon.setTemplateImage(true);
+    return trayIcon;
+  }
+
+  const trayIcon = nativeImage.createFromPath(icon1024_primary).resize({
     width: 20,
     height: 20,
     quality: "best"
   });
-  trayIcon.setTemplateImage(true);
+  return trayIcon;
+}
 
+function createTrayMenu() {
+  const menu = new MenuBuilder();
+  menu.addLabel(`ReFolder ${app.getVersion()}`);
+  if (process.platform === "darwin") {
+    menu.addSeparator();
+  }
+  menu.addButton("Open", createOrShowWindow);
+  if (process.platform === "darwin") {
+    menu.addSeparator();
+  }
+  menu.addButton("Quit", app.quit);
+  return menu.build();
+}
+
+function createTray() {
+  const trayIcon = createTrayIcon();
   const tray = new Tray(trayIcon);
 
-  const menu = new MenuBuilder()
-    .addLabel("ReFolder")
-    .addSeparator()
-    .addButton("Open", createOrShowWindow)
-    .addSeparator()
-    .addButton("Quit", app.quit)
-    .build();
-
+  const menu = createTrayMenu();
   tray.setContextMenu(menu);
 }
 
@@ -173,7 +194,7 @@ async function main() {
     initializeWatcher();
     createTray();
     createWindow();
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV !== "development") {
       autoUpdater.checkForUpdates();
     }
   } catch (error: any) {

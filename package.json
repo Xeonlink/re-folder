@@ -1,6 +1,6 @@
 {
   "name": "re-folder",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Watch folder and automatic reorganize files",
   "main": "./out/main/index.js",
   "author": "Oh_jimin",
