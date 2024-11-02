@@ -160,7 +160,9 @@ app.on("activate", () => {
 });
 
 app.on("window-all-closed", () => {
-  app.dock.hide();
+  if (process.platform === "darwin") {
+    app.dock.hide();
+  }
 });
 
 async function main() {
