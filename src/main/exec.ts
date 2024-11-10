@@ -122,9 +122,7 @@ export function createWatcher(watcherId: string): boolean {
       if (!rule.enabled) continue;
 
       const ruleTester = createRuleTester(rule);
-      console.log(filename);
       if (ruleTester(filename.normalize("NFC"))) {
-        console.log("filename is matched");
         const exportedFilename = join(rule.path, filename);
         rename(fullPath, exportedFilename, (err) => {
           if (err) {
@@ -133,8 +131,6 @@ export function createWatcher(watcherId: string): boolean {
           }
         });
         break;
-      } else {
-        console.log("filename is not matched");
       }
     }
   });
@@ -150,9 +146,7 @@ export function createWatcher(watcherId: string): boolean {
       if (!rule.enabled) continue;
 
       const ruleTester = createRuleTester(rule);
-      console.log(filename);
       if (ruleTester(filename.normalize("NFC"))) {
-        console.log("filename is matched");
         const exportedFilename = join(rule.path, filename);
         rename(fullPath, exportedFilename, (err) => {
           if (err) {
@@ -161,8 +155,6 @@ export function createWatcher(watcherId: string): boolean {
           }
         });
         break;
-      } else {
-        console.log("filename is not matched");
       }
     }
   }
