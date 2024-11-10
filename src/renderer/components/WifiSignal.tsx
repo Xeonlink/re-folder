@@ -9,24 +9,27 @@ type Props = Omit<LucideProps, "ref"> &
 
 export function WifiSignal(props: Props) {
   const { count, ...others } = props;
+  const remain = count % length;
 
-  if (count % length === 0) {
+  if (remain === 0) {
     return <WifiZero {...others} />;
   }
 
-  if (count % length === 1) {
+  if (remain === 1) {
     return <WifiLow {...others} />;
   }
 
-  if (count % length === 2) {
+  if (remain === 2) {
     return <WifiHigh {...others} />;
   }
 
-  if (count % length === 3) {
+  if (remain === 3) {
     return <Wifi {...others} />;
   }
 
-  if (count % length === 4) {
+  if (remain === 4) {
     return <WifiOff {...others} />;
   }
+
+  return <Wifi {...others} />;
 }
