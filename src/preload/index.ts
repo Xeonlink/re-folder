@@ -16,11 +16,16 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   updateRule: true,
   updateRuleOrder: true,
   deleteRule: true,
-  // dialog ----------------
-  selectFolder: true,
   // window ----------------
   closeSelf: true,
-  minimizeSelf: true
+  minimizeSelf: true,
+  selectFolder: true,
+  // info ----------------
+  getVersion: true,
+  getOpenAiApiKey: true,
+  getOpenAiModel: true,
+  updateOpenAiApiKey: true,
+  updateOpenAiModel: true
 });
 
 export const subscribe = createSubscriptionSelector<typeof ipcSubscriptionDef>()({

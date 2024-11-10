@@ -1,8 +1,9 @@
 import { and, asc, count, eq, gt } from "drizzle-orm";
-import { BrowserWindow, dialog } from "electron/main";
+import { app, BrowserWindow, dialog } from "electron/main";
 import { createWatcher, invalidateWatcher, removeWatcher } from "./exec";
 import { Rule, ruleTable, Watcher, watcherTable } from "./schema/v0.0.0";
-import { db } from "./storage";
+import { db, Settings } from "./storage";
+import OpenAI from "openai";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
@@ -131,13 +132,6 @@ export const ipcApiDef = {
 
     return results.length;
   },
-  // dialog -----------------------------------------------------
-  selectFolder: async () => {
-    const result = await dialog.showOpenDialog({
-      properties: ["openDirectory", "createDirectory", "dontAddToRecent"]
-    });
-    return result;
-  },
   // window -----------------------------------------------------
   closeSelf: async () => {
     const win = BrowserWindow.getFocusedWindow();
@@ -152,5 +146,29 @@ export const ipcApiDef = {
       throw new Error("no focused window");
     }
     win.minimize();
+  },
+  selectFolder: async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory", "createDirectory", "dontAddToRecent"]
+    });
+    return result;
+  },
+  // info -----------------------------------------------------
+  getVersion: async () => {
+    return app.getVersion();
+  },
+  getOpenAiApiKey: async () => {
+    return Settings.data.openaiApiKey;
+  },
+  getOpenAiModel: async () => {
+    return Settings.data.openaiModel;
+  },
+  updateOpenAiApiKey: async (apiKey: string) => {
+    const client = new OpenAI({ apiKey });
+    await client.models.list();
+    Settings.data.openaiApiKey = apiKey;
+  },
+  updateOpenAiModel: async (model: string) => {
+    Settings.data.openaiModel = model;
   }
 } satisfies IpcDef;

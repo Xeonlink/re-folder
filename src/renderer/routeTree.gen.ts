@@ -10,189 +10,240 @@
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as WatchersImport } from "./routes/watchers";
-import { Route as RulesImport } from "./routes/rules";
-import { Route as IndexImport } from "./routes/index";
-import { Route as WatchersIndexImport } from "./routes/watchers/index";
-import { Route as WatchersWatcherIdIndexImport } from "./routes/watchers/$watcherId/index";
-import { Route as RulesRuleIdIndexImport } from "./routes/rules/$ruleId/index";
+import { Route as rootRoute } from "./routes/__root"
+import { Route as WatchersImport } from "./routes/watchers"
+import { Route as RulesImport } from "./routes/rules"
+import { Route as IndexImport } from "./routes/index"
+import { Route as WatchersIndexImport } from "./routes/watchers/index"
+import { Route as SettingsIndexImport } from "./routes/settings/index"
+import { Route as WatchersWatcherIdIndexImport } from "./routes/watchers/$watcherId/index"
+import { Route as SettingsOpenaiIndexImport } from "./routes/settings/openai/index"
+import { Route as RulesRuleIdIndexImport } from "./routes/rules/$ruleId/index"
 
 // Create/Update Routes
 
 const WatchersRoute = WatchersImport.update({
   id: "/watchers",
   path: "/watchers",
-  getParentRoute: () => rootRoute
-} as any);
+  getParentRoute: () => rootRoute,
+} as any)
 
 const RulesRoute = RulesImport.update({
   id: "/rules",
   path: "/rules",
-  getParentRoute: () => rootRoute
-} as any);
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: "/",
   path: "/",
-  getParentRoute: () => rootRoute
-} as any);
+  getParentRoute: () => rootRoute,
+} as any)
 
 const WatchersIndexRoute = WatchersIndexImport.update({
   id: "/",
   path: "/",
-  getParentRoute: () => WatchersRoute
-} as any);
+  getParentRoute: () => WatchersRoute,
+} as any)
+
+const SettingsIndexRoute = SettingsIndexImport.update({
+  id: "/settings/",
+  path: "/settings/",
+  getParentRoute: () => rootRoute,
+} as any)
 
 const WatchersWatcherIdIndexRoute = WatchersWatcherIdIndexImport.update({
   id: "/$watcherId/",
   path: "/$watcherId/",
-  getParentRoute: () => WatchersRoute
-} as any);
+  getParentRoute: () => WatchersRoute,
+} as any)
+
+const SettingsOpenaiIndexRoute = SettingsOpenaiIndexImport.update({
+  id: "/settings/openai/",
+  path: "/settings/openai/",
+  getParentRoute: () => rootRoute,
+} as any)
 
 const RulesRuleIdIndexRoute = RulesRuleIdIndexImport.update({
   id: "/$ruleId/",
   path: "/$ruleId/",
-  getParentRoute: () => RulesRoute
-} as any);
+  getParentRoute: () => RulesRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
     "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: "/"
+      path: "/"
+      fullPath: "/"
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     "/rules": {
-      id: "/rules";
-      path: "/rules";
-      fullPath: "/rules";
-      preLoaderRoute: typeof RulesImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: "/rules"
+      path: "/rules"
+      fullPath: "/rules"
+      preLoaderRoute: typeof RulesImport
+      parentRoute: typeof rootRoute
+    }
     "/watchers": {
-      id: "/watchers";
-      path: "/watchers";
-      fullPath: "/watchers";
-      preLoaderRoute: typeof WatchersImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: "/watchers"
+      path: "/watchers"
+      fullPath: "/watchers"
+      preLoaderRoute: typeof WatchersImport
+      parentRoute: typeof rootRoute
+    }
+    "/settings/": {
+      id: "/settings/"
+      path: "/settings"
+      fullPath: "/settings"
+      preLoaderRoute: typeof SettingsIndexImport
+      parentRoute: typeof rootRoute
+    }
     "/watchers/": {
-      id: "/watchers/";
-      path: "/";
-      fullPath: "/watchers/";
-      preLoaderRoute: typeof WatchersIndexImport;
-      parentRoute: typeof WatchersImport;
-    };
+      id: "/watchers/"
+      path: "/"
+      fullPath: "/watchers/"
+      preLoaderRoute: typeof WatchersIndexImport
+      parentRoute: typeof WatchersImport
+    }
     "/rules/$ruleId/": {
-      id: "/rules/$ruleId/";
-      path: "/$ruleId";
-      fullPath: "/rules/$ruleId";
-      preLoaderRoute: typeof RulesRuleIdIndexImport;
-      parentRoute: typeof RulesImport;
-    };
+      id: "/rules/$ruleId/"
+      path: "/$ruleId"
+      fullPath: "/rules/$ruleId"
+      preLoaderRoute: typeof RulesRuleIdIndexImport
+      parentRoute: typeof RulesImport
+    }
+    "/settings/openai/": {
+      id: "/settings/openai/"
+      path: "/settings/openai"
+      fullPath: "/settings/openai"
+      preLoaderRoute: typeof SettingsOpenaiIndexImport
+      parentRoute: typeof rootRoute
+    }
     "/watchers/$watcherId/": {
-      id: "/watchers/$watcherId/";
-      path: "/$watcherId";
-      fullPath: "/watchers/$watcherId";
-      preLoaderRoute: typeof WatchersWatcherIdIndexImport;
-      parentRoute: typeof WatchersImport;
-    };
+      id: "/watchers/$watcherId/"
+      path: "/$watcherId"
+      fullPath: "/watchers/$watcherId"
+      preLoaderRoute: typeof WatchersWatcherIdIndexImport
+      parentRoute: typeof WatchersImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface RulesRouteChildren {
-  RulesRuleIdIndexRoute: typeof RulesRuleIdIndexRoute;
+  RulesRuleIdIndexRoute: typeof RulesRuleIdIndexRoute
 }
 
 const RulesRouteChildren: RulesRouteChildren = {
-  RulesRuleIdIndexRoute: RulesRuleIdIndexRoute
-};
+  RulesRuleIdIndexRoute: RulesRuleIdIndexRoute,
+}
 
-const RulesRouteWithChildren = RulesRoute._addFileChildren(RulesRouteChildren);
+const RulesRouteWithChildren = RulesRoute._addFileChildren(RulesRouteChildren)
 
 interface WatchersRouteChildren {
-  WatchersIndexRoute: typeof WatchersIndexRoute;
-  WatchersWatcherIdIndexRoute: typeof WatchersWatcherIdIndexRoute;
+  WatchersIndexRoute: typeof WatchersIndexRoute
+  WatchersWatcherIdIndexRoute: typeof WatchersWatcherIdIndexRoute
 }
 
 const WatchersRouteChildren: WatchersRouteChildren = {
   WatchersIndexRoute: WatchersIndexRoute,
-  WatchersWatcherIdIndexRoute: WatchersWatcherIdIndexRoute
-};
+  WatchersWatcherIdIndexRoute: WatchersWatcherIdIndexRoute,
+}
 
-const WatchersRouteWithChildren = WatchersRoute._addFileChildren(WatchersRouteChildren);
+const WatchersRouteWithChildren = WatchersRoute._addFileChildren(
+  WatchersRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/rules": typeof RulesRouteWithChildren;
-  "/watchers": typeof WatchersRouteWithChildren;
-  "/watchers/": typeof WatchersIndexRoute;
-  "/rules/$ruleId": typeof RulesRuleIdIndexRoute;
-  "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute;
+  "/": typeof IndexRoute
+  "/rules": typeof RulesRouteWithChildren
+  "/watchers": typeof WatchersRouteWithChildren
+  "/settings": typeof SettingsIndexRoute
+  "/watchers/": typeof WatchersIndexRoute
+  "/rules/$ruleId": typeof RulesRuleIdIndexRoute
+  "/settings/openai": typeof SettingsOpenaiIndexRoute
+  "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/rules": typeof RulesRouteWithChildren;
-  "/watchers": typeof WatchersIndexRoute;
-  "/rules/$ruleId": typeof RulesRuleIdIndexRoute;
-  "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute;
+  "/": typeof IndexRoute
+  "/rules": typeof RulesRouteWithChildren
+  "/settings": typeof SettingsIndexRoute
+  "/watchers": typeof WatchersIndexRoute
+  "/rules/$ruleId": typeof RulesRuleIdIndexRoute
+  "/settings/openai": typeof SettingsOpenaiIndexRoute
+  "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/": typeof IndexRoute;
-  "/rules": typeof RulesRouteWithChildren;
-  "/watchers": typeof WatchersRouteWithChildren;
-  "/watchers/": typeof WatchersIndexRoute;
-  "/rules/$ruleId/": typeof RulesRuleIdIndexRoute;
-  "/watchers/$watcherId/": typeof WatchersWatcherIdIndexRoute;
+  __root__: typeof rootRoute
+  "/": typeof IndexRoute
+  "/rules": typeof RulesRouteWithChildren
+  "/watchers": typeof WatchersRouteWithChildren
+  "/settings/": typeof SettingsIndexRoute
+  "/watchers/": typeof WatchersIndexRoute
+  "/rules/$ruleId/": typeof RulesRuleIdIndexRoute
+  "/settings/openai/": typeof SettingsOpenaiIndexRoute
+  "/watchers/$watcherId/": typeof WatchersWatcherIdIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | "/"
     | "/rules"
     | "/watchers"
+    | "/settings"
     | "/watchers/"
     | "/rules/$ruleId"
-    | "/watchers/$watcherId";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/rules" | "/watchers" | "/rules/$ruleId" | "/watchers/$watcherId";
+    | "/settings/openai"
+    | "/watchers/$watcherId"
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | "/"
+    | "/rules"
+    | "/settings"
+    | "/watchers"
+    | "/rules/$ruleId"
+    | "/settings/openai"
+    | "/watchers/$watcherId"
   id:
     | "__root__"
     | "/"
     | "/rules"
     | "/watchers"
+    | "/settings/"
     | "/watchers/"
     | "/rules/$ruleId/"
-    | "/watchers/$watcherId/";
-  fileRoutesById: FileRoutesById;
+    | "/settings/openai/"
+    | "/watchers/$watcherId/"
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  RulesRoute: typeof RulesRouteWithChildren;
-  WatchersRoute: typeof WatchersRouteWithChildren;
+  IndexRoute: typeof IndexRoute
+  RulesRoute: typeof RulesRouteWithChildren
+  WatchersRoute: typeof WatchersRouteWithChildren
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  SettingsOpenaiIndexRoute: typeof SettingsOpenaiIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RulesRoute: RulesRouteWithChildren,
-  WatchersRoute: WatchersRouteWithChildren
-};
+  WatchersRoute: WatchersRouteWithChildren,
+  SettingsIndexRoute: SettingsIndexRoute,
+  SettingsOpenaiIndexRoute: SettingsOpenaiIndexRoute,
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 
@@ -204,7 +255,9 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/rules",
-        "/watchers"
+        "/watchers",
+        "/settings/",
+        "/settings/openai/"
       ]
     },
     "/": {
@@ -223,6 +276,9 @@ export const routeTree = rootRoute
         "/watchers/$watcherId/"
       ]
     },
+    "/settings/": {
+      "filePath": "settings/index.tsx"
+    },
     "/watchers/": {
       "filePath": "watchers/index.tsx",
       "parent": "/watchers"
@@ -230,6 +286,9 @@ export const routeTree = rootRoute
     "/rules/$ruleId/": {
       "filePath": "rules/$ruleId/index.tsx",
       "parent": "/rules"
+    },
+    "/settings/openai/": {
+      "filePath": "settings/openai/index.tsx"
     },
     "/watchers/$watcherId/": {
       "filePath": "watchers/$watcherId/index.tsx",

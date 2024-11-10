@@ -1,15 +1,8 @@
 import { ArrowLeftIcon, ArrowRightIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
 import ImgLogo from "@renderer/assets/logo.png";
-import { useTheme } from "@renderer/components/ThemeProvider";
 import { Button } from "@renderer/components/ui/button";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger
-} from "@renderer/components/ui/context-menu";
 import { Toaster } from "@renderer/components/ui/toaster";
-import { createRootRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
+import { createRootRoute, Outlet, useNavigate, useRouter } from "@tanstack/react-router";
 
 export const Route = createRootRoute({
   component: Page
@@ -17,7 +10,12 @@ export const Route = createRootRoute({
 
 function Page() {
   const router = useRouter();
-  const { setTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const gotoRoot = () => {
+    router.history.destroy();
+    navigate({ to: "/" });
+  };
 
   return (
     <>
@@ -31,18 +29,13 @@ function Page() {
           </Button>
         </div>
         <div className="flex-1 window-handle"></div>
-        <ContextMenu>
-          <ContextMenuTrigger className="py-3">
-            <Link to="/">
-              <img src={ImgLogo} alt="re-folder" className="h-6" />
-            </Link>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuItem onClick={() => setTheme("light")}>Light</ContextMenuItem>
-            <ContextMenuItem onClick={() => setTheme("dark")}>Dark</ContextMenuItem>
-            <ContextMenuItem onClick={() => setTheme("system")}>System</ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
+        <button
+          className="py-3"
+          onClick={gotoRoot}
+          onContextMenu={() => navigate({ to: "/settings" })}
+        >
+          <img src={ImgLogo} alt="re-folder" className="h-6" />
+        </button>
 
         <div className="flex-1 window-handle"></div>
         <div className="flex pr-2 py-2">

@@ -17,7 +17,7 @@ const sqlite = new Database(dbPath);
 export const db = drizzle(sqlite, { schema: schema_0_0_0 });
 
 const schemaMap = new VersionRangeMap({
-  "0.0.0 - 0.1.0": schema_0_0_0
+  "0.0.0 - 0.2.0": schema_0_0_0
 });
 
 export async function autoMigrate() {
@@ -44,7 +44,9 @@ export class Settings {
     : join(cwd(), "dev", "flags.json");
 
   public static schema = z.object({
-    dbVersion: z.string().optional()
+    dbVersion: z.string().optional(),
+    openaiApiKey: z.string().default(""),
+    openaiModel: z.string().default("gpt-3.5-turbo")
   });
 
   private static _instance: Settings;
