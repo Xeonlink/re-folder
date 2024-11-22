@@ -16,6 +16,12 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   updateRule: true,
   updateRuleOrder: true,
   deleteRule: true,
+  // folderPreset ----------------
+  createFolderPreset: true,
+  getFolderPresets: true,
+  getFolderPreset: true,
+  updateFolderPreset: true,
+  deleteFolderPreset: true,
   // window ----------------
   closeSelf: true,
   minimizeSelf: true,
