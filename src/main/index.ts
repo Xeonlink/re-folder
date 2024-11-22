@@ -3,7 +3,7 @@ import { autoUpdater } from "electron-updater";
 import { join } from "path";
 import icon1024_black from "../../resources/icon1024_black.png?asset";
 import icon1024_primary from "../../resources/icon1024_primary.png?asset";
-import { initializeWatcher } from "./exec";
+import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
 import { autoMigrate } from "./storage";
 import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils";

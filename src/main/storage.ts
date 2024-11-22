@@ -7,6 +7,7 @@ import { join } from "path";
 import { cwd } from "process";
 import { z } from "zod";
 import * as schema_0_0_0 from "./schema/v0.0.0";
+import * as schema_1_0_0 from "./schema/v1.0.0";
 import { VersionRangeMap } from "./utils";
 
 const dbPath = app.isPackaged //
@@ -17,7 +18,8 @@ const sqlite = new Database(dbPath);
 export const db = drizzle(sqlite, { schema: schema_0_0_0 });
 
 const schemaMap = new VersionRangeMap({
-  "0.0.0 - 0.2.0": schema_0_0_0
+  "0.0.0 - 0.2.0": schema_0_0_0,
+  "0.3.0 - 0.3.0": schema_1_0_0
 });
 
 export async function autoMigrate() {

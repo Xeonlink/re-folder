@@ -1,9 +1,16 @@
-import { and, asc, count, eq, gt } from "drizzle-orm";
+import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
 import { app, BrowserWindow, dialog } from "electron/main";
-import { createWatcher, invalidateWatcher, removeWatcher } from "./exec";
-import { Rule, ruleTable, Watcher, watcherTable } from "./schema/v0.0.0";
-import { db, Settings } from "./storage";
 import OpenAI from "openai";
+import { createWatcher, invalidateWatcher, removeWatcher } from "./exec/watcher";
+import {
+  FolderPreset,
+  folderPresetTable,
+  Rule,
+  ruleTable,
+  Watcher,
+  watcherTable
+} from "./schema/v1.0.0";
+import { db, Settings } from "./storage";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
@@ -49,7 +56,6 @@ export const ipcApiDef = {
     const results = await db.delete(watcherTable).where(eq(watcherTable.id, watcherId));
     return results.changes;
   },
-
   // rule table -----------------------------------------------------
   createRule: async (watcherId: string) => {
     const [{ order }] = await db
@@ -131,6 +137,47 @@ export const ipcApiDef = {
     invalidateWatcher(watcherId);
 
     return results.length;
+  },
+  // folder -----------------------------------------------------
+  createFolderPreset: async () => {
+    const result = await db.insert(folderPresetTable).values([{}]).returning({
+      id: folderPresetTable.id
+    });
+    return result[0].id;
+  },
+  getFolderPresets: async (parentId: string | null): Promise<FolderPreset[]> => {
+    const builder = db.select().from(folderPresetTable);
+
+    if (parentId === null) {
+      return await builder.where(isNull(folderPresetTable.parentId));
+    } else {
+      return await builder.where(eq(folderPresetTable.parentId, parentId));
+    }
+  },
+  getFolderPreset: async (folderPresetId: string): Promise<FolderPreset> => {
+    const result = await db
+      .select()
+      .from(folderPresetTable)
+      .where(eq(folderPresetTable.id, folderPresetId));
+    return result[0];
+  },
+  updateFolderPreset: async (folderPresetId: string, data: Partial<FolderPreset>) => {
+    if (Object.keys(data).length === 0) {
+      return 0;
+    }
+
+    const result = await db
+      .update(folderPresetTable)
+      .set(data)
+      .where(eq(folderPresetTable.id, folderPresetId));
+
+    return result.changes;
+  },
+  deleteFolderPreset: async (folderPresetId: string) => {
+    const result = await db
+      .delete(folderPresetTable)
+      .where(eq(folderPresetTable.id, folderPresetId));
+    return result.changes;
   },
   // window -----------------------------------------------------
   closeSelf: async () => {
