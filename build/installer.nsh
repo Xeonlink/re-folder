@@ -42,7 +42,7 @@
   StrCmp $1 "" notRunning
 
   ; If the app is running, notify the user and attempt to close it
-  MessageBox MB_OK "YourApp is being uninstalled." IDOK forceClose
+  MessageBox MB_OK "ReFolder is being uninstalled." IDOK forceClose
 
   forceClose:
     ; Attempt to kill the running application
@@ -58,14 +58,14 @@
 
   continueUninstall:
     ; Proceed with uninstallation
-    DeleteRegKey HKLM "Software\YourApp"
+    DeleteRegKey HKLM "Software\ReFolder"
     RMDir /r "$INSTDIR"
     Delete "$INSTDIR\*.*"
 
     ; Clean up shortcuts and app data
-    Delete "$DESKTOP\YourApp.lnk"
-    Delete "$STARTMENU\Programs\YourApp.lnk"
-    RMDir /r "$APPDATA\YourApp"
+    Delete "$DESKTOP\ReFolder.lnk"
+    Delete "$STARTMENU\Programs\ReFolder.lnk"
+    RMDir /r "$APPDATA\re-folder"
 
     ; Close the uninstaller
     Quit
