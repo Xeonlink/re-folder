@@ -1,35 +1,38 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { FolderPreset } from "src/main/schema";
+import { QueryClient, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import type { FolderPreset } from "src/main/schema";
+
+type FolderPresetWithChildren = FolderPreset & { children: string[] };
 
 const api = window.api;
 
-export function useFolderPresets(parentId: string | null) {
+export function useRootFolderPresets() {
   return useSuspenseQuery<FolderPreset[]>({
-    queryKey: ["folderPresets"],
-    queryFn: () => api.getFolderPresets(parentId)
+    queryKey: ["folderPresets", null],
+    queryFn: () => api.getFolderPresets(null)
   });
 }
 
 export function useFolderPreset(id: string) {
-  return useSuspenseQuery<FolderPreset>({
+  return useSuspenseQuery<FolderPresetWithChildren>({
     queryKey: ["folderPresets", id],
     queryFn: () => api.getFolderPreset(id)
   });
 }
 
-export function useCreateFolderPreset() {
+export function useCreateFolderPreset(parentId: string | null) {
   const queryClient = useQueryClient();
-  const queryKey = ["folderPresets"];
+  const queryKey = ["folderPresets", parentId];
 
   return useMutation({
-    mutationFn: (_: { onError?: (error: Error) => any }) => {
-      return api.createFolderPreset();
+    mutationFn: (_: { onError?: (error: Error) => any; onSuccess?: () => any }) => {
+      return api.createFolderPreset(parentId);
     },
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     }
   });
 }
@@ -39,25 +42,21 @@ export function useUpdateFolderPreset(id: string) {
   const queryKey = ["folderPresets", id];
 
   return useMutation({
-    mutationFn: (variables: {
-      id: string;
-      data: Partial<FolderPreset>;
-      onError?: (error: Error) => any;
-    }) => {
-      return api.updateFolderPreset(variables.id, variables.data);
+    mutationFn: (variables: { data: Partial<FolderPreset>; onError?: (error: Error) => any }) => {
+      return api.updateFolderPreset(id, variables.data);
     },
     onMutate: async (variables) => {
-      const prev = queryClient.getQueryData<FolderPreset>(["folderPresets", variables.id]);
+      const prev = queryClient.getQueryData<FolderPreset>(["folderPresets", id]);
       if (!prev) return;
 
-      queryClient.setQueryData<FolderPreset>(["folderPresets", variables.id], () => {
+      queryClient.setQueryData<FolderPreset>(["folderPresets", id], () => {
         return { ...prev, ...variables.data };
       });
       return { prev };
     },
     onError: (error, variables, context) => {
       if (!context?.prev) return;
-      queryClient.setQueryData<FolderPreset>(["folderPresets", variables.id], context.prev);
+      queryClient.setQueryData<FolderPreset>(["folderPresets", id], context.prev);
       variables.onError?.(error);
     },
     onSuccess: () => {
@@ -66,29 +65,49 @@ export function useUpdateFolderPreset(id: string) {
   });
 }
 
-export function useDeleteWatcher(id: string) {
+export function useDeleteFolderPreset(parentId: string | null, id: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["folderPresets"];
+  const queryKey = ["folderPresets", parentId];
 
   return useMutation({
-    mutationFn: (_: { onError: (error: Error) => any }) => {
+    mutationFn: (_: { onError?: (error: Error) => any }) => {
       return api.deleteFolderPreset(id);
     },
-    onMutate: async (_) => {
-      await queryClient.cancelQueries({ queryKey });
-      const prev = queryClient.getQueryData<FolderPreset[]>(queryKey);
-      if (!prev) return;
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey, exact: true });
+      remove(queryClient, id);
+    }
+  });
+}
 
-      return { prev };
+/**
+ * DFS를 하면서 자기자신과 하위의 folderPreset에 대한 쿼리를 모두 제거한다.
+ * @author 오지민
+ */
+function remove(queryClient: QueryClient, id: string) {
+  const folderPreset = queryClient.getQueryData<FolderPresetWithChildren>(["folderPresets", id]);
+  if (!folderPreset) return;
+
+  for (const childId of folderPreset.children) {
+    remove(queryClient, childId);
+  }
+
+  queryClient.removeQueries({ queryKey: ["folderPresets", id], exact: true });
+}
+
+export function useApplyFolderPreset(id: string) {
+  return useMutation({
+    mutationFn: (_: { onError?: (error: Error) => any; onSuccess?: () => any }) => {
+      return api.applyFolderPreset(id);
     },
-    onError: (error, variables, context) => {
-      if (!context?.prev) return;
-      queryClient.setQueryData<FolderPreset[]>(queryKey, context.prev);
-      variables.onError(error);
+    onError: (error, variables) => {
+      variables.onError?.(error);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
-      queryClient.removeQueries({ queryKey: [...queryKey, id] });
+    onSuccess: (_, variables) => {
+      variables.onSuccess?.();
     }
   });
 }

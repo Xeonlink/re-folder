@@ -19,8 +19,6 @@ export function createApiSelector<TDef extends IpcDef>() {
             const error = new Error();
             error.name = resultOrError.name;
             error.message = resultOrError.message;
-            error.cause = resultOrError.cause;
-            error.stack = resultOrError.stack;
             throw error;
           }
         };

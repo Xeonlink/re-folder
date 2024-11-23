@@ -1,16 +1,13 @@
 import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 import { app, BrowserWindow, dialog } from "electron/main";
 import OpenAI from "openai";
 import { createWatcher, invalidateWatcher, removeWatcher } from "./exec/watcher";
-import {
-  FolderPreset,
-  folderPresetTable,
-  Rule,
-  ruleTable,
-  Watcher,
-  watcherTable
-} from "./schema/v1.0.0";
+import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
+import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
 import { db, Settings } from "./storage";
+import { applyFolderPreset } from "./exec/folderPreset";
+import { v4 as uuid } from "uuid";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
@@ -139,14 +136,22 @@ export const ipcApiDef = {
     return results.length;
   },
   // folder -----------------------------------------------------
-  createFolderPreset: async () => {
-    const result = await db.insert(folderPresetTable).values([{}]).returning({
-      id: folderPresetTable.id
-    });
+  createFolderPreset: async (parentId: string | null) => {
+    const result = await db
+      .insert(folderPresetTable)
+      .values([
+        {
+          parentId,
+          name: `folder (${uuid().split("-")[0]})`
+        }
+      ])
+      .returning({
+        id: folderPresetTable.id
+      });
     return result[0].id;
   },
   getFolderPresets: async (parentId: string | null): Promise<FolderPreset[]> => {
-    const builder = db.select().from(folderPresetTable);
+    const builder = db.select().from(folderPresetTable).orderBy(asc(folderPresetTable.name));
 
     if (parentId === null) {
       return await builder.where(isNull(folderPresetTable.parentId));
@@ -154,16 +159,51 @@ export const ipcApiDef = {
       return await builder.where(eq(folderPresetTable.parentId, parentId));
     }
   },
-  getFolderPreset: async (folderPresetId: string): Promise<FolderPreset> => {
-    const result = await db
+  getFolderPreset: async (folderPresetId: string) => {
+    const child = alias(folderPresetTable, "child");
+    const rows = await db
       .select()
       .from(folderPresetTable)
+      .leftJoin(child, eq(child.parentId, folderPresetTable.id))
       .where(eq(folderPresetTable.id, folderPresetId));
+
+    const raw1 = rows.reduce<Record<string, FolderPreset & { children: string[] }>>((acc, row) => {
+      const { folder_preset, child } = row;
+      if (!acc[folder_preset.id]) {
+        acc[folder_preset.id] = { ...folder_preset, children: [] };
+      }
+      if (child) {
+        acc[folder_preset.id].children.push(child.id);
+      }
+      return acc;
+    }, {});
+
+    const result = Object.values(raw1);
     return result[0];
   },
   updateFolderPreset: async (folderPresetId: string, data: Partial<FolderPreset>) => {
     if (Object.keys(data).length === 0) {
       return 0;
+    }
+
+    if (data.name) {
+      const [{ parentId }] = await db
+        .select({ parentId: folderPresetTable.parentId })
+        .from(folderPresetTable)
+        .where(eq(folderPresetTable.id, folderPresetId))
+        .limit(1);
+
+      if (parentId !== null) {
+        const raw = await db
+          .select()
+          .from(folderPresetTable)
+          .where(eq(folderPresetTable.parentId, parentId));
+
+        if (raw.map((r) => r.name).includes(data.name)) {
+          console.log(raw.map((r) => r.name));
+          throw new Error("이미 존재하는 이름입니다.");
+        }
+      }
     }
 
     const result = await db
@@ -178,6 +218,15 @@ export const ipcApiDef = {
       .delete(folderPresetTable)
       .where(eq(folderPresetTable.id, folderPresetId));
     return result.changes;
+  },
+  applyFolderPreset: async (folderPresetId: string) => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory", "createDirectory", "dontAddToRecent"]
+    });
+    if (result.canceled) return;
+    const path = result.filePaths[0];
+    await applyFolderPreset(folderPresetId, path);
+    return path;
   },
   // window -----------------------------------------------------
   closeSelf: async () => {
