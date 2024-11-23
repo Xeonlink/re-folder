@@ -22,6 +22,7 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   getFolderPreset: true,
   updateFolderPreset: true,
   deleteFolderPreset: true,
+  applyFolderPreset: true,
   // window ----------------
   closeSelf: true,
   minimizeSelf: true,

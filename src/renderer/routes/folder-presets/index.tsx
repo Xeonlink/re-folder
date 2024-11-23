@@ -1,4 +1,4 @@
-import { useCreateFolderPreset, useFolderPresets } from "@renderer/api/folderPresets";
+import { useCreateFolderPreset, useRootFolderPresets } from "@renderer/api/folderPresets";
 import { Button } from "@renderer/components/ui/button";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
@@ -14,11 +14,11 @@ export const Route = createFileRoute("/folder-presets/")({
 
 export function Page() {
   const { toast } = useToastWithDismiss();
-  const { data: folderPresets } = useFolderPresets(null);
-  const create = useCreateFolderPreset();
+  const { data: folderPresets } = useRootFolderPresets();
+  const createFolderPreset = useCreateFolderPreset(null);
 
   const onCreateClick = async (_: React.MouseEvent<HTMLButtonElement>) => {
-    await create.mutateAsync({
+    await createFolderPreset.mutateAsync({
       onError: (error) => {
         toast(error.name, error.message);
       }
@@ -34,7 +34,7 @@ export function Page() {
           </Link>
         </Button>
       ))}
-      {create.isPending ? ( //
+      {createFolderPreset.isPending ? ( //
         <motion.div
           initial={{ scale: 0.3 }}
           animate={{ scale: 1 }}

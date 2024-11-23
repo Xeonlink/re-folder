@@ -10,7 +10,11 @@ export function registIpcs(ipcDef: IpcDef) {
         const result = await ipcDef[channel](...args);
         return [true, result];
       } catch (error: any) {
-        return [false, { ...error }];
+        if (error instanceof Error) {
+          return [false, { name: error.name, message: error.message }];
+        } else {
+          return [false, { ...error }];
+        }
       }
     });
   }
