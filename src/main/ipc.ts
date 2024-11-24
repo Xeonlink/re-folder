@@ -2,12 +2,12 @@ import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import { app, BrowserWindow, dialog } from "electron/main";
 import OpenAI from "openai";
+import { v4 as uuid } from "uuid";
+import { applyFolderPreset } from "./exec/folderPreset";
 import { createWatcher, invalidateWatcher, removeWatcher } from "./exec/watcher";
 import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
 import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
 import { db, Settings } from "./storage";
-import { applyFolderPreset } from "./exec/folderPreset";
-import { v4 as uuid } from "uuid";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
@@ -23,6 +23,34 @@ export const ipcApiDef = {
       id: watcherTable.id
     });
     return results[0].id;
+  },
+  copyWatcher: async (watcherId: string): Promise<string> => {
+    const raw = await db
+      .select()
+      .from(watcherTable)
+      .leftJoin(ruleTable, eq(ruleTable.watcherId, watcherTable.id))
+      .where(eq(watcherTable.id, watcherId));
+
+    const newId = await db.transaction(async (tx) => {
+      const { id, createdAt, updatedAt, ...rawWatcher } = raw[0].watcher;
+      rawWatcher.name = `copy of ${rawWatcher.name}`;
+
+      const [{ id: newWatherId }] = await tx
+        .insert(watcherTable)
+        .values([{ ...rawWatcher }])
+        .returning({ id: watcherTable.id });
+
+      for (const r of raw) {
+        if (r.rule === null) continue;
+        const { id, createdAt, updatedAt, ...rawRule } = r.rule;
+        rawRule.watcherId = newWatherId;
+        await tx.insert(ruleTable).values([rawRule]);
+      }
+
+      return newWatherId;
+    });
+
+    return newId;
   },
   getWatchers: async (): Promise<Watcher[]> => {
     return await db.select().from(watcherTable);
@@ -67,6 +95,28 @@ export const ipcApiDef = {
     invalidateWatcher(watcherId);
 
     return results[0].id;
+  },
+  copyRule: async (ruleId: string) => {
+    const raw = await db.select().from(ruleTable).where(eq(ruleTable.id, ruleId)).limit(1);
+
+    const { id, createdAt, updatedAt, ...rawRule } = raw[0];
+
+    const [{ order }] = await db
+      .select({ order: count() })
+      .from(ruleTable)
+      .where(eq(ruleTable.watcherId, rawRule.watcherId));
+
+    rawRule.name = `copy of ${rawRule.name}`;
+    rawRule.order = order;
+
+    const result = await db
+      .insert(ruleTable)
+      .values([{ ...rawRule }])
+      .returning({ id: ruleTable.id });
+
+    invalidateWatcher(rawRule.watcherId);
+
+    return result[0].id;
   },
   getRules: async (watcherId: string) => {
     return await db
@@ -149,6 +199,38 @@ export const ipcApiDef = {
         id: folderPresetTable.id
       });
     return result[0].id;
+  },
+  copyFolderPreset: async (parentId: string | null, folderPresetId: string): Promise<string> => {
+    return await db.transaction(async (tx) => {
+      const copy = async (parentId: string | null, folderPresetId: string, depth: number) => {
+        const raw = await db
+          .select()
+          .from(folderPresetTable)
+          .where(eq(folderPresetTable.id, folderPresetId));
+
+        const { id, createdAt, updatedAt, ...rawFolderPreset } = raw[0];
+        rawFolderPreset.parentId = parentId;
+        if (depth === 0) {
+          rawFolderPreset.name = `copy of ${rawFolderPreset.name}`;
+        }
+
+        const [{ id: newFolderPresetId }] = await tx
+          .insert(folderPresetTable)
+          .values([{ ...rawFolderPreset, parentId }])
+          .returning({ id: folderPresetTable.id });
+
+        const raw1 = await db
+          .select()
+          .from(folderPresetTable)
+          .where(eq(folderPresetTable.parentId, id));
+
+        for (const r of raw1) {
+          await copy(newFolderPresetId, r.id, depth + 1);
+        }
+        return newFolderPresetId;
+      };
+      return await copy(parentId, folderPresetId, 0);
+    });
   },
   getFolderPresets: async (parentId: string | null): Promise<FolderPreset[]> => {
     const builder = db.select().from(folderPresetTable).orderBy(asc(folderPresetTable.name));

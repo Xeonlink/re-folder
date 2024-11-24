@@ -1,4 +1,4 @@
-import { useDeleteRule, useRule, useUpdateRule } from "@renderer/api/rules";
+import { useCopyRule, useDeleteRule, useRule, useUpdateRule } from "@renderer/api/rules";
 import { AutoSizeInput } from "@renderer/components/AutoSizeInput";
 import {
   Accordion,
@@ -14,7 +14,7 @@ import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Pending } from "./-Pending";
 import { knownExtensions } from "@renderer/assets/knownExtensions";
-import { Power, PowerOff, Trash2Icon } from "lucide-react";
+import { Copy, Power, PowerOff, Trash2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/rules/$ruleId/")({
   component: Page,
@@ -30,6 +30,7 @@ function Page() {
   const router = useRouter();
   const { toast } = useToastWithDismiss();
 
+  const copyRule = useCopyRule(rule.watcherId, ruleId);
   const updateRule = useUpdateRule(ruleId);
   const deleteRule = useDeleteRule(rule.watcherId, ruleId);
 
@@ -115,6 +116,14 @@ function Page() {
       }
     };
 
+  const onCopyClick = async (_: React.MouseEvent<HTMLButtonElement>) => {
+    await copyRule.mutateAsync({
+      onError: (error) => {
+        toast("복사 실패", error.message);
+      }
+    });
+    router.history.back();
+  };
   const onDeleteClick = async (_: React.MouseEvent<HTMLButtonElement>) => {
     await deleteRule.mutateAsync({
       onError: (error) => {
@@ -176,6 +185,12 @@ function Page() {
                 <PowerOff className="w-5 h-5" />
               </Button>
             </div>
+          </li>
+          <li className="flex items-center">
+            <Label className="flex-1">복사하기</Label>
+            <Button className="w-56" variant="secondary" size="sm" onClick={onCopyClick}>
+              <Copy className="w-5 h-5" />
+            </Button>
           </li>
           <li className="flex items-center">
             <Label className="flex-1">삭제하기</Label>

@@ -5,12 +5,14 @@ import { createApiSelector, createSubscriptionSelector } from "./utils";
 export const api = createApiSelector<typeof ipcApiDef>()({
   // watcher ----------------
   createWatcher: true,
+  copyWatcher: true,
   getWatchers: true,
   getWatcher: true,
   updateWatcher: true,
   deleteWatcher: true,
   // rule ----------------
   createRule: true,
+  copyRule: true,
   getRules: true,
   getRule: true,
   updateRule: true,
@@ -18,6 +20,7 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   deleteRule: true,
   // folderPreset ----------------
   createFolderPreset: true,
+  copyFolderPreset: true,
   getFolderPresets: true,
   getFolderPreset: true,
   updateFolderPreset: true,

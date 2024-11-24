@@ -1,5 +1,6 @@
 import {
   useApplyFolderPreset,
+  useCopyFolderPreset,
   useDeleteFolderPreset,
   useFolderPreset,
   useUpdateFolderPreset
@@ -9,7 +10,7 @@ import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ArrowRight, Trash2Icon } from "lucide-react";
+import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
 import { FolderUnit } from "./-FolderUnit";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 
@@ -25,6 +26,7 @@ function Page() {
   const router = useRouter();
   const { toast } = useToastWithDismiss();
   const { data: folderPreset } = useFolderPreset(folderPresetId);
+  const copyFolderPreset = useCopyFolderPreset(folderPreset.parentId, folderPresetId);
   const deleteFolderPreset = useDeleteFolderPreset(null, folderPresetId);
   const updateFolderPreset = useUpdateFolderPreset(folderPresetId);
   const applyFolderPreset = useApplyFolderPreset(folderPresetId);
@@ -54,6 +56,14 @@ function Page() {
 
   const onDeleteClick = () => {
     deleteFolderPreset.mutate({
+      onError: (error) => {
+        toast(error.name, error.message);
+      }
+    });
+    router.history.back();
+  };
+  const onCopyClick = () => {
+    copyFolderPreset.mutate({
       onError: (error) => {
         toast(error.name, error.message);
       }
@@ -95,6 +105,12 @@ function Page() {
             <Label className="flex-1">적용하기</Label>
             <Button className="w-56" variant="secondary" size="sm" onClick={onApplyClick}>
               <ArrowRight className="w-5 h-5" />
+            </Button>
+          </li>
+          <li className="flex items-center">
+            <Label className="flex-1">복사하기</Label>
+            <Button className="w-56" variant="secondary" size="sm" onClick={onCopyClick}>
+              <Copy className="w-5 h-5" />
             </Button>
           </li>
           <li className="flex items-center">

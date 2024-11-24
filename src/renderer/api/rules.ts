@@ -18,6 +18,21 @@ export function useCreateRule(watcherId: string) {
   });
 }
 
+export function useCopyRule(watcherId: string, ruleId: string) {
+  const queryClient = useQueryClient();
+  const queryKey = ["watchers", watcherId, "rules"];
+
+  return useMutation({
+    mutationFn: (_: { onError?: (error: Error) => any }) => api.copyRule(ruleId),
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    }
+  });
+}
+
 export function useRules(watcherId: string) {
   return useSuspenseQuery({
     queryKey: ["watchers", watcherId, "rules"],
