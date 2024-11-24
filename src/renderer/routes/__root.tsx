@@ -28,12 +28,12 @@ function Page() {
     win32: {
       "alt+arrowleft": router.history.back,
       "alt+arrowright": router.history.forward,
-      "ctrl+p": () => !open && setOpen(true)
+      "ctrl+o": () => !open && setOpen(true)
     },
     darwin: {
       "meta+arrowleft": router.history.back,
       "meta+arrowright": router.history.forward,
-      "meta+p": () => !open && setOpen(true)
+      "meta+o": () => !open && setOpen(true)
     }
   });
 

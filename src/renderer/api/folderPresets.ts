@@ -37,6 +37,23 @@ export function useCreateFolderPreset(parentId: string | null) {
   });
 }
 
+export function useCopyFolderPreset(parentId: string | null, id: string) {
+  const queryClient = useQueryClient();
+  const queryKey = ["folderPresets", parentId];
+
+  return useMutation({
+    mutationFn: (_: { onError?: (error: Error) => any }) => {
+      return api.copyFolderPreset(parentId, id);
+    },
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    }
+  });
+}
+
 export function useUpdateFolderPreset(id: string) {
   const queryClient = useQueryClient();
   const queryKey = ["folderPresets", id];

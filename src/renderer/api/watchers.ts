@@ -34,6 +34,23 @@ export function useCreateWatcher() {
   });
 }
 
+export function useCopyWatcher(watcherId: string) {
+  const queryClient = useQueryClient();
+  const queryKey = ["watchers"];
+
+  return useMutation({
+    mutationFn: (_: { onError?: (error: Error) => any }) => {
+      return api.copyWatcher(watcherId);
+    },
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    }
+  });
+}
+
 export function useUpdateWatcher(id: string) {
   const queryClient = useQueryClient();
   const queryKey = ["watchers", id];

@@ -1,6 +1,11 @@
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
-import { useDeleteWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
+import {
+  useCopyWatcher,
+  useDeleteWatcher,
+  useUpdateWatcher,
+  useWatcher
+} from "@renderer/api/watchers";
 import { DraggableItem } from "@renderer/components/DraggableItme";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
@@ -10,7 +15,7 @@ import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { motion, Reorder } from "framer-motion";
-import { PlusIcon, Power, PowerOff, Trash2Icon } from "lucide-react";
+import { Copy, PlusIcon, Power, PowerOff, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Rule } from "src/main/schema";
 import { Pending } from "./-Pending";
@@ -30,6 +35,7 @@ function Page() {
   const { toast } = useToastWithDismiss();
   const router = useRouter();
 
+  const copyWatcher = useCopyWatcher(watcherId);
   const deleteWatcher = useDeleteWatcher(watcherId);
   const updateWatcher = useUpdateWatcher(watcherId);
   const createRule = useCreateRule(watcherId);
@@ -92,7 +98,6 @@ function Page() {
     });
     router.history.back();
   };
-
   const enable = (isEnable: boolean) => async (_: React.MouseEvent<HTMLButtonElement>) => {
     if (watcher.enabled !== isEnable) {
       await updateWatcher.mutateAsync({
@@ -104,13 +109,20 @@ function Page() {
       });
     }
   };
-
   const onCreateRuleClick = async () => {
     await createRule.mutateAsync({
       onError: (error) => {
         toast(error.name, error.message);
       }
     });
+  };
+  const onCopyClick = () => {
+    copyWatcher.mutate({
+      onError: (error) => {
+        toast(error.name, error.message);
+      }
+    });
+    router.history.back();
   };
 
   return (
@@ -177,6 +189,12 @@ function Page() {
                 <PowerOff className="w-5 h-5" />
               </Button>
             </div>
+          </li>
+          <li className="flex items-center">
+            <Label className="flex-1">복사하기</Label>
+            <Button className="w-56" variant="secondary" size="sm" onClick={onCopyClick}>
+              <Copy className="w-5 h-5" />
+            </Button>
           </li>
           <li className="flex items-center">
             <Label className="flex-1">삭제하기</Label>
