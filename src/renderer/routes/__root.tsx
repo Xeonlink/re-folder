@@ -55,16 +55,26 @@ function Page() {
     <>
       <header className="w-full flex sticky top-0 bg-background rounded-b-sm">
         <div className="flex py-2 pl-2">
-          <Button variant="ghost" size="sm_icon" onClick={() => router.history.back()}>
+          <Button
+            variant="ghost"
+            size="sm_icon"
+            onClick={() => router.history.back()}
+            tabIndex={-1}
+          >
             <ArrowLeftIcon />
           </Button>
-          <Button variant="ghost" size="sm_icon" onClick={() => router.history.forward()}>
+          <Button
+            variant="ghost"
+            size="sm_icon"
+            onClick={() => router.history.forward()}
+            tabIndex={-1}
+          >
             <ArrowRightIcon />
           </Button>
         </div>
         <div className="flex-1 window-handle"></div>
 
-        <Link to="/" className="py-3" onContextMenu={() => setOpen(true)}>
+        <Link to="/" className="py-3" onContextMenu={() => setOpen(true)} tabIndex={-1}>
           <img src={ImgLogo} alt="re-folder" className="h-6" />
         </Link>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -111,10 +121,20 @@ function Page() {
 
         <div className="flex-1 window-handle"></div>
         <div className="flex pr-2 py-2">
-          <Button variant="ghost" size="sm_icon" onClick={() => window.api.minimizeSelf()}>
+          <Button
+            variant="ghost"
+            size="sm_icon"
+            onClick={() => window.api.minimizeSelf()}
+            tabIndex={-1}
+          >
             <MinusIcon className="relative top-1" />
           </Button>
-          <Button variant="ghost" size="sm_icon" onClick={() => window.api.closeSelf()}>
+          <Button
+            variant="ghost"
+            size="sm_icon"
+            onClick={() => window.api.closeSelf()}
+            tabIndex={-1}
+          >
             <Cross1Icon />
           </Button>
         </div>

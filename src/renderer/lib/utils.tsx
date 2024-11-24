@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { SyntheticEvent } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -55,3 +56,11 @@ export function testPromise<T>(
 export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export const eventSplitor =
+  <T extends SyntheticEvent>(...args: ((e: T) => any)[]) =>
+  (e: T) => {
+    for (const arg of args) {
+      arg(e);
+    }
+  };

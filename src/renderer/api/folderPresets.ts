@@ -83,6 +83,30 @@ export function useDeleteFolderPreset(parentId: string | null, id: string) {
   });
 }
 
+export function useDeleteFolderPresetById() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      parentId: string | null;
+      id: string;
+      onError?: (error: Error) => any;
+    }) => {
+      return api.deleteFolderPreset(variables.id);
+    },
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["folderPresets", variables.parentId],
+        exact: true
+      });
+      remove(queryClient, variables.id);
+    }
+  });
+}
+
 /**
  * DFS를 하면서 자기자신과 하위의 folderPreset에 대한 쿼리를 모두 제거한다.
  * @author 오지민
