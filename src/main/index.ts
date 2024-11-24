@@ -1,15 +1,15 @@
 import { app, BrowserWindow, dialog, nativeImage, shell, Tray } from "electron";
 import { autoUpdater } from "electron-updater";
 import { join } from "path";
-import icon1024_black from "../../resources/icon1024_black.png?asset";
-import icon1024_primary from "../../resources/icon1024_primary.png?asset";
+import IconBlack from "../../resources/icon1800_primary.png?asset";
+import IconPrimary from "../../resources/icon1800_primary.png?asset";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
 import { autoMigrate } from "./storage";
 import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils";
 
 function createWindow(): void {
-  const icon = nativeImage.createFromPath(icon1024_black).resize({
+  const icon = nativeImage.createFromPath(IconBlack).resize({
     width: 512,
     height: 512,
     quality: "best"
@@ -100,7 +100,7 @@ function createOrShowWindow() {
 /* Tray ========================================================= */
 function createTrayIcon() {
   if (process.platform === "darwin") {
-    const trayIcon = nativeImage.createFromPath(icon1024_black).resize({
+    const trayIcon = nativeImage.createFromPath(IconBlack).resize({
       width: 20,
       height: 20,
       quality: "best"
@@ -109,7 +109,7 @@ function createTrayIcon() {
     return trayIcon;
   }
 
-  const trayIcon = nativeImage.createFromPath(icon1024_primary).resize({
+  const trayIcon = nativeImage.createFromPath(IconPrimary).resize({
     width: 20,
     height: 20,
     quality: "best"
