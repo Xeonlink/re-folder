@@ -32,7 +32,8 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   getOpenAiApiKey: true,
   getOpenAiModel: true,
   updateOpenAiApiKey: true,
-  updateOpenAiModel: true
+  updateOpenAiModel: true,
+  getPlatform: true
 });
 
 export const subscribe = createSubscriptionSelector<typeof ipcSubscriptionDef>()({

@@ -98,7 +98,7 @@ export function FolderUnit(props: Props) {
         <ContextMenuTrigger>
           <Button
             variant="ghost"
-            className="py-0 font-normal rounded-none min-w-full justify-start focus:bg-secondary focus:outline-none focus:border-none items-center h-8"
+            className="py-0 font-normal rounded-none min-w-full justify-start focus:bg-secondary focus:outline-none focus:border-none items-center h-8 focus-visible:ring-0"
             style={{ paddingLeft: `${depts}rem` }}
             onClick={() => setOpen((prev) => !prev)}
             onKeyDown={onButtonKeyDown}

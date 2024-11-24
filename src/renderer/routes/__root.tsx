@@ -9,7 +9,8 @@ import {
   DialogTitle
 } from "@renderer/components/ui/dialog";
 import { Toaster } from "@renderer/components/ui/toaster";
-import { createRootRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
+import { useShortcuts } from "@renderer/hooks/useShortcuts";
+import { createRootRoute, Link, Outlet, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Error } from "./-Error";
 
@@ -20,7 +21,35 @@ export const Route = createRootRoute({
 
 function Page() {
   const router = useRouter();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  useShortcuts({
+    win32: {
+      "alt+arrowleft": router.history.back,
+      "alt+arrowright": router.history.forward,
+      "ctrl+p": () => !open && setOpen(true)
+    },
+    darwin: {
+      "meta+arrowleft": router.history.back,
+      "meta+arrowright": router.history.forward,
+      "meta+p": () => !open && setOpen(true)
+    }
+  });
+
+  const onDialogKeyDown =
+    (hasPrev: boolean, hasNext: boolean) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (hasNext && e.key === "ArrowDown") {
+        const element = e.currentTarget.nextElementSibling as HTMLElement;
+        element?.focus();
+        return;
+      }
+      if (hasPrev && e.key === "ArrowUp") {
+        const element = e.currentTarget.previousElementSibling as HTMLElement;
+        element?.focus();
+        return;
+      }
+    };
 
   return (
     <>
@@ -44,18 +73,37 @@ function Page() {
           </DialogTitle>
           <DialogContent className="w-fit p-0 gap-0 bg-transparent border-0" hideDefaultClose>
             <DialogClose asChild>
-              <Button variant="ghost" size="lg" autoFocus={false} className="text-lg h-16" asChild>
-                <Link to="/folder-presets">폴더 프리셋</Link>
+              <Button
+                variant="ghost"
+                size="lg"
+                className="text-lg h-16 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                onClick={() => navigate({ to: "/folder-presets" })}
+                onKeyDown={onDialogKeyDown(false, true)}
+                autoFocus
+              >
+                폴더 프리셋
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="ghost" size="lg" autoFocus={false} className="text-lg h-16" asChild>
-                <Link to="/watchers">감시자</Link>
+              <Button
+                variant="ghost"
+                size="lg"
+                className="text-lg h-16 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                onClick={() => navigate({ to: "/watchers" })}
+                onKeyDown={onDialogKeyDown(true, true)}
+              >
+                감시자
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="ghost" size="lg" autoFocus={false} className="text-lg h-16" asChild>
-                <Link to="/settings">설정</Link>
+              <Button
+                variant="ghost"
+                size="lg"
+                className="text-lg h-16 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                onClick={() => navigate({ to: "/settings" })}
+                onKeyDown={onDialogKeyDown(true, false)}
+              >
+                설정
               </Button>
             </DialogClose>
           </DialogContent>

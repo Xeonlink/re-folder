@@ -266,5 +266,8 @@ export const ipcApiDef = {
   },
   updateOpenAiModel: async (model: string) => {
     Settings.data.openaiModel = model;
+  },
+  getPlatform: async () => {
+    return process.platform;
   }
 } satisfies IpcDef;

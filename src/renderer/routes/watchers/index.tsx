@@ -1,11 +1,11 @@
 import { useCreateWatcher, useWatchers } from "@renderer/api/watchers";
 import { Button } from "@renderer/components/ui/button";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { PlusIcon } from "lucide-react";
-import { Pending } from "./-Pending";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { PlusIcon } from "lucide-react";
+import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/watchers/")({
   component: Page,
