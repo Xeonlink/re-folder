@@ -1,4 +1,4 @@
-import { DragControls, useDragControls, Reorder } from "framer-motion";
+import { DragControls, Reorder, useDragControls } from "framer-motion";
 
 export function DraggableItem(props: {
   value: any;
@@ -9,12 +9,7 @@ export function DraggableItem(props: {
   const dragCtrl = useDragControls();
 
   return (
-    <Reorder.Item
-      value={value}
-      dragControls={dragCtrl}
-      dragListener={false}
-      onDragEnd={() => onDragEnd?.()}
-    >
+    <Reorder.Item value={value} dragControls={dragCtrl} dragListener={false} onDragEnd={() => onDragEnd?.()}>
       {children(dragCtrl)}
     </Reorder.Item>
   );

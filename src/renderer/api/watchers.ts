@@ -6,14 +6,14 @@ const api = window.api;
 export function useWatchers() {
   return useSuspenseQuery<Watcher[]>({
     queryKey: ["watchers"],
-    queryFn: () => api.getWatchers()
+    queryFn: () => api.getWatchers(),
   });
 }
 
 export function useWatcher(id: string) {
   return useSuspenseQuery<Watcher>({
     queryKey: ["watchers", id],
-    queryFn: () => api.getWatcher(id)
+    queryFn: () => api.getWatcher(id),
   });
 }
 
@@ -30,7 +30,7 @@ export function useCreateWatcher() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -47,7 +47,7 @@ export function useCopyWatcher(watcherId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -76,7 +76,7 @@ export function useUpdateWatcher(id: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -104,7 +104,7 @@ export function useDeleteWatcher(watcherId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.removeQueries({ queryKey: [...queryKey, watcherId] });
-    }
+    },
   });
 }
 
@@ -113,8 +113,7 @@ export function useDeleteWatcherById() {
   const queryKey = ["watchers"];
 
   return useMutation({
-    mutationFn: (variables: { id: string; onError: (error: Error) => any }) =>
-      api.deleteWatcher(variables.id),
+    mutationFn: (variables: { id: string; onError: (error: Error) => any }) => api.deleteWatcher(variables.id),
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Watcher[]>(queryKey);
@@ -133,6 +132,6 @@ export function useDeleteWatcherById() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.removeQueries({ queryKey: [...queryKey, variables.id] });
-    }
+    },
   });
 }

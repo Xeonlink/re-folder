@@ -1,10 +1,6 @@
+import { Pending } from "./-Pending";
 import { Label } from "@radix-ui/react-label";
-import {
-  useOpenAiApiKey,
-  useOpenAiModel,
-  useUpdateOpenAiApiKey,
-  useUpdateOpenAiModel
-} from "@renderer/api/openai";
+import { useOpenAiApiKey, useOpenAiModel, useUpdateOpenAiApiKey, useUpdateOpenAiModel } from "@renderer/api/openai";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import {
@@ -13,15 +9,14 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@renderer/components/ui/select";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute } from "@tanstack/react-router";
-import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/settings/openai/")({
   component: Page,
-  pendingComponent: Pending
+  pendingComponent: Pending,
 });
 
 function Page() {
@@ -38,7 +33,7 @@ function Page() {
       onError: () => {
         toast("api key 수정실패", "api key 수정에 실패했습니다.");
         e.target.value = apiKey ?? "";
-      }
+      },
     });
   };
 
@@ -48,7 +43,7 @@ function Page() {
       data: value,
       onError: () => {
         toast("모델 변경실패", "모델 변경에 실패했습니다.");
-      }
+      },
     });
   };
 

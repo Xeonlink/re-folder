@@ -48,7 +48,7 @@ export function useShortcuts(options: Options) {
         e.shiftKey && "shift",
         e.altKey && "alt",
         e.metaKey && "meta",
-        e.key.toLowerCase()
+        e.key.toLowerCase(),
       ]
         .filter(Boolean)
         .join("+") as KeyCompose;
@@ -66,12 +66,7 @@ export function useShortcuts(options: Options) {
   }, []);
 }
 
-export function useSimpleShortcuts(
-  platform: NodeJS.Platform,
-  modifier: Modifier,
-  key: Key,
-  callback: () => any
-) {
+export function useSimpleShortcuts(platform: NodeJS.Platform, modifier: Modifier, key: Key, callback: () => any) {
   const { data: actualPlatform } = usePlatform();
 
   useEffect(() => {

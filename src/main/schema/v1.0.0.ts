@@ -1,8 +1,8 @@
+import { getRandomHexColor } from ".";
 import { AnySQLiteColumn, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { InferSelectModel } from "drizzle-orm/table";
 import { app } from "electron";
 import { v4 as uuid } from "uuid";
-import { getRandomHexColor } from ".";
 
 export const watcherTable = sqliteTable("watcher", {
   id: text("id", { mode: "text" })
@@ -34,7 +34,7 @@ export const watcherTable = sqliteTable("watcher", {
   extras: text("extras", { mode: "json" })
     .$type<Record<string, string>>()
     .$defaultFn(() => ({}))
-    .notNull()
+    .notNull(),
 });
 
 export const ruleTable = sqliteTable("rule", {
@@ -82,8 +82,8 @@ export const ruleTable = sqliteTable("rule", {
     .notNull()
     .references(() => watcherTable.id, {
       onDelete: "cascade",
-      onUpdate: "cascade"
-    })
+      onUpdate: "cascade",
+    }),
 });
 
 export const logTable = sqliteTable("log", {
@@ -107,8 +107,8 @@ export const logTable = sqliteTable("log", {
     .notNull()
     .references(() => watcherTable.id, {
       onDelete: "cascade",
-      onUpdate: "cascade"
-    })
+      onUpdate: "cascade",
+    }),
 });
 
 // root folder의 parentId는 null
@@ -134,13 +134,10 @@ export const folderPresetTable = sqliteTable("folder_preset", {
   description: text("description", { mode: "text" })
     .$defaultFn(() => "this is folder desciption.")
     .notNull(),
-  parentId: text("parentId", { mode: "text" }).references(
-    (): AnySQLiteColumn => folderPresetTable.id,
-    {
-      onDelete: "cascade",
-      onUpdate: "cascade"
-    }
-  )
+  parentId: text("parentId", { mode: "text" }).references((): AnySQLiteColumn => folderPresetTable.id, {
+    onDelete: "cascade",
+    onUpdate: "cascade",
+  }),
 });
 
 // Type ------------------------------------------------------------

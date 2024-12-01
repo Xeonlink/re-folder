@@ -26,19 +26,19 @@ export function resolveErrorMessage(error: any): string {
     return JSON.stringify({
       type: "Error",
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
   } else if (typeof error === "object" && error !== null) {
     // 객체인 경우
     return JSON.stringify({
       type: "Object",
-      ...error // 객체 자체를 복사
+      ...error, // 객체 자체를 복사
     });
   } else {
     // 그 이외의 경우 (문자열, 숫자 등)
     return JSON.stringify({
       type: "Other",
-      value: String(error)
+      value: String(error),
     });
   }
 }
@@ -56,7 +56,7 @@ export function createNotifier<TDef extends IpcSubscriptionDef>(ipcDef: TDef) {
     };
   }
   return {
-    notify: notifier as { [P in keyof TDef]: TDef[P] }
+    notify: notifier as { [P in keyof TDef]: TDef[P] },
   };
 }
 
@@ -83,8 +83,7 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
 
     const [major, minor, patch] = parts;
 
-    if (major >= 1024 || minor >= 1024 || patch >= 1024)
-      throw new Error("버전 번호는 각각 1024 미만이어야 합니다.");
+    if (major >= 1024 || minor >= 1024 || patch >= 1024) throw new Error("버전 번호는 각각 1024 미만이어야 합니다.");
 
     return (major << this.MAJOR_SHIFT) | (minor << this.MINOR_SHIFT) | patch;
   }
@@ -103,8 +102,7 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
 
       const [start, end] = range.split("-").map((v) => v.trim());
 
-      if (!start || !end)
-        throw new Error('유효하지 않은 버전 범위 형식입니다. "시작버전-끝버전" 형식이어야 합니다.');
+      if (!start || !end) throw new Error('유효하지 않은 버전 범위 형식입니다. "시작버전-끝버전" 형식이어야 합니다.');
 
       this.set([start, end], value);
     }
@@ -123,8 +121,7 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
     const startNum = VersionRangeMap.versionToNumber(startVer);
     const endNum = VersionRangeMap.versionToNumber(endVer);
 
-    if (startNum > endNum)
-      throw new Error("유효하지 않은 범위: 시작 버전이 끝 버전보다 작아야 합니다");
+    if (startNum > endNum) throw new Error("유효하지 않은 범위: 시작 버전이 끝 버전보다 작아야 합니다");
 
     return super.set([startVer.trim(), endVer.trim()], value);
   }

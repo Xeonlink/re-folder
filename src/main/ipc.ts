@@ -1,26 +1,26 @@
-import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
-import { alias } from "drizzle-orm/sqlite-core";
-import { app, BrowserWindow, dialog } from "electron/main";
-import OpenAI from "openai";
-import { v4 as uuid } from "uuid";
 import { applyFolderPreset } from "./exec/folderPreset";
 import { invalidateWatcher, removeWatcher } from "./exec/watcher";
 import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
 import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
-import { db, Settings } from "./storage";
+import { Settings, db } from "./storage";
+import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
+import { BrowserWindow, app, dialog } from "electron/main";
+import OpenAI from "openai";
+import { v4 as uuid } from "uuid";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
 
 export const ipcSubscriptionDef = {
-  checkingForUpdate: (_: boolean) => {}
+  checkingForUpdate: (_: boolean) => {},
 } satisfies IpcSubscriptionDef;
 
 export const ipcApiDef = {
   // watcher table -----------------------------------------------------
   createWatcher: async (): Promise<string> => {
     const results = await db.insert(watcherTable).values([{}]).returning({
-      id: watcherTable.id
+      id: watcherTable.id,
     });
     return results[0].id;
   },
@@ -79,13 +79,10 @@ export const ipcApiDef = {
   },
   // rule table -----------------------------------------------------
   createRule: async (watcherId: string) => {
-    const [{ order }] = await db
-      .select({ order: count() })
-      .from(ruleTable)
-      .where(eq(ruleTable.watcherId, watcherId));
+    const [{ order }] = await db.select({ order: count() }).from(ruleTable).where(eq(ruleTable.watcherId, watcherId));
 
     const results = await db.insert(ruleTable).values([{ order, watcherId }]).returning({
-      id: ruleTable.id
+      id: ruleTable.id,
     });
 
     invalidateWatcher(watcherId);
@@ -115,11 +112,7 @@ export const ipcApiDef = {
     return result[0].id;
   },
   getRules: async (watcherId: string) => {
-    return await db
-      .select()
-      .from(ruleTable)
-      .where(eq(ruleTable.watcherId, watcherId))
-      .orderBy(asc(ruleTable.order));
+    return await db.select().from(ruleTable).where(eq(ruleTable.watcherId, watcherId)).orderBy(asc(ruleTable.order));
   },
   getRule: async (ruleId: string) => {
     const results = await db.select().from(ruleTable).where(eq(ruleTable.id, ruleId));
@@ -145,10 +138,7 @@ export const ipcApiDef = {
     const changes = await db.transaction(async (tx) => {
       let changes = 0;
       for (const id in data) {
-        const result = await tx
-          .update(ruleTable)
-          .set({ order: data[id] })
-          .where(eq(ruleTable.id, id));
+        const result = await tx.update(ruleTable).set({ order: data[id] }).where(eq(ruleTable.id, id));
         changes += result.changes;
       }
       return changes;
@@ -188,21 +178,18 @@ export const ipcApiDef = {
       .values([
         {
           parentId,
-          name: `folder (${uuid().split("-")[0]})`
-        }
+          name: `folder (${uuid().split("-")[0]})`,
+        },
       ])
       .returning({
-        id: folderPresetTable.id
+        id: folderPresetTable.id,
       });
     return result[0].id;
   },
   copyFolderPreset: async (parentId: string | null, folderPresetId: string): Promise<string> => {
     return await db.transaction(async (tx) => {
       const copy = async (parentId: string | null, folderPresetId: string, depth: number) => {
-        const raw = await db
-          .select()
-          .from(folderPresetTable)
-          .where(eq(folderPresetTable.id, folderPresetId));
+        const raw = await db.select().from(folderPresetTable).where(eq(folderPresetTable.id, folderPresetId));
 
         const { id, createdAt, updatedAt, ...rawFolderPreset } = raw[0];
         rawFolderPreset.parentId = parentId;
@@ -215,10 +202,7 @@ export const ipcApiDef = {
           .values([{ ...rawFolderPreset, parentId }])
           .returning({ id: folderPresetTable.id });
 
-        const raw1 = await db
-          .select()
-          .from(folderPresetTable)
-          .where(eq(folderPresetTable.parentId, id));
+        const raw1 = await db.select().from(folderPresetTable).where(eq(folderPresetTable.parentId, id));
 
         for (const r of raw1) {
           await copy(newFolderPresetId, r.id, depth + 1);
@@ -272,10 +256,7 @@ export const ipcApiDef = {
         .limit(1);
 
       if (parentId !== null) {
-        const raw = await db
-          .select()
-          .from(folderPresetTable)
-          .where(eq(folderPresetTable.parentId, parentId));
+        const raw = await db.select().from(folderPresetTable).where(eq(folderPresetTable.parentId, parentId));
 
         if (raw.map((r) => r.name).includes(data.name)) {
           console.log(raw.map((r) => r.name));
@@ -284,22 +265,17 @@ export const ipcApiDef = {
       }
     }
 
-    const result = await db
-      .update(folderPresetTable)
-      .set(data)
-      .where(eq(folderPresetTable.id, folderPresetId));
+    const result = await db.update(folderPresetTable).set(data).where(eq(folderPresetTable.id, folderPresetId));
 
     return result.changes;
   },
   deleteFolderPreset: async (folderPresetId: string) => {
-    const result = await db
-      .delete(folderPresetTable)
-      .where(eq(folderPresetTable.id, folderPresetId));
+    const result = await db.delete(folderPresetTable).where(eq(folderPresetTable.id, folderPresetId));
     return result.changes;
   },
   applyFolderPreset: async (folderPresetId: string) => {
     const result = await dialog.showOpenDialog({
-      properties: ["openDirectory", "createDirectory", "dontAddToRecent"]
+      properties: ["openDirectory", "createDirectory", "dontAddToRecent"],
     });
     if (result.canceled) return;
     const path = result.filePaths[0];
@@ -323,7 +299,7 @@ export const ipcApiDef = {
   },
   selectFolder: async () => {
     const result = await dialog.showOpenDialog({
-      properties: ["openDirectory", "createDirectory", "dontAddToRecent"]
+      properties: ["openDirectory", "createDirectory", "dontAddToRecent"],
     });
     return result;
   },
@@ -347,5 +323,5 @@ export const ipcApiDef = {
   },
   getPlatform: async () => {
     return process.platform;
-  }
+  },
 } satisfies IpcDef;

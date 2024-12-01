@@ -1,11 +1,7 @@
+import { Pending } from "./-Pending";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
-import {
-  useCopyWatcher,
-  useDeleteWatcher,
-  useUpdateWatcher,
-  useWatcher
-} from "@renderer/api/watchers";
+import { useCopyWatcher, useDeleteWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
 import { DraggableItem } from "@renderer/components/DraggableItme";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
@@ -14,15 +10,14 @@ import { Label } from "@renderer/components/ui/label";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { motion, Reorder } from "framer-motion";
+import { Reorder, motion } from "framer-motion";
 import { Copy, PlusIcon, Power, PowerOff, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Rule } from "src/main/schema";
-import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/watchers/$watcherId/")({
   component: Page,
-  pendingComponent: Pending
+  pendingComponent: Pending,
 });
 
 type NormalKey = "name" | "description";
@@ -51,7 +46,7 @@ function Page() {
       onError: (error) => {
         toast(error.name, error.message);
         e.target.value = watcher[key];
-      }
+      },
     });
   };
 
@@ -65,7 +60,7 @@ function Page() {
       onError: (error) => {
         toast(error.name, error.message);
         target.value = watcher.path;
-      }
+      },
     });
   };
 
@@ -82,7 +77,7 @@ function Page() {
       onError: (error) => {
         toast(error.name, error.message);
         setRuleOrder(rules);
-      }
+      },
     });
   };
 
@@ -94,7 +89,7 @@ function Page() {
     deleteWatcher.mutate({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
     router.history.back();
   };
@@ -105,7 +100,7 @@ function Page() {
         onError: (error) => {
           const action = isEnable ? "활성화" : "비활성화";
           toast(`${action} 실패`, error.message);
-        }
+        },
       });
     }
   };
@@ -113,14 +108,14 @@ function Page() {
     await createRule.mutateAsync({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
   const onCopyClick = () => {
     copyWatcher.mutate({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
     router.history.back();
   };
@@ -241,11 +236,7 @@ function Page() {
           </Skeleton>
         </motion.div>
       ) : (
-        <Button
-          className="w-96 justify-between h-12 border-dashed"
-          variant="outline"
-          onClick={onCreateRuleClick}
-        >
+        <Button className="w-96 justify-between h-12 border-dashed" variant="outline" onClick={onCreateRuleClick}>
           규칙 만들기
         </Button>
       )}

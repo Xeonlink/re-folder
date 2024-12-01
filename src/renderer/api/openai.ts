@@ -1,4 +1,4 @@
-import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 
 const api = window.api;
 
@@ -6,7 +6,7 @@ const api = window.api;
 export function useOpenAiApiKey() {
   return useSuspenseQuery({
     queryKey: ["openai", "apikey"],
-    queryFn: async () => api.getOpenAiApiKey()
+    queryFn: async () => api.getOpenAiApiKey(),
   });
 }
 
@@ -35,7 +35,7 @@ export function useUpdateOpenAiApiKey() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -43,7 +43,7 @@ export function useUpdateOpenAiApiKey() {
 export function useOpenAiModel() {
   return useSuspenseQuery({
     queryKey: ["openai", "model"],
-    queryFn: async () => api.getOpenAiModel()
+    queryFn: async () => api.getOpenAiModel(),
   });
 }
 
@@ -72,6 +72,6 @@ export function useUpdateOpenAiModel() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }

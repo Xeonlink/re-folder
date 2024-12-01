@@ -1,5 +1,13 @@
 {
-  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug All",
+      "configurations": ["Debug Main Process", "Debug Renderer Process"],
+      "presentation": {
+        "order": 1
+      }
+    }
+  ],
   "configurations": [
     {
       "name": "Debug Main Process",
@@ -27,13 +35,5 @@
       }
     }
   ],
-  "compounds": [
-    {
-      "name": "Debug All",
-      "configurations": ["Debug Main Process", "Debug Renderer Process"],
-      "presentation": {
-        "order": 1
-      }
-    }
-  ]
+  "version": "0.2.0"
 }

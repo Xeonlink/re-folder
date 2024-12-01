@@ -4,7 +4,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
-  component: Page
+  component: Page,
 });
 
 function Page() {
@@ -24,18 +24,18 @@ function Page() {
           left: "50%",
           top: 25,
           scale: 1,
-          rotate: 0
+          rotate: 0,
         }}
         animate={{
           top: "50%",
           scale: 4,
-          rotate: 360
+          rotate: 360,
         }}
         transition={{
           type: "spring",
           ease: "linear",
           duration: 1.8,
-          delay: 0
+          delay: 0,
         }}
       >
         <img src={ImgLogo} alt="re-folder" className="h-6" />

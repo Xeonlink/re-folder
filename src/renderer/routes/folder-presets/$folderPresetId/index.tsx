@@ -1,21 +1,21 @@
+import { FolderUnit } from "./-FolderUnit";
 import {
   useApplyFolderPreset,
   useCopyFolderPreset,
   useDeleteFolderPreset,
   useFolderPreset,
-  useUpdateFolderPreset
+  useUpdateFolderPreset,
 } from "@renderer/api/folderPresets";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
+import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
-import { FolderUnit } from "./-FolderUnit";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 
 export const Route = createFileRoute("/folder-presets/$folderPresetId/")({
-  component: Page
+  component: Page,
 });
 
 type NormalKey = "name" | "description";
@@ -39,7 +39,7 @@ function Page() {
       onError: (error) => {
         toast(error.name, error.message);
         e.target.value = folderPreset[key];
-      }
+      },
     });
   };
 
@@ -50,7 +50,7 @@ function Page() {
       },
       onSuccess: () => {
         toast("적용 완료", "폴더 프리셋이 적용되었습니다.");
-      }
+      },
     });
   };
 
@@ -58,7 +58,7 @@ function Page() {
     deleteFolderPreset.mutate({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
     router.history.back();
   };
@@ -66,7 +66,7 @@ function Page() {
     copyFolderPreset.mutate({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
     router.history.back();
   };

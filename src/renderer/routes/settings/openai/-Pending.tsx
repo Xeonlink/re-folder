@@ -7,7 +7,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@renderer/components/ui/select";
 
 export function Pending() {

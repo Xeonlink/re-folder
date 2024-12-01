@@ -1,16 +1,15 @@
 import "./assets/main.css";
-
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createHashHistory, createRouter, RouterProvider } from "@tanstack/react-router";
-import ReactDOM from "react-dom/client";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { routeTree } from "./routeTree.gen";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { RouterProvider, createHashHistory, createRouter } from "@tanstack/react-router";
+import ReactDOM from "react-dom/client";
 
 const router = createRouter({
   routeTree,
   history: createHashHistory(),
-  defaultViewTransition: true
+  defaultViewTransition: true,
 });
 
 declare module "@tanstack/react-router" {
@@ -30,5 +29,5 @@ reactRoot.render(
       <RouterProvider router={router} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  </ThemeProvider>
+  </ThemeProvider>,
 );

@@ -1,8 +1,8 @@
+import { getRandomHexColor } from ".";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { InferSelectModel } from "drizzle-orm/table";
 import { app } from "electron";
 import { v4 as uuid } from "uuid";
-import { getRandomHexColor } from ".";
 
 export const watcherTable = sqliteTable("watcher", {
   id: text("id", { mode: "text" })
@@ -34,7 +34,7 @@ export const watcherTable = sqliteTable("watcher", {
   extras: text("extras", { mode: "json" })
     .$type<Record<string, string>>()
     .$defaultFn(() => ({}))
-    .notNull()
+    .notNull(),
 });
 
 export const ruleTable = sqliteTable("rule", {
@@ -82,8 +82,8 @@ export const ruleTable = sqliteTable("rule", {
     .notNull()
     .references(() => watcherTable.id, {
       onDelete: "cascade",
-      onUpdate: "cascade"
-    })
+      onUpdate: "cascade",
+    }),
 });
 
 export const logTable = sqliteTable("log", {
@@ -107,8 +107,8 @@ export const logTable = sqliteTable("log", {
     .notNull()
     .references(() => watcherTable.id, {
       onDelete: "cascade",
-      onUpdate: "cascade"
-    })
+      onUpdate: "cascade",
+    }),
 });
 
 // Type ------------------------------------------------------------

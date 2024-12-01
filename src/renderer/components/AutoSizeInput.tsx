@@ -1,5 +1,5 @@
-import { createElement, ReactHTML, useEffect, useRef, useState } from "react";
 import { Input, InputProps } from "./ui/input";
+import { ReactHTML, createElement, useEffect, useRef, useState } from "react";
 
 type Props = InputProps & {
   as?: keyof ReactHTML;
@@ -30,6 +30,6 @@ export function AutoSizeInput(props: Props) {
         onChange?.(e);
       }}
       {...others}
-    />
+    />,
   ]);
 }

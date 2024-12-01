@@ -1,9 +1,6 @@
+import { Pending } from "./-Pending";
 import { usePlatform } from "@renderer/api/extra";
-import {
-  useCreateFolderPreset,
-  useDeleteFolderPresetById,
-  useRootFolderPresets
-} from "@renderer/api/folderPresets";
+import { useCreateFolderPreset, useDeleteFolderPresetById, useRootFolderPresets } from "@renderer/api/folderPresets";
 import { Button } from "@renderer/components/ui/button";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
@@ -12,11 +9,10 @@ import { eventSplitor } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
-import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/folder-presets/")({
   component: Page,
-  pendingComponent: Pending
+  pendingComponent: Pending,
 });
 
 export function Page() {
@@ -31,7 +27,7 @@ export function Page() {
     await creator.mutateAsync({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
   const deleteFolderPreset = async (folderPresetId: string) => {
@@ -40,7 +36,7 @@ export function Page() {
       id: folderPresetId,
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
 
@@ -50,11 +46,11 @@ export function Page() {
 
   useShortcuts({
     win32: {
-      "ctrl+n": createFolderPreset
+      "ctrl+n": createFolderPreset,
     },
     darwin: {
-      "meta+n": createFolderPreset
-    }
+      "meta+n": createFolderPreset,
+    },
   });
 
   const arrowFocusEventHandler =
@@ -63,8 +59,7 @@ export function Page() {
       const { enabled = true } = options;
       if (!enabled) return;
       if (options.hasUp && e.key === "ArrowUp") {
-        const element = e.currentTarget.previousElementSibling
-          ?.previousElementSibling as HTMLElement;
+        const element = e.currentTarget.previousElementSibling?.previousElementSibling as HTMLElement;
         element?.focus();
         return;
       }
@@ -85,8 +80,7 @@ export function Page() {
       }
     };
   const deleteEventHandler =
-    (options: { enabled?: boolean; id: string }) =>
-    async (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    (options: { enabled?: boolean; id: string }) => async (e: React.KeyboardEvent<HTMLButtonElement>) => {
       const { enabled = true, id } = options;
       if (!enabled) return;
       if (platform === "win32" && e.key === "Delete") {
@@ -114,11 +108,11 @@ export function Page() {
               hasUp: index > 1,
               hasRight: index % 2 === 0,
               hasDown: index < folderPresets.length - 1,
-              hasLeft: index % 2 === 1
+              hasLeft: index % 2 === 1,
             }),
             deleteEventHandler({
-              id: preset.id
-            })
+              id: preset.id,
+            }),
           )}
         >
           {preset.name}
@@ -142,7 +136,7 @@ export function Page() {
           tabIndex={folderPresets.length}
           onKeyDown={arrowFocusEventHandler({
             hasUp: folderPresets.length > 1,
-            hasLeft: folderPresets.length % 2 === 1
+            hasLeft: folderPresets.length % 2 === 1,
           })}
         >
           <PlusIcon />

@@ -1,24 +1,19 @@
+import { Pending } from "./-Pending";
 import { useCopyRule, useDeleteRule, useRule, useUpdateRule } from "@renderer/api/rules";
+import { knownExtensions } from "@renderer/assets/knownExtensions";
 import { AutoSizeInput } from "@renderer/components/AutoSizeInput";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@renderer/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@renderer/components/ui/accordion";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { Pending } from "./-Pending";
-import { knownExtensions } from "@renderer/assets/knownExtensions";
 import { Copy, Power, PowerOff, Trash2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/rules/$ruleId/")({
   component: Page,
-  pendingComponent: Pending
+  pendingComponent: Pending,
 });
 
 type ArrayKey = "prefix" | "suffix" | "extensions";
@@ -42,7 +37,7 @@ function Page() {
       onError: (error) => {
         toast(`${key} 변경 실패`, error.message);
         e.target.value = rule[key];
-      }
+      },
     });
   };
 
@@ -56,7 +51,7 @@ function Page() {
       onError: (error) => {
         toast(error.name, error.message);
         target.value = rule.path;
-      }
+      },
     });
   };
 
@@ -71,7 +66,7 @@ function Page() {
       data: { [key]: [...rule[key], value] },
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
 
@@ -82,45 +77,44 @@ function Page() {
         onError: (error) => {
           const action = isEnable ? "활성화" : "비활성화";
           toast(`${action} 실패`, error.message);
-        }
+        },
       });
     }
   };
 
-  const modify =
-    (key: ArrayKey, index: number) => async (e: React.FocusEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      // 삭제
-      if (value === "") {
-        const array = [...rule[key]];
-        array.splice(index, 1);
-        await updateRule.mutateAsync({
-          data: { [key]: array },
-          onError: (error) => {
-            toast(`${key} 삭제 실패`, error.message);
-          }
-        });
-        return;
-      }
-      // 수정
-      if (value !== rule[key][index]) {
-        const array = [...rule[key]];
-        array[index] = value;
-        await updateRule.mutateAsync({
-          data: { [key]: array },
-          onError: (error) => {
-            toast(`${key} 수정 실패`, error.message);
-          }
-        });
-        return;
-      }
-    };
+  const modify = (key: ArrayKey, index: number) => async (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // 삭제
+    if (value === "") {
+      const array = [...rule[key]];
+      array.splice(index, 1);
+      await updateRule.mutateAsync({
+        data: { [key]: array },
+        onError: (error) => {
+          toast(`${key} 삭제 실패`, error.message);
+        },
+      });
+      return;
+    }
+    // 수정
+    if (value !== rule[key][index]) {
+      const array = [...rule[key]];
+      array[index] = value;
+      await updateRule.mutateAsync({
+        data: { [key]: array },
+        onError: (error) => {
+          toast(`${key} 수정 실패`, error.message);
+        },
+      });
+      return;
+    }
+  };
 
   const onCopyClick = async (_: React.MouseEvent<HTMLButtonElement>) => {
     await copyRule.mutateAsync({
       onError: (error) => {
         toast("복사 실패", error.message);
-      }
+      },
     });
     router.history.back();
   };
@@ -128,7 +122,7 @@ function Page() {
     await deleteRule.mutateAsync({
       onError: (error) => {
         toast("삭제 실패", error.message);
-      }
+      },
     });
     router.history.back();
   };

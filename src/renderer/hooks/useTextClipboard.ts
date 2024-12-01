@@ -13,6 +13,6 @@ export function useClipboard() {
   };
 
   return {
-    copy
+    copy,
   };
 }

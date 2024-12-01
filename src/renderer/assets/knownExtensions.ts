@@ -145,7 +145,7 @@ const set = {
   orf: true, // Olympus RAW Format files
   cr2: true, // Canon RAW Version 2 files
   pef: true, // Pentax Electronic Format files
-  arw: true // Sony RAW Format files
+  arw: true, // Sony RAW Format files
 };
 
 export const knownExtensions = Object.entries(set)

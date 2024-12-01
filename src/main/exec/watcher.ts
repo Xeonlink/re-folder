@@ -1,10 +1,10 @@
+import { Rule, ruleTable, watcherTable } from "../schema/v1.0.0";
+import { db } from "../storage";
 import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";
 import { existsSync, readdirSync, rename, watch } from "fs";
 // import { basename, extname, join } from "path";
 import { join } from "path";
-import { Rule, ruleTable, watcherTable } from "../schema/v1.0.0";
-import { db } from "../storage";
 
 /**
  * 규칙 객체를 정규 표현식으로 변환합니다.

@@ -1,3 +1,6 @@
+import * as schema_0_0_0 from "./schema/v0.0.0";
+import * as schema_1_0_0 from "./schema/v1.0.0";
+import { VersionRangeMap } from "./utils";
 import Database from "better-sqlite3";
 import { generateSQLiteDrizzleJson, generateSQLiteMigration } from "drizzle-kit/api";
 import { drizzle } from "drizzle-orm/better-sqlite3";
@@ -6,9 +9,6 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { cwd } from "process";
 import { z } from "zod";
-import * as schema_0_0_0 from "./schema/v0.0.0";
-import * as schema_1_0_0 from "./schema/v1.0.0";
-import { VersionRangeMap } from "./utils";
 
 const dbPath = app.isPackaged //
   ? join(app.getPath("userData"), "data.db")
@@ -19,7 +19,7 @@ export const db = drizzle(sqlite, { schema: schema_0_0_0 });
 
 const schemaMap = new VersionRangeMap({
   "0.0.0 - 0.2.0": schema_0_0_0,
-  "0.3.0 - 1.0.1": schema_1_0_0
+  "0.3.0 - 1.0.1": schema_1_0_0,
 });
 
 export async function autoMigrate() {
@@ -30,7 +30,7 @@ export async function autoMigrate() {
 
   const migrateStates = await generateSQLiteMigration(
     await generateSQLiteDrizzleJson(schemaFrom),
-    await generateSQLiteDrizzleJson(schemaTo)
+    await generateSQLiteDrizzleJson(schemaTo),
   );
   for (const query of migrateStates) {
     db.run(query);
@@ -41,14 +41,12 @@ export async function autoMigrate() {
 
 // ------------------------------------------------------------
 export class Settings {
-  public static PATH = app.isPackaged
-    ? join(app.getPath("userData"), "flags")
-    : join(cwd(), "dev", "flags.json");
+  public static PATH = app.isPackaged ? join(app.getPath("userData"), "flags") : join(cwd(), "dev", "flags.json");
 
   public static schema = z.object({
     dbVersion: z.string().optional(),
     openaiApiKey: z.string().default(""),
-    openaiModel: z.string().default("gpt-3.5-turbo")
+    openaiModel: z.string().default("gpt-3.5-turbo"),
   });
 
   private static _instance: Settings;
@@ -62,7 +60,7 @@ export class Settings {
         target[prop] = value;
         this.saveData(target);
         return true;
-      }
+      },
     });
   }
 

@@ -14,7 +14,7 @@ export function useCreateRule(watcherId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -29,14 +29,14 @@ export function useCopyRule(watcherId: string, ruleId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
 export function useRules(watcherId: string) {
   return useSuspenseQuery({
     queryKey: ["watchers", watcherId, "rules"],
-    queryFn: () => api.getRules(watcherId)
+    queryFn: () => api.getRules(watcherId),
   });
 }
 
@@ -44,7 +44,7 @@ export function useRule(ruleId: string) {
   return useSuspenseQuery({
     queryKey: ["rules", ruleId],
     queryFn: () => api.getRule(ruleId),
-    retry: false
+    retry: false,
   });
 }
 
@@ -73,7 +73,7 @@ export function useUpdateRule(ruleId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -104,7 +104,7 @@ export function useUpdateRuleOrder(watcherId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -133,6 +133,6 @@ export function useDeleteRule(watcherId: string, ruleId: string) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }

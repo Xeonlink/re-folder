@@ -8,14 +8,14 @@ const api = window.api;
 export function useRootFolderPresets() {
   return useSuspenseQuery<FolderPreset[]>({
     queryKey: ["folderPresets", null],
-    queryFn: () => api.getFolderPresets(null)
+    queryFn: () => api.getFolderPresets(null),
   });
 }
 
 export function useFolderPreset(id: string) {
   return useSuspenseQuery<FolderPresetWithChildren>({
     queryKey: ["folderPresets", id],
-    queryFn: () => api.getFolderPreset(id)
+    queryFn: () => api.getFolderPreset(id),
   });
 }
 
@@ -33,7 +33,7 @@ export function useCreateFolderPreset(parentId: string | null) {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey });
       variables.onSuccess?.();
-    }
+    },
   });
 }
 
@@ -50,7 +50,7 @@ export function useCopyFolderPreset(parentId: string | null, id: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -78,7 +78,7 @@ export function useUpdateFolderPreset(id: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 }
 
@@ -96,7 +96,7 @@ export function useDeleteFolderPreset(parentId: string | null, id: string) {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey, exact: true });
       remove(queryClient, id);
-    }
+    },
   });
 }
 
@@ -104,11 +104,7 @@ export function useDeleteFolderPresetById() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: {
-      parentId: string | null;
-      id: string;
-      onError?: (error: Error) => any;
-    }) => {
+    mutationFn: (variables: { parentId: string | null; id: string; onError?: (error: Error) => any }) => {
       return api.deleteFolderPreset(variables.id);
     },
     onError: (error, variables) => {
@@ -117,10 +113,10 @@ export function useDeleteFolderPresetById() {
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["folderPresets", variables.parentId],
-        exact: true
+        exact: true,
       });
       remove(queryClient, variables.id);
-    }
+    },
   });
 }
 
@@ -149,6 +145,6 @@ export function useApplyFolderPreset(id: string) {
     },
     onSuccess: (_, variables) => {
       variables.onSuccess?.();
-    }
+    },
   });
 }

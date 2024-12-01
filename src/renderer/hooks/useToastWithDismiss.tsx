@@ -1,6 +1,6 @@
-import { ToastAction } from "@renderer/components/ui/toast";
 import { useToast } from "./use-toast";
 import { Cross1Icon } from "@radix-ui/react-icons";
+import { ToastAction } from "@renderer/components/ui/toast";
 
 export function useToastWithDismiss() {
   const { toast, dismiss, toasts } = useToast();
@@ -20,7 +20,7 @@ export function useToastWithDismiss() {
         >
           <Cross1Icon />
         </ToastAction>
-      )
+      ),
     });
     const timer = setTimeout(() => {
       dismiss(toastResult.id);

@@ -2,21 +2,16 @@ import {
   useCreateFolderPreset,
   useDeleteFolderPreset,
   useFolderPreset,
-  useUpdateFolderPreset
+  useUpdateFolderPreset,
 } from "@renderer/api/folderPresets";
 import { Button } from "@renderer/components/ui/button";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuTrigger
+  ContextMenuTrigger,
 } from "@renderer/components/ui/context-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle
-} from "@renderer/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@renderer/components/ui/dialog";
 import { Input } from "@renderer/components/ui/input";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
@@ -50,7 +45,7 @@ export function FolderUnit(props: Props) {
         console.log(error);
         toast(error.name, error.message);
         e.target.value = folderPreset[key];
-      }
+      },
     });
   };
 
@@ -61,7 +56,7 @@ export function FolderUnit(props: Props) {
       },
       onSuccess: () => {
         setOpen(true);
-      }
+      },
     });
   };
 
@@ -69,7 +64,7 @@ export function FolderUnit(props: Props) {
     await deleteFolderPreset.mutateAsync({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
 
@@ -125,18 +120,13 @@ export function FolderUnit(props: Props) {
         <DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogTitle>
-        <DialogContent
-          className="w-64 bg-transparent border-none outline-none p-0"
-          hideDefaultClose
-        >
+        <DialogContent className="w-64 bg-transparent border-none outline-none p-0" hideDefaultClose>
           <Input id="name" defaultValue={folderPreset.name} onBlur={onModifyBlur("name")} />
         </DialogContent>
       </Dialog>
 
       <div className={cn("", { hidden: !open })}>
-        {folderPreset.children?.map((id) => (
-          <FolderUnit key={id} folderPresetId={id} depts={depts + 1} />
-        ))}
+        {folderPreset.children?.map((id) => <FolderUnit key={id} folderPresetId={id} depts={depts + 1} />)}
       </div>
     </div>
   );

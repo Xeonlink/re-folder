@@ -1,3 +1,5 @@
+import { Pending } from "./-Pending";
+import { usePlatform } from "@renderer/api/extra";
 import { useCreateWatcher, useDeleteWatcherById, useWatchers } from "@renderer/api/watchers";
 import { Button } from "@renderer/components/ui/button";
 import { Skeleton } from "@renderer/components/ui/skeleton";
@@ -7,13 +9,11 @@ import { eventSplitor } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
-import { Pending } from "./-Pending";
 import React from "react";
-import { usePlatform } from "@renderer/api/extra";
 
 export const Route = createFileRoute("/watchers/")({
   component: Page,
-  pendingComponent: Pending
+  pendingComponent: Pending,
 });
 
 function Page() {
@@ -28,7 +28,7 @@ function Page() {
     await creator.mutateAsync({
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
   const deleteWatcher = async (watcherId: string) => {
@@ -36,7 +36,7 @@ function Page() {
       id: watcherId,
       onError: (error) => {
         toast(error.name, error.message);
-      }
+      },
     });
   };
 
@@ -46,11 +46,11 @@ function Page() {
 
   useShortcuts({
     win32: {
-      "ctrl+n": createWatcher
+      "ctrl+n": createWatcher,
     },
     darwin: {
-      "meta+n": createWatcher
-    }
+      "meta+n": createWatcher,
+    },
   });
 
   const arrowFocusEventHandler =
@@ -59,8 +59,7 @@ function Page() {
       const { enabled = true } = options;
       if (!enabled) return;
       if (options.hasUp && e.key === "ArrowUp") {
-        const element = e.currentTarget.previousElementSibling
-          ?.previousElementSibling as HTMLElement;
+        const element = e.currentTarget.previousElementSibling?.previousElementSibling as HTMLElement;
         element?.focus();
         return;
       }
@@ -81,8 +80,7 @@ function Page() {
       }
     };
   const deleteEventHandler =
-    (options: { enabled?: boolean; id: string }) =>
-    async (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    (options: { enabled?: boolean; id: string }) => async (e: React.KeyboardEvent<HTMLButtonElement>) => {
       const { enabled = true, id } = options;
       if (!enabled) return;
       if (platform === "win32" && e.key === "Delete") {
@@ -110,11 +108,11 @@ function Page() {
               hasUp: index > 1,
               hasRight: index % 2 === 0,
               hasDown: index < watchers.length - 1,
-              hasLeft: index % 2 === 1
+              hasLeft: index % 2 === 1,
             }),
             deleteEventHandler({
-              id: watcher.id
-            })
+              id: watcher.id,
+            }),
           )}
         >
           {watcher.name}
@@ -138,7 +136,7 @@ function Page() {
           tabIndex={watchers.length}
           onKeyDown={arrowFocusEventHandler({
             hasUp: watchers.length > 1,
-            hasLeft: watchers.length % 2 === 1
+            hasLeft: watchers.length % 2 === 1,
           })}
         >
           <PlusIcon />

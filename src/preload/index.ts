@@ -1,6 +1,6 @@
-import { contextBridge } from "electron";
 import type { ipcApiDef, ipcSubscriptionDef } from "../main/ipc";
 import { createApiSelector, createSubscriptionSelector } from "./utils";
+import { contextBridge } from "electron";
 
 export const api = createApiSelector<typeof ipcApiDef>()({
   // watcher ----------------
@@ -36,11 +36,11 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   getOpenAiModel: true,
   updateOpenAiApiKey: true,
   updateOpenAiModel: true,
-  getPlatform: true
+  getPlatform: true,
 });
 
 export const subscribe = createSubscriptionSelector<typeof ipcSubscriptionDef>()({
-  checkingForUpdate: true
+  checkingForUpdate: true,
 });
 
 // --------------------------------------------------------------

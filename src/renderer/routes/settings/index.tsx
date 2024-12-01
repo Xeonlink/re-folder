@@ -1,25 +1,20 @@
 import { GearIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useVersion } from "@renderer/api/extra";
 import { useTheme } from "@renderer/components/ThemeProvider";
+import { WifiSignal } from "@renderer/components/WifiSignal";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Label } from "@renderer/components/ui/label";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@renderer/components/ui/tooltip";
-import { WifiSignal } from "@renderer/components/WifiSignal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
 import { URL } from "@renderer/constants";
 import { useClipboard } from "@renderer/hooks/useTextClipboard";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Mail, MonitorCog, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/settings/")({
-  component: Page
+  component: Page,
 });
 
 function Page() {
@@ -44,12 +39,7 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    className="w-56"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => copy(version)}
-                  >
+                  <Button className="w-56" variant="secondary" size="sm" onClick={() => copy(version)}>
                     {version}
                   </Button>
                 </TooltipTrigger>
@@ -199,12 +189,7 @@ function Page() {
           >
             개인정보처리방침
           </Button>
-          <Button
-            className="w-full font-normal col-span-3"
-            size="sm"
-            variant="secondary"
-            onClick={linkTo(URL.LICENSE)}
-          >
+          <Button className="w-full font-normal col-span-3" size="sm" variant="secondary" onClick={linkTo(URL.LICENSE)}>
             소프트웨어 라이센스
           </Button>
         </div>
