@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";
 import { existsSync, readdirSync, rename, watch } from "fs";
-import { basename, extname, join } from "path";
+// import { basename, extname, join } from "path";
+import { join } from "path";
 import { Rule, ruleTable, watcherTable } from "../schema/v1.0.0";
 import { db } from "../storage";
 
@@ -16,27 +17,37 @@ import { db } from "../storage";
  *
  * @author 오지민
  */
-// function rule2RegEx(rule: Rule) {
-//   const prefix = rule.prefix.length > 0 ? rule.prefix.join("|") : ".*";
-//   const suffix = rule.suffix.length > 0 ? rule.suffix.join("|") : ".*";
-//   const extensions = rule.extensions.length > 0 ? rule.extensions.join("|") : ".*";
-//   return new RegExp(`^(${prefix}).*(${suffix})\\.(${extensions})$`);
-// }
-
-function createRuleTester(rule: Rule) {
-  return (filePath: string): boolean => {
-    // 확장자와 파일 이름 분리
-    const extension = extname(filePath).slice(1); // .을 제거한 확장자
-    const baseName = basename(filePath, extname(filePath)); // 확장자 제외한 파일명
-
-    const prefixMatch = rule.prefix.some(baseName.startsWith);
-    const suffixMatch = rule.suffix.some((s) => baseName.endsWith(s));
-    const extensionMatch = rule.extensions.includes(extension);
-
-    // 모든 조건을 만족하면 true 반환
-    return prefixMatch && suffixMatch && extensionMatch;
-  };
+function rule2RegEx(rule: Rule) {
+  const prefix = rule.prefix.length > 0 ? rule.prefix.join("|") : ".*";
+  const suffix = rule.suffix.length > 0 ? rule.suffix.join("|") : ".*";
+  const extensions = rule.extensions.length > 0 ? rule.extensions.join("|") : ".*";
+  return new RegExp(`^(${prefix}).*(${suffix})\\.(${extensions})$`);
 }
+
+/**
+ * 주어진 규칙 객체를 테스트하는 함수를 생성합니다.
+ *
+ * @param rule - 테스트할 규칙 객체.
+ * @returns 주어진 규칙 객체를 테스트하는 함수.
+ *
+ * @author 오지민
+ */
+// function createRuleTester(rule: Rule) {
+//   return (filePath: string): boolean => {
+//     // 확장자와 파일 이름 분리
+//     const extension = extname(filePath).slice(1); // .을 제거한 확장자
+//     const baseName = basename(filePath, extname(filePath)); // 확장자 제외한 파일명
+
+//     const prefixMatch = rule.prefix.length === 0 ? true : rule.prefix.some(baseName.startsWith);
+//     const suffixMatch =
+//       rule.suffix.length === 0 ? true : rule.suffix.some((s) => baseName.endsWith(s));
+//     const extensionMatch =
+//       rule.extensions.length === 0 ? true : rule.extensions.includes(extension);
+
+//     // 모든 조건을 만족하면 true 반환
+//     return prefixMatch && suffixMatch && extensionMatch;
+//   };
+// }
 
 // ----------------------------------------------------------------
 // 현재 활성화된 감시자들을 저장하는 Map 객체.
@@ -121,8 +132,8 @@ export function createWatcher(watcherId: string): boolean {
       if (rule === null) continue;
       if (!rule.enabled) continue;
 
-      const ruleTester = createRuleTester(rule);
-      if (ruleTester(filename.normalize("NFC"))) {
+      const ruleTester = rule2RegEx(rule);
+      if (ruleTester.test(filename.normalize("NFC"))) {
         const exportedFilename = join(rule.path, filename);
         rename(fullPath, exportedFilename, (err) => {
           if (err) {
@@ -145,8 +156,8 @@ export function createWatcher(watcherId: string): boolean {
       if (rule === null) continue;
       if (!rule.enabled) continue;
 
-      const ruleTester = createRuleTester(rule);
-      if (ruleTester(filename.normalize("NFC"))) {
+      const ruleTester = rule2RegEx(rule);
+      if (ruleTester.test(filename.normalize("NFC"))) {
         const exportedFilename = join(rule.path, filename);
         rename(fullPath, exportedFilename, (err) => {
           if (err) {
@@ -163,13 +174,16 @@ export function createWatcher(watcherId: string): boolean {
   return true;
 }
 
-export function invalidateWatcher(watcherId: string): boolean {
-  if (!watcherMap.has(watcherId)) {
-    return false;
-  }
-
-  // 모든 결과가 true일 때만, true를 반환
-  return removeWatcher(watcherId) && createWatcher(watcherId);
+/**
+ * 아래와 같은 일이 순차적으로 실행된다.
+ * 1. 감시자가 있으면, 감시자를 제거한다.
+ * 2. 감시자를 생성한다. 확성화되어 있지 않다면, 생성하지 않는다.
+ *
+ * @param watcherId 감시자 ID
+ */
+export function invalidateWatcher(watcherId: string) {
+  removeWatcher(watcherId);
+  createWatcher(watcherId);
 }
 
 export async function initializeWatcher() {

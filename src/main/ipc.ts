@@ -4,7 +4,7 @@ import { app, BrowserWindow, dialog } from "electron/main";
 import OpenAI from "openai";
 import { v4 as uuid } from "uuid";
 import { applyFolderPreset } from "./exec/folderPreset";
-import { createWatcher, invalidateWatcher, removeWatcher } from "./exec/watcher";
+import { invalidateWatcher, removeWatcher } from "./exec/watcher";
 import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
 import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
 import { db, Settings } from "./storage";
@@ -67,11 +67,7 @@ export const ipcApiDef = {
     const results = await db.update(watcherTable).set(data).where(eq(watcherTable.id, watcherId));
 
     if (data.enabled !== undefined && typeof data.enabled === "boolean") {
-      if (data.enabled) {
-        createWatcher(watcherId);
-      } else {
-        removeWatcher(watcherId);
-      }
+      invalidateWatcher(watcherId);
     }
 
     return results.changes;
