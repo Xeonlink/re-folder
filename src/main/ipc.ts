@@ -308,18 +308,18 @@ export const ipcApiDef = {
     return app.getVersion();
   },
   getOpenAiApiKey: async () => {
-    return Settings.data.openaiApiKey;
+    return await Settings.get("openaiApiKey");
   },
   getOpenAiModel: async () => {
-    return Settings.data.openaiModel;
+    return await Settings.get("openaiModel");
   },
   updateOpenAiApiKey: async (apiKey: string) => {
     const client = new OpenAI({ apiKey });
     await client.models.list();
-    Settings.data.openaiApiKey = apiKey;
+    await Settings.set("openaiApiKey", apiKey);
   },
   updateOpenAiModel: async (model: string) => {
-    Settings.data.openaiModel = model;
+    await Settings.set("openaiModel", model);
   },
   getPlatform: async () => {
     return process.platform;

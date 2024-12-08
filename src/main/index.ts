@@ -3,7 +3,7 @@ import IconPrimary from "../../resources/icon1800_primary.png?asset";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
 import { autoMigrate } from "./storage";
-import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils";
+import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils/utils";
 import { BrowserWindow, Tray, app, dialog, nativeImage, shell } from "electron";
 import { autoUpdater } from "electron-updater";
 import { join } from "path";

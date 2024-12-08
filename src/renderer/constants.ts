@@ -9,3 +9,5 @@ export const URL = {
   LICENSE: "https://github.com/Xeonlink/re-folder/blob/main/LICENSE",
   MAILTO: "mailto:jimin7020@gmail.com",
 };
+
+export const ENCODING = "utf-8";
