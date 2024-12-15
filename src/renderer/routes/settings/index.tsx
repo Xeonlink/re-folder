@@ -119,6 +119,16 @@ function Page() {
               </Link>
             </Button>
           </li>
+          <li className="flex items-center">
+            <Label htmlFor="apikey" className="flex-1">
+              업데이트
+            </Label>
+            <Button variant="secondary" size="sm" className="w-56" asChild>
+              <Link to="/settings/update">
+                <GearIcon className="w-5 h-5" />
+              </Link>
+            </Button>
+          </li>
         </ul>
       </Card>
 
