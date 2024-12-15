@@ -20,6 +20,7 @@ import { Route as WatchersIndexImport } from "./routes/watchers/index"
 import { Route as SettingsIndexImport } from "./routes/settings/index"
 import { Route as FolderPresetsIndexImport } from "./routes/folder-presets/index"
 import { Route as WatchersWatcherIdIndexImport } from "./routes/watchers/$watcherId/index"
+import { Route as SettingsUpdateIndexImport } from "./routes/settings/update/index"
 import { Route as SettingsOpenaiIndexImport } from "./routes/settings/openai/index"
 import { Route as RulesRuleIdIndexImport } from "./routes/rules/$ruleId/index"
 import { Route as FolderPresetsFolderPresetIdIndexImport } from "./routes/folder-presets/$folderPresetId/index"
@@ -78,6 +79,12 @@ const WatchersWatcherIdIndexRoute = WatchersWatcherIdIndexImport.update({
   id: "/$watcherId/",
   path: "/$watcherId/",
   getParentRoute: () => WatchersRoute,
+} as any)
+
+const SettingsUpdateIndexRoute = SettingsUpdateIndexImport.update({
+  id: "/update/",
+  path: "/update/",
+  getParentRoute: () => SettingsRoute,
 } as any)
 
 const SettingsOpenaiIndexRoute = SettingsOpenaiIndexImport.update({
@@ -180,6 +187,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof SettingsOpenaiIndexImport
       parentRoute: typeof SettingsImport
     }
+    "/settings/update/": {
+      id: "/settings/update/"
+      path: "/update"
+      fullPath: "/settings/update"
+      preLoaderRoute: typeof SettingsUpdateIndexImport
+      parentRoute: typeof SettingsImport
+    }
     "/watchers/$watcherId/": {
       id: "/watchers/$watcherId/"
       path: "/$watcherId"
@@ -205,11 +219,13 @@ const RulesRouteWithChildren = RulesRoute._addFileChildren(RulesRouteChildren)
 interface SettingsRouteChildren {
   SettingsIndexRoute: typeof SettingsIndexRoute
   SettingsOpenaiIndexRoute: typeof SettingsOpenaiIndexRoute
+  SettingsUpdateIndexRoute: typeof SettingsUpdateIndexRoute
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsIndexRoute: SettingsIndexRoute,
   SettingsOpenaiIndexRoute: SettingsOpenaiIndexRoute,
+  SettingsUpdateIndexRoute: SettingsUpdateIndexRoute,
 }
 
 const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
@@ -242,6 +258,7 @@ export interface FileRoutesByFullPath {
   "/folder-presets/$folderPresetId": typeof FolderPresetsFolderPresetIdIndexRoute
   "/rules/$ruleId": typeof RulesRuleIdIndexRoute
   "/settings/openai": typeof SettingsOpenaiIndexRoute
+  "/settings/update": typeof SettingsUpdateIndexRoute
   "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute
 }
 
@@ -255,6 +272,7 @@ export interface FileRoutesByTo {
   "/folder-presets/$folderPresetId": typeof FolderPresetsFolderPresetIdIndexRoute
   "/rules/$ruleId": typeof RulesRuleIdIndexRoute
   "/settings/openai": typeof SettingsOpenaiIndexRoute
+  "/settings/update": typeof SettingsUpdateIndexRoute
   "/watchers/$watcherId": typeof WatchersWatcherIdIndexRoute
 }
 
@@ -271,6 +289,7 @@ export interface FileRoutesById {
   "/folder-presets/$folderPresetId/": typeof FolderPresetsFolderPresetIdIndexRoute
   "/rules/$ruleId/": typeof RulesRuleIdIndexRoute
   "/settings/openai/": typeof SettingsOpenaiIndexRoute
+  "/settings/update/": typeof SettingsUpdateIndexRoute
   "/watchers/$watcherId/": typeof WatchersWatcherIdIndexRoute
 }
 
@@ -288,6 +307,7 @@ export interface FileRouteTypes {
     | "/folder-presets/$folderPresetId"
     | "/rules/$ruleId"
     | "/settings/openai"
+    | "/settings/update"
     | "/watchers/$watcherId"
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -300,6 +320,7 @@ export interface FileRouteTypes {
     | "/folder-presets/$folderPresetId"
     | "/rules/$ruleId"
     | "/settings/openai"
+    | "/settings/update"
     | "/watchers/$watcherId"
   id:
     | "__root__"
@@ -314,6 +335,7 @@ export interface FileRouteTypes {
     | "/folder-presets/$folderPresetId/"
     | "/rules/$ruleId/"
     | "/settings/openai/"
+    | "/settings/update/"
     | "/watchers/$watcherId/"
   fileRoutesById: FileRoutesById
 }
@@ -375,7 +397,8 @@ export const routeTree = rootRoute
       "filePath": "settings.tsx",
       "children": [
         "/settings/",
-        "/settings/openai/"
+        "/settings/openai/",
+        "/settings/update/"
       ]
     },
     "/watchers": {
@@ -405,6 +428,10 @@ export const routeTree = rootRoute
     },
     "/settings/openai/": {
       "filePath": "settings/openai/index.tsx",
+      "parent": "/settings"
+    },
+    "/settings/update/": {
+      "filePath": "settings/update/index.tsx",
       "parent": "/settings"
     },
     "/watchers/$watcherId/": {

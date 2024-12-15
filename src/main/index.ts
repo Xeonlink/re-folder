@@ -1,8 +1,9 @@
 import IconBlack from "../../resources/icon1800_primary.png?asset";
 import IconPrimary from "../../resources/icon1800_primary.png?asset";
+import { executeOnce } from "./exec/once";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
-import { autoMigrate } from "./storage";
+import { Settings, autoMigrate } from "./storage";
 import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils/utils";
 import { BrowserWindow, Tray, app, dialog, nativeImage, shell } from "electron";
 import { autoUpdater } from "electron-updater";
@@ -139,40 +140,6 @@ function createTray() {
   tray.setContextMenu(menu);
 }
 
-/* Updator ====================================================== */
-// const notifier = createNotifier(ipcSubscriptionDef);
-
-// autoUpdater.on("checking-for-update", () => {
-//   dialog.showErrorBox("Info", "checking-for-update");
-// });
-
-// autoUpdater.on("update-available", () => {
-//   dialog.showErrorBox("Info", "update-available");
-// });
-
-// autoUpdater.on("update-not-available", () => {
-//   dialog.showErrorBox("Info", "update-not-available");
-// });
-
-// autoUpdater.on("error", (error) => {
-//   const message = resolveErrorMessage(error);
-//   dialog.showErrorBox("Info", message);
-// });
-
-// autoUpdater.on("download-progress", (progress) => {
-//   // dialog.showErrorBox("Info", "update-available");
-//   console.log("download-progress", progress);
-// });
-
-// autoUpdater.on("update-cancelled", (info) => {
-//   dialog.showErrorBox("Info", "update-cancelled");
-//   console.log("update-cancelled", info);
-// });
-
-// autoUpdater.on("update-downloaded", () => {
-//   dialog.showErrorBox("Info", "update-downloaded");
-// });
-
 /* Main ========================================================= */
 app.setAppUserModelId("com.ohjimin.re-folder");
 
@@ -186,17 +153,23 @@ app.on("window-all-closed", () => {
   }
 });
 
+app.on("quit", async () => {
+  const isUpdateReady = await Settings.get("isUpdateReady");
+  if (isUpdateReady) {
+    await Settings.set("once", false);
+  }
+});
+
 async function main() {
   try {
     await app.whenReady();
     await autoMigrate();
+    await executeOnce();
     registIpcs(ipcApiDef);
     initializeWatcher();
     createTray();
     createWindow();
-    if (process.env.NODE_ENV !== "development") {
-      autoUpdater.checkForUpdates();
-    }
+    autoUpdater.checkForUpdates();
   } catch (error: any) {
     const message = resolveErrorMessage(error);
     dialog.showErrorBox("Error", message);
