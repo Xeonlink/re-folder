@@ -3,7 +3,7 @@ import { VersionMap } from "../utils/VersionMap";
 import { app } from "electron";
 
 const versionMap = new VersionMap<() => Promise<boolean>>({
-  "1.0.1": verifyUpdate,
+  "1.1.0": verifyUpdate,
 });
 
 async function verifyUpdate() {
