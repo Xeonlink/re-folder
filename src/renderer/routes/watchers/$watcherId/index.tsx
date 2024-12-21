@@ -44,7 +44,7 @@ function Page() {
   const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === watcher[key]) return;
-    await updateWatcher.mutateAsync({
+    updateWatcher.mutate({
       data: { [key]: value },
       onError: (error) => {
         toast(error.name, error.message);
@@ -58,7 +58,7 @@ function Page() {
     if (results.canceled) return;
     const target = e.target as HTMLInputElement;
     target.value = results.filePaths[0];
-    await updateWatcher.mutateAsync({
+    updateWatcher.mutate({
       data: { path: results.filePaths[0] },
       onError: (error) => {
         toast(error.name, error.message);
@@ -67,7 +67,7 @@ function Page() {
     });
   };
 
-  const onRuleDragEnd = async () => {
+  const onRuleDragEnd = () => {
     const data = {};
     for (let i = 0; i < ruleOrder.length; i++) {
       if (ruleOrder[i].id === rules[i].id) continue;
@@ -75,7 +75,7 @@ function Page() {
     }
     if (Object.keys(data).length === 0) return;
 
-    await updateRuleOrder.mutateAsync({
+    updateRuleOrder.mutate({
       data,
       onError: (error) => {
         toast(error.name, error.message);
@@ -86,15 +86,13 @@ function Page() {
 
   const onDeleteClick = () => {
     deleteWatcher.mutate({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => router.history.back(),
     });
-    router.history.back();
   };
-  const toggle = () => async (_: React.MouseEvent<HTMLButtonElement>) => {
+  const toggle = (_: React.MouseEvent<HTMLButtonElement>) => {
     const isEnable = !watcher.enabled;
-    await updateWatcher.mutateAsync({
+    updateWatcher.mutate({
       data: { enabled: isEnable },
       onError: (error) => {
         const action = isEnable ? "활성화" : "비활성화";
@@ -102,20 +100,16 @@ function Page() {
       },
     });
   };
-  const onCreateRuleClick = async () => {
-    await createRule.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+  const onCreateRuleClick = () => {
+    createRule.mutate({
+      onError: (error) => toast(error.name, error.message),
     });
   };
   const onCopyClick = () => {
     copyWatcher.mutate({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => router.history.back(),
     });
-    router.history.back();
   };
 
   return (
@@ -214,7 +208,7 @@ function Page() {
                     className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
                     variant="secondary"
                     size="default"
-                    onClick={toggle()}
+                    onClick={toggle}
                   >
                     {watcher.enabled ? <PowerOff className="w-5 h-5" /> : <Power className="w-5 h-5" />}
                   </Button>

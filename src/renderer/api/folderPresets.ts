@@ -30,7 +30,7 @@ export function useCreateFolderPreset(parentId: string | null) {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
       variables.onSuccess?.();
     },
@@ -48,8 +48,9 @@ export function useCopyFolderPreset(parentId: string | null, id: string) {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -76,13 +77,12 @@ export function useUpdateFolderPreset(id: string) {
       queryClient.setQueryData<FolderPreset>(["folderPresets", id], context.prev);
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
-
-const navAnimDuration = 1000 * 1;
 
 export function useDeleteFolderPreset(parentId: string | null, id: string) {
   const queryClient = useQueryClient();
@@ -97,9 +97,8 @@ export function useDeleteFolderPreset(parentId: string | null, id: string) {
     },
     onSuccess: async (_, variables, __) => {
       await queryClient.invalidateQueries({ queryKey, exact: true });
-
       variables.onSuccess?.();
-      await wait(navAnimDuration);
+      await wait(1000);
       removeQueries(queryClient, id);
     },
   });
@@ -118,7 +117,7 @@ export function useDeleteFolderPresetById() {
     onSuccess: async (_, variables, __) => {
       await queryClient.invalidateQueries({ queryKey: ["folderPresets", variables.parentId], exact: true });
       variables.onSuccess?.();
-      await wait(navAnimDuration);
+      await wait(1000);
       removeQueries(queryClient, variables.id);
     },
   });

@@ -1,4 +1,5 @@
 import { type Variables, api } from "./utils";
+import { wait } from "@renderer/lib/utils";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import type { Watcher } from "src/main/schema";
 
@@ -27,8 +28,9 @@ export function useCreateWatcher() {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -44,8 +46,9 @@ export function useCopyWatcher(watcherId: string) {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -74,8 +77,8 @@ export function useUpdateWatcher(id: string) {
       variables.onError?.(error);
     },
     onSuccess: (_, variables, __) => {
-      variables.onSuccess?.();
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -87,7 +90,7 @@ export function useDeleteWatcher(watcherId: string) {
   return useMutation({
     mutationFn: (_: Variables) => api.deleteWatcher(watcherId),
     onMutate: async (_) => {
-      await queryClient.cancelQueries({ queryKey });
+      queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Watcher[]>(queryKey);
       if (!prev) return;
 
@@ -101,8 +104,10 @@ export function useDeleteWatcher(watcherId: string) {
       queryClient.setQueryData<Watcher[]>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
+    onSuccess: async (_, variables, __) => {
+      queryClient.invalidateQueries({ queryKey, exact: true });
+      variables.onSuccess?.();
+      await wait(1000);
       queryClient.removeQueries({ queryKey: [...queryKey, watcherId] });
     },
   });
@@ -129,8 +134,10 @@ export function useDeleteWatcherById() {
       queryClient.setQueryData<Watcher[]>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
+      await wait(1000);
       queryClient.removeQueries({ queryKey: [...queryKey, variables.id] });
     },
   });

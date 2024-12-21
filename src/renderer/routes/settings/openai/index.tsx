@@ -27,9 +27,9 @@ function Page() {
   const updateOpenAiApiKey = useUpdateOpenAiApiKey();
   const updateOpenAiModel = useUpdateOpenAiModel();
 
-  const onApiKeyBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+  const onApiKeyBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value === apiKey) return;
-    await updateOpenAiApiKey.mutateAsync({
+    updateOpenAiApiKey.mutate({
       data: e.target.value,
       onError: () => {
         toast("api key 수정실패", "api key 수정에 실패했습니다.");
@@ -38,9 +38,9 @@ function Page() {
     });
   };
 
-  const onModelChange = async (value: string) => {
+  const onModelChange = (value: string) => {
     if (value === model) return;
-    await updateOpenAiModel.mutateAsync({
+    updateOpenAiModel.mutate({
       data: value,
       onError: () => {
         toast("모델 변경실패", "모델 변경에 실패했습니다.");

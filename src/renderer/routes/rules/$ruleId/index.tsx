@@ -28,14 +28,14 @@ function Page() {
   const router = useRouter();
   const { toast } = useToastWithDismiss();
 
-  const copyRule = useCopyRule(rule.watcherId, ruleId);
-  const updateRule = useUpdateRule(ruleId);
-  const deleteRule = useDeleteRule(rule.watcherId, ruleId);
+  const copior = useCopyRule(rule.watcherId, ruleId);
+  const updator = useUpdateRule(ruleId);
+  const deletor = useDeleteRule(rule.watcherId, ruleId);
 
-  const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+  const onModifyBlur = (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === rule[key]) return;
-    await updateRule.mutateAsync({
+    updator.mutate({
       data: { [key]: value },
       onError: (error) => {
         toast(`${key} 변경 실패`, error.message);
@@ -49,7 +49,7 @@ function Page() {
     if (results.canceled) return;
     const target = e.target as HTMLInputElement;
     target.value = results.filePaths[0];
-    await updateRule.mutateAsync({
+    updator.mutate({
       data: { path: results.filePaths[0] },
       onError: (error) => {
         toast(error.name, error.message);
@@ -58,24 +58,22 @@ function Page() {
     });
   };
 
-  const onCreateBlur = (key: ArrayKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+  const onCreateBlur = (key: ArrayKey) => (e: React.FocusEvent<HTMLInputElement>) => {
     let value = e.target.value;
     if (value === "") return;
     if (key === "extensions") value = (value.split(".").pop() ?? value).toLowerCase();
     e.target.value = "";
     if (rule[key].includes(value)) return;
 
-    await updateRule.mutateAsync({
+    updator.mutate({
       data: { [key]: [...rule[key], value] },
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+      onError: (error) => toast(error.name, error.message),
     });
   };
 
-  const toggle = () => async (_: React.MouseEvent<HTMLButtonElement>) => {
+  const toggle = (_: React.MouseEvent<HTMLButtonElement>) => {
     const isEnable = !rule.enabled;
-    await updateRule.mutateAsync({
+    updator.mutate({
       data: { enabled: isEnable },
       onError: (error) => {
         const action = isEnable ? "활성화" : "비활성화";
@@ -84,17 +82,15 @@ function Page() {
     });
   };
 
-  const modify = (key: ArrayKey, index: number) => async (e: React.FocusEvent<HTMLInputElement>) => {
+  const modify = (key: ArrayKey, index: number) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // 삭제
     if (value === "") {
       const array = [...rule[key]];
       array.splice(index, 1);
-      await updateRule.mutateAsync({
+      updator.mutate({
         data: { [key]: array },
-        onError: (error) => {
-          toast(`${key} 삭제 실패`, error.message);
-        },
+        onError: (error) => toast(`${key} 삭제 실패`, error.message),
       });
       return;
     }
@@ -102,31 +98,25 @@ function Page() {
     if (value !== rule[key][index]) {
       const array = [...rule[key]];
       array[index] = value;
-      await updateRule.mutateAsync({
+      updator.mutate({
         data: { [key]: array },
-        onError: (error) => {
-          toast(`${key} 수정 실패`, error.message);
-        },
+        onError: (error) => toast(`${key} 수정 실패`, error.message),
       });
       return;
     }
   };
 
-  const onCopyClick = async (_: React.MouseEvent<HTMLButtonElement>) => {
-    await copyRule.mutateAsync({
-      onError: (error) => {
-        toast("복사 실패", error.message);
-      },
+  const onCopyClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+    copior.mutate({
+      onError: (error) => toast("복사 실패", error.message),
+      onSuccess: () => router.history.back(),
     });
-    router.history.back();
   };
-  const onDeleteClick = async (_: React.MouseEvent<HTMLButtonElement>) => {
-    await deleteRule.mutateAsync({
-      onError: (error) => {
-        toast("삭제 실패", error.message);
-      },
+  const onDeleteClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+    deletor.mutate({
+      onError: (error) => toast("삭제 실패", error.message),
+      onSuccess: () => router.history.back(),
     });
-    router.history.back();
   };
 
   return (
@@ -251,7 +241,7 @@ function Page() {
                     className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
                     variant="secondary"
                     size="default"
-                    onClick={toggle()}
+                    onClick={toggle}
                   >
                     {rule.enabled ? <PowerOff className="w-5 h-5" /> : <Power className="w-5 h-5" />}
                   </Button>

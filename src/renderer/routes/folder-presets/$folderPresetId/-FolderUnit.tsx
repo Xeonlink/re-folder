@@ -36,10 +36,10 @@ export function FolderUnit(props: Props) {
   const updateFolderPreset = useUpdateFolderPreset(folderPresetId);
   const deleteFolderPreset = useDeleteFolderPreset(folderPreset.parentId, folderPresetId);
 
-  const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+  const onModifyBlur = (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === folderPreset[key]) return;
-    await updateFolderPreset.mutateAsync({
+    updateFolderPreset.mutate({
       data: { [key]: value },
       onError: (error) => {
         console.log(error);
@@ -49,22 +49,16 @@ export function FolderUnit(props: Props) {
     });
   };
 
-  const onCreateFolderPresetClick = async () => {
-    await createFolderPreset.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
-      onSuccess: () => {
-        setOpen(true);
-      },
+  const onCreateFolderPresetClick = () => {
+    createFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => setOpen(true),
     });
   };
 
-  const onDeleteFolderPresetClick = async () => {
-    await deleteFolderPreset.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+  const onDeleteFolderPresetClick = () => {
+    deleteFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
     });
   };
 
@@ -76,7 +70,6 @@ export function FolderUnit(props: Props) {
         return;
       }
     }
-
     if (e.key === "ArrowRight") {
       setOpen(true);
       return;

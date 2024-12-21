@@ -25,19 +25,15 @@ function Page() {
   const creator = useCreateWatcher();
   const deletor = useDeleteWatcherById();
 
-  const createWatcher = async () => {
-    await creator.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+  const createWatcher = () => {
+    creator.mutate({
+      onError: (error) => toast(error.name, error.message),
     });
   };
-  const deleteWatcher = async (watcherId: string) => {
-    await deletor.mutateAsync({
+  const deleteWatcher = (watcherId: string) => {
+    deletor.mutate({
       id: watcherId,
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+      onError: (error) => toast(error.name, error.message),
     });
   };
 
@@ -81,7 +77,7 @@ function Page() {
       }
     };
   const deleteEventHandler =
-    (options: { enabled?: boolean; id: string }) => async (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    (options: { enabled?: boolean; id: string }) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
       const { enabled = true, id } = options;
       if (!enabled) return;
       if (platform === "win32" && e.key === "Delete") {

@@ -1,4 +1,5 @@
 import { Variables, api } from "./utils";
+import { wait } from "@renderer/lib/utils";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import type { Rule } from "src/main/schema";
 
@@ -11,8 +12,9 @@ export function useCreateRule(watcherId: string) {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -26,8 +28,9 @@ export function useCopyRule(watcherId: string, ruleId: string) {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -70,8 +73,9 @@ export function useUpdateRule(ruleId: string) {
       queryClient.setQueryData<Rule>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -101,8 +105,9 @@ export function useUpdateRuleOrder(watcherId: string) {
       queryClient.setQueryData<Rule[]>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -130,8 +135,11 @@ export function useDeleteRule(watcherId: string, ruleId: string) {
       queryClient.setQueryData<Rule[]>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSettled: () => {
+    onSuccess: async (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
+      await wait(1000);
+      queryClient.removeQueries({ queryKey: [...queryKey, ruleId] });
     },
   });
 }

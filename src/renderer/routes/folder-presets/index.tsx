@@ -24,20 +24,16 @@ export function Page() {
   const creator = useCreateFolderPreset(null);
   const deletor = useDeleteFolderPresetById();
 
-  const createFolderPreset = async () => {
-    await creator.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+  const createFolderPreset = () => {
+    creator.mutate({
+      onError: (error) => toast(error.name, error.message),
     });
   };
-  const deleteFolderPreset = async (folderPresetId: string) => {
-    await deletor.mutateAsync({
+  const deleteFolderPreset = (folderPresetId: string) => {
+    deletor.mutate({
       parentId: null,
       id: folderPresetId,
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+      onError: (error) => toast(error.name, error.message),
     });
   };
 
