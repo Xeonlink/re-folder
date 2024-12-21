@@ -2,6 +2,7 @@ import { Pending } from "./-Pending";
 import { usePlatform } from "@renderer/api/extra";
 import { useCreateFolderPreset, useDeleteFolderPresetById, useRootFolderPresets } from "@renderer/api/folderPresets";
 import { Button } from "@renderer/components/ui/button";
+import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
@@ -94,54 +95,56 @@ export function Page() {
     };
 
   return (
-    <main className="w-full grid grid-cols-2 px-2 gap-2 mb-2 mt-1">
-      {folderPresets.map((preset, index) => (
-        <Button
-          variant="outline"
-          className="w-full h-28"
-          autoFocus={index === 0}
-          tabIndex={index + 1}
-          key={preset.id}
-          onClick={gotoFolderPreset(preset.id)}
-          onKeyDown={eventSplitor(
-            arrowFocusEventHandler({
-              hasUp: index > 1,
-              hasRight: index % 2 === 0,
-              hasDown: index < folderPresets.length - 1,
-              hasLeft: index % 2 === 1,
-            }),
-            deleteEventHandler({
-              id: preset.id,
-            }),
-          )}
-        >
-          {preset.name}
-        </Button>
-      ))}
-      {creator.isPending ? ( //
-        <motion.div
-          initial={{ scale: 0.3 }}
-          animate={{ scale: 1 }}
-          transition={{ ease: "linear", type: "spring", duration: 0.5 }}
-        >
-          <Skeleton className="h-28 w-full flex justify-center items-center">
-            <PlusIcon className="animate-spin" />
-          </Skeleton>
-        </motion.div>
-      ) : (
-        <Button
-          variant="outline"
-          className="h-28 border-dashed w-full"
-          onClick={createFolderPreset}
-          tabIndex={folderPresets.length}
-          onKeyDown={arrowFocusEventHandler({
-            hasUp: folderPresets.length > 1,
-            hasLeft: folderPresets.length % 2 === 1,
-          })}
-        >
-          <PlusIcon />
-        </Button>
-      )}
-    </main>
+    <ScrollArea className="flex-1">
+      <main className="grid grid-cols-2 gap-2 p-2">
+        {folderPresets.map((preset, index) => (
+          <Button
+            variant="outline"
+            className="w-full h-28"
+            autoFocus={index === 0}
+            tabIndex={index + 1}
+            key={preset.id}
+            onClick={gotoFolderPreset(preset.id)}
+            onKeyDown={eventSplitor(
+              arrowFocusEventHandler({
+                hasUp: index > 1,
+                hasRight: index % 2 === 0,
+                hasDown: index < folderPresets.length - 1,
+                hasLeft: index % 2 === 1,
+              }),
+              deleteEventHandler({
+                id: preset.id,
+              }),
+            )}
+          >
+            {preset.name}
+          </Button>
+        ))}
+        {creator.isPending ? ( //
+          <motion.div
+            initial={{ scale: 0.3 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "linear", type: "spring", duration: 0.5 }}
+          >
+            <Skeleton className="h-28 w-full flex justify-center items-center">
+              <PlusIcon className="animate-spin" />
+            </Skeleton>
+          </motion.div>
+        ) : (
+          <Button
+            variant="outline"
+            className="h-28 border-dashed w-full"
+            onClick={createFolderPreset}
+            tabIndex={folderPresets.length}
+            onKeyDown={arrowFocusEventHandler({
+              hasUp: folderPresets.length > 1,
+              hasLeft: folderPresets.length % 2 === 1,
+            })}
+          >
+            <PlusIcon />
+          </Button>
+        )}
+      </main>
+    </ScrollArea>
   );
 }

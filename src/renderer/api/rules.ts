@@ -1,14 +1,13 @@
+import { Variables, api } from "./utils";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import type { Rule } from "src/main/schema";
-
-const api = window.api;
 
 export function useCreateRule(watcherId: string) {
   const queryClient = useQueryClient();
   const queryKey = ["watchers", watcherId, "rules"];
 
   return useMutation({
-    mutationFn: (_: { onError?: (error: Error) => any }) => api.createRule(watcherId),
+    mutationFn: (_: Variables) => api.createRule(watcherId),
     onError: (error, variables) => {
       variables.onError?.(error);
     },
@@ -23,7 +22,7 @@ export function useCopyRule(watcherId: string, ruleId: string) {
   const queryKey = ["watchers", watcherId, "rules"];
 
   return useMutation({
-    mutationFn: (_: { onError?: (error: Error) => any }) => api.copyRule(ruleId),
+    mutationFn: (_: Variables) => api.copyRule(ruleId),
     onError: (error, variables) => {
       variables.onError?.(error);
     },
@@ -53,7 +52,7 @@ export function useUpdateRule(ruleId: string) {
   const queryKey = ["rules", ruleId];
 
   return useMutation({
-    mutationFn: (variables: { data: Partial<Rule>; onError?: (error: Error) => any }) => {
+    mutationFn: (variables: Variables<{ data: Partial<Rule> }>) => {
       return api.updateRule(ruleId, variables.data);
     },
     onMutate: async (variables) => {
@@ -82,7 +81,7 @@ export function useUpdateRuleOrder(watcherId: string) {
   const queryKey = ["watchers", watcherId, "rules"];
 
   return useMutation({
-    mutationFn: (variables: { data: Record<string, number>; onError?: (error: Error) => any }) => {
+    mutationFn: (variables: Variables<{ data: Record<string, number> }>) => {
       return api.updateRuleOrder(watcherId, variables.data);
     },
     onMutate: async (variables) => {
@@ -113,7 +112,7 @@ export function useDeleteRule(watcherId: string, ruleId: string) {
   const queryKey = ["watchers", watcherId, "rules"];
 
   return useMutation({
-    mutationFn: async (_: { onError?: (error: Error) => any }) => {
+    mutationFn: async (_: Variables) => {
       return await api.deleteRule(ruleId);
     },
     onMutate: async (_) => {

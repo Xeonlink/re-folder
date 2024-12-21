@@ -1,6 +1,5 @@
+import { api } from "./utils";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-
-const api = window.api;
 
 // OpenAI API Key ----------------------------------------------------------
 export function useOpenAiApiKey() {

@@ -7,8 +7,11 @@ import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
+import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Skeleton } from "@renderer/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+import { cn } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { Reorder, motion } from "framer-motion";
 import { Copy, PlusIcon, Power, PowerOff, Trash2Icon } from "lucide-react";
@@ -81,10 +84,6 @@ function Page() {
     });
   };
 
-  const gotoRule = (ruleId: string) => {
-    navigate({ to: "/rules/$ruleId", params: { ruleId } });
-  };
-
   const onDeleteClick = () => {
     deleteWatcher.mutate({
       onError: (error) => {
@@ -93,16 +92,15 @@ function Page() {
     });
     router.history.back();
   };
-  const enable = (isEnable: boolean) => async (_: React.MouseEvent<HTMLButtonElement>) => {
-    if (watcher.enabled !== isEnable) {
-      await updateWatcher.mutateAsync({
-        data: { enabled: isEnable },
-        onError: (error) => {
-          const action = isEnable ? "활성화" : "비활성화";
-          toast(`${action} 실패`, error.message);
-        },
-      });
-    }
+  const toggle = () => async (_: React.MouseEvent<HTMLButtonElement>) => {
+    const isEnable = !watcher.enabled;
+    await updateWatcher.mutateAsync({
+      data: { enabled: isEnable },
+      onError: (error) => {
+        const action = isEnable ? "활성화" : "비활성화";
+        toast(`${action} 실패`, error.message);
+      },
+    });
   };
   const onCreateRuleClick = async () => {
     await createRule.mutateAsync({
@@ -121,125 +119,152 @@ function Page() {
   };
 
   return (
-    <main className="w-full flex flex-col justify-start items-center mb-2 space-y-2">
-      <Card className="w-96 shadow-none">
-        <ul className="m-4 space-y-2">
-          <li className="flex items-center">
-            <Label htmlFor="name" className="flex-1">
-              이름
-            </Label>
-            <Input
-              id="name"
-              className="bg-secondary border-none w-56"
-              size="sm"
-              name="name"
-              defaultValue={watcher.name}
-              onBlur={onModifyBlur("name")}
-            />
-          </li>
-          <li className="flex items-center">
-            <Label htmlFor="description" className="flex-1">
-              설명
-            </Label>
-            <Input
-              id="description"
-              className="bg-secondary border-none w-56"
-              size="sm"
-              name="description"
-              defaultValue={watcher.description}
-              onBlur={onModifyBlur("description")}
-            />
-          </li>
-          <li className="flex items-center">
-            <Label htmlFor="path" className="flex-1">
-              감시경로
-            </Label>
-            <Input
-              id="path"
-              name="path"
-              className="bg-secondary border-none w-56"
-              size="sm"
-              onClick={onSelectFolderClick}
-              defaultValue={watcher.path}
-              readOnly
-            />
-          </li>
-          <li className="flex items-center">
-            <Label className="flex-1">활성화</Label>
-            <div className="flex w-56">
-              <Button
-                className="w-full rounded-tr-none rounded-br-none"
-                size="sm"
-                variant={watcher.enabled ? "default" : "secondary"}
-                onClick={enable(true)}
-              >
-                <Power className="w-5 h-5" />
-              </Button>
-              <Button
-                className="w-full rounded-tl-none rounded-bl-none"
-                size="sm"
-                variant={watcher.enabled ? "secondary" : "default"}
-                onClick={enable(false)}
-              >
-                <PowerOff className="w-5 h-5" />
-              </Button>
-            </div>
-          </li>
-          <li className="flex items-center">
-            <Label className="flex-1">복사하기</Label>
-            <Button className="w-56" variant="secondary" size="sm" onClick={onCopyClick}>
-              <Copy className="w-5 h-5" />
+    <>
+      <ScrollArea className="flex-1">
+        <main className="p-2 space-y-2">
+          <Card className={cn("shadow-none", { "border-primary": watcher.enabled })}>
+            <ul className="m-4 space-y-2">
+              <li className="flex items-center">
+                <Label htmlFor="name" className="flex-1">
+                  이름
+                </Label>
+                <Input
+                  id="name"
+                  className="bg-secondary border-none w-56"
+                  size="sm"
+                  name="name"
+                  defaultValue={watcher.name}
+                  onBlur={onModifyBlur("name")}
+                />
+              </li>
+              <li className="flex items-center">
+                <Label htmlFor="description" className="flex-1">
+                  설명
+                </Label>
+                <Input
+                  id="description"
+                  className="bg-secondary border-none w-56"
+                  size="sm"
+                  name="description"
+                  defaultValue={watcher.description}
+                  onBlur={onModifyBlur("description")}
+                />
+              </li>
+              <li className="flex items-center">
+                <Label htmlFor="path" className="flex-1">
+                  감시경로
+                </Label>
+                <Input
+                  id="path"
+                  name="path"
+                  className="bg-secondary border-none w-56"
+                  size="sm"
+                  onClick={onSelectFolderClick}
+                  defaultValue={watcher.path}
+                  readOnly
+                />
+              </li>
+            </ul>
+          </Card>
+          <Reorder.Group
+            axis="y"
+            values={ruleOrder}
+            onReorder={setRuleOrder}
+            className={cn("space-y-2", { contents: ruleOrder.length === 0 })}
+          >
+            {ruleOrder.map((rule) => (
+              <DraggableItem key={rule.id} value={rule} onDragEnd={onRuleDragEnd}>
+                <Button
+                  className="w-full justify-between h-12"
+                  variant={rule.enabled ? "secondary" : "outline"}
+                  onClick={() => navigate({ to: "/rules/$ruleId", params: { ruleId: rule.id } })}
+                >
+                  <span>
+                    {rule.name}&nbsp;&nbsp;<span className="text-xs">{rule.path}</span>
+                  </span>
+                  <DragHandleDots2Icon className="w-5 h-full" data-drag-handle />
+                </Button>
+              </DraggableItem>
+            ))}
+          </Reorder.Group>
+          {createRule.isPending ? (
+            <motion.div
+              initial={{ scale: 0.3 }}
+              animate={{ scale: 1 }}
+              transition={{ ease: "linear", type: "spring", duration: 0.5 }}
+            >
+              <Skeleton className="w-96 h-12 flex justify-center items-center">
+                <PlusIcon className="animate-spin" />
+              </Skeleton>
+            </motion.div>
+          ) : (
+            <Button className="w-96 justify-between h-12 border-dashed" variant="outline" onClick={onCreateRuleClick}>
+              규칙 만들기
             </Button>
+          )}
+        </main>
+      </ScrollArea>
+      <footer>
+        <ul className="flex h-12">
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
+                    variant="secondary"
+                    size="default"
+                    onClick={toggle()}
+                  >
+                    {watcher.enabled ? <PowerOff className="w-5 h-5" /> : <Power className="w-5 h-5" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{watcher.enabled ? "비활성화 하기" : "활성화 하기"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </li>
-          <li className="flex items-center">
-            <Label className="flex-1">삭제하기</Label>
-            <Button className="w-56" variant="secondary" size="sm" onClick={onDeleteClick}>
-              <Trash2Icon className="w-5 h-5" />
-            </Button>
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-full rounded-none gap-1.5 h-full flex-col"
+                    variant="secondary"
+                    size="default"
+                    onClick={onCopyClick}
+                  >
+                    <Copy className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>복사하기</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </li>
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
+                    variant="secondary"
+                    size="default"
+                    onClick={onDeleteClick}
+                  >
+                    <Trash2Icon className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>즉시 삭제하기</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </li>
         </ul>
-      </Card>
-      {ruleOrder.length > 0 ? (
-        <Reorder.Group axis="y" values={ruleOrder} onReorder={setRuleOrder} className="space-y-2">
-          {ruleOrder.map((rule) => (
-            <DraggableItem key={rule.id} value={rule} onDragEnd={onRuleDragEnd}>
-              {(dragCtrl) => (
-                <Button
-                  className="w-96 justify-start h-12"
-                  variant={rule.enabled ? "secondary" : "outline"}
-                  onClick={() => gotoRule(rule.id)}
-                >
-                  <div className="flex-1 text-left overflow-hidden">
-                    <span>{rule.name}</span>
-                    &nbsp;&nbsp;
-                    <span className="text-xs">{rule.path}</span>
-                  </div>
-                  <DragHandleDots2Icon
-                    className="w-6 h-full ml-2"
-                    onPointerDown={(e) => dragCtrl.start(e)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </Button>
-              )}
-            </DraggableItem>
-          ))}
-        </Reorder.Group>
-      ) : null}
-      {createRule.isPending ? (
-        <motion.div
-          initial={{ scale: 0.3 }}
-          animate={{ scale: 1 }}
-          transition={{ ease: "linear", type: "spring", duration: 0.5 }}
-        >
-          <Skeleton className="w-96 h-12 flex justify-center items-center">
-            <PlusIcon className="animate-spin" />
-          </Skeleton>
-        </motion.div>
-      ) : (
-        <Button className="w-96 justify-between h-12 border-dashed" variant="outline" onClick={onCreateRuleClick}>
-          규칙 만들기
-        </Button>
-      )}
-    </main>
+      </footer>
+    </>
   );
 }
