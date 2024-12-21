@@ -1,4 +1,5 @@
 import { FolderUnit } from "./-FolderUnit";
+import { Pending } from "./-Pending";
 import {
   useApplyFolderPreset,
   useCopyFolderPreset,
@@ -19,6 +20,7 @@ import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/folder-presets/$folderPresetId/")({
   component: Page,
+  pendingComponent: Pending,
 });
 
 type NormalKey = "name" | "description";

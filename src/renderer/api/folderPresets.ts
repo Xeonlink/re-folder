@@ -15,7 +15,8 @@ export function useRootFolderPresets() {
 export function useFolderPreset(id: string) {
   return useSuspenseQuery<FolderPresetWithChildren>({
     queryKey: ["folderPresets", id],
-    queryFn: () => api.getFolderPreset(id),
+    // queryFn: () => api.getFolderPreset(id),
+    queryFn: () => wait(10000).then(() => api.getFolderPreset(id)),
   });
 }
 

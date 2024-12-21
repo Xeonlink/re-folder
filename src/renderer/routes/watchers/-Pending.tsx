@@ -6,7 +6,7 @@ import { Skeleton } from "@renderer/components/ui/skeleton";
 export function Pending() {
   return (
     <ScrollArea className="flex-1">
-      <main className="grid grid-cols-2 px-2 gap-2 mb-2 mt-1">
+      <main className="grid grid-cols-2 p-2 gap-2">
         {new Array(4).fill(0).map((_, i) => (
           <Skeleton key={i} className="h-28" />
         ))}

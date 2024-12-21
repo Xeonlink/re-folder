@@ -19,8 +19,8 @@ export function Error(props: ErrorComponentProps) {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="px-2 mb-2 mt-1 text-end">
-        <Textarea className="w-full" id="message" rows={20} value={errorString} readOnly />
+      <main className="p-2 text-end">
+        <Textarea id="message" rows={20} value={errorString} readOnly />
         <Button onClick={onResetClick} variant="outline" size="lg" className="mt-2">
           <UpdateIcon />
           &nbsp;새로고침

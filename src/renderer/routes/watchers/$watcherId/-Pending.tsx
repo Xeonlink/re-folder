@@ -8,7 +8,7 @@ import { Skeleton } from "@renderer/components/ui/skeleton";
 export function Pending() {
   return (
     <ScrollArea className="flex-1">
-      <main className="flex flex-col justify-start items-center mb-2 space-y-2">
+      <main className="p-2 space-y-2">
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
