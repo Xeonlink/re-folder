@@ -112,33 +112,3 @@ export function useDeleteWatcher(watcherId: string) {
     },
   });
 }
-
-export function useDeleteWatcherById() {
-  const queryClient = useQueryClient();
-  const queryKey = ["watchers"];
-
-  return useMutation({
-    mutationFn: (variables: Variables<{ id: string }>) => api.deleteWatcher(variables.id),
-    onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey });
-      const prev = queryClient.getQueryData<Watcher[]>(queryKey);
-      if (!prev) return;
-
-      queryClient.setQueryData<Watcher[]>(queryKey, () => {
-        return prev.filter((watcher) => watcher.id !== variables.id);
-      });
-      return { prev };
-    },
-    onError: (error, variables, context) => {
-      if (!context?.prev) return;
-      queryClient.setQueryData<Watcher[]>(queryKey, context.prev);
-      variables.onError?.(error);
-    },
-    onSuccess: async (_, variables) => {
-      queryClient.invalidateQueries({ queryKey });
-      variables.onSuccess?.();
-      await wait(1000);
-      queryClient.removeQueries({ queryKey: [...queryKey, variables.id] });
-    },
-  });
-}

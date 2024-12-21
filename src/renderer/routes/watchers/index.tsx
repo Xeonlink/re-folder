@@ -1,12 +1,10 @@
 import { Pending } from "./-Pending";
-import { usePlatform } from "@renderer/api/extra";
-import { useCreateWatcher, useDeleteWatcherById, useWatchers } from "@renderer/api/watchers";
+import { useCreateWatcher, useWatchers } from "@renderer/api/watchers";
 import { Button } from "@renderer/components/ui/button";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { eventSplitor } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
@@ -20,19 +18,11 @@ export const Route = createFileRoute("/watchers/")({
 function Page() {
   const navigate = useNavigate();
   const { toast } = useToastWithDismiss();
-  const { data: platform } = usePlatform();
   const { data: watchers } = useWatchers();
   const creator = useCreateWatcher();
-  const deletor = useDeleteWatcherById();
 
   const createWatcher = () => {
     creator.mutate({
-      onError: (error) => toast(error.name, error.message),
-    });
-  };
-  const deleteWatcher = (watcherId: string) => {
-    deletor.mutate({
-      id: watcherId,
       onError: (error) => toast(error.name, error.message),
     });
   };
@@ -76,19 +66,6 @@ function Page() {
         return;
       }
     };
-  const deleteEventHandler =
-    (options: { enabled?: boolean; id: string }) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
-      const { enabled = true, id } = options;
-      if (!enabled) return;
-      if (platform === "win32" && e.key === "Delete") {
-        deleteWatcher(id);
-        return;
-      }
-      if (platform === "darwin" && e.key === "Backspace" && e.metaKey) {
-        deleteWatcher(id);
-        return;
-      }
-    };
 
   return (
     <ScrollArea className="flex-1">
@@ -101,17 +78,12 @@ function Page() {
             tabIndex={index + 1}
             key={watcher.id}
             onClick={gotoWatcher(watcher.id)}
-            onKeyDown={eventSplitor(
-              arrowFocusEventHandler({
-                hasUp: index > 1,
-                hasRight: index % 2 === 0,
-                hasDown: index < watchers.length - 1,
-                hasLeft: index % 2 === 1,
-              }),
-              deleteEventHandler({
-                id: watcher.id,
-              }),
-            )}
+            onKeyDown={arrowFocusEventHandler({
+              hasUp: index > 1,
+              hasRight: index % 2 === 0,
+              hasDown: index < watchers.length - 1,
+              hasLeft: index % 2 === 1,
+            })}
           >
             {watcher.name}
           </Button>

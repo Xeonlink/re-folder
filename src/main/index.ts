@@ -1,9 +1,7 @@
-import IconBlack from "../../resources/icon1800_primary.png?asset";
-import IconPrimary from "../../resources/icon1800_primary.png?asset";
-import { executeOnce } from "./exec/once";
+import { default as IconBlack, default as IconPrimary } from "../../resources/icon1800_primary.png?asset";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
-import { Settings, autoMigrate } from "./storage";
+import { autoMigrate } from "./storage";
 import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils/utils";
 import { BrowserWindow, Tray, app, dialog, nativeImage, shell } from "electron";
 import { autoUpdater } from "electron-updater";
@@ -153,18 +151,10 @@ app.on("window-all-closed", () => {
   }
 });
 
-app.on("quit", async () => {
-  const isUpdateReady = await Settings.get("isUpdateReady");
-  if (isUpdateReady) {
-    await Settings.set("once", false);
-  }
-});
-
 async function main() {
   try {
     await app.whenReady();
     await autoMigrate();
-    await executeOnce();
     registIpcs(ipcApiDef);
     initializeWatcher();
     createTray();

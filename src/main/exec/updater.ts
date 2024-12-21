@@ -1,4 +1,3 @@
-import { Settings } from "../storage";
 import { autoUpdater } from "electron-updater";
 
 autoUpdater.autoDownload = true;
@@ -25,10 +24,8 @@ autoUpdater.on("download-progress", (progress) => {
   console.log("download-progress", progress);
 });
 
-autoUpdater.on("update-downloaded", (event) => {
+autoUpdater.on("update-downloaded", (_) => {
   console.log("update-downloaded");
-  Settings.set("isUpdateReady", true);
-  Settings.set("targetVersion", event.version);
 });
 
 autoUpdater.on("update-cancelled", (info) => {

@@ -10,6 +10,7 @@ import { Label } from "@renderer/components/ui/label";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
+import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
@@ -90,7 +91,7 @@ function Page() {
       onSuccess: () => router.history.back(),
     });
   };
-  const toggle = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const toggle = () => {
     const isEnable = !watcher.enabled;
     updateWatcher.mutate({
       data: { enabled: isEnable },
@@ -105,12 +106,28 @@ function Page() {
       onError: (error) => toast(error.name, error.message),
     });
   };
-  const onCopyClick = () => {
+  const copy = () => {
     copyWatcher.mutate({
       onError: (error) => toast(error.name, error.message),
       onSuccess: () => router.history.back(),
     });
   };
+
+  useShortcuts(
+    {
+      win32: {
+        "ctrl+delete": onDeleteClick,
+        "ctrl+d": copy,
+        "ctrl+t": toggle,
+      },
+      darwin: {
+        "meta+backspace": onDeleteClick,
+        "meta+d": copy,
+        "meta+t": toggle,
+      },
+    },
+    [watcher],
+  );
 
   return (
     <>
@@ -227,7 +244,7 @@ function Page() {
                     className="w-full rounded-none gap-1.5 h-full flex-col"
                     variant="secondary"
                     size="default"
-                    onClick={onCopyClick}
+                    onClick={copy}
                   >
                     <Copy className="w-5 h-5" />
                   </Button>

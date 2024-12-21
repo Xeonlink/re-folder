@@ -12,6 +12,7 @@ import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
+import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
@@ -45,25 +46,40 @@ function Page() {
     });
   };
 
-  const onApplyClick = () => {
+  const apply = () => {
     applyFolderPreset.mutate({
       onError: (error) => toast(error.name, error.message),
       onSuccess: () => toast("적용 완료", "폴더 프리셋이 적용되었습니다."),
     });
   };
-
-  const onDeleteClick = () => {
+  const deleteOne = () => {
     deleteFolderPreset.mutate({
       onError: (error) => toast(error.name, error.message),
       onSuccess: () => router.history.back(),
     });
   };
-  const onCopyClick = () => {
+  const copy = () => {
     copyFolderPreset.mutate({
       onError: (error) => toast(error.name, error.message),
       onSuccess: () => router.history.back(),
     });
   };
+
+  useShortcuts(
+    {
+      win32: {
+        "ctrl+delete": deleteOne,
+        "ctrl+d": copy,
+        "ctrl+enter": apply,
+      },
+      darwin: {
+        "meta+backspace": deleteOne,
+        "meta+d": copy,
+        "meta+enter": apply,
+      },
+    },
+    [folderPreset],
+  );
 
   return (
     <>
@@ -114,7 +130,7 @@ function Page() {
                     className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
                     variant="secondary"
                     size="default"
-                    onClick={onApplyClick}
+                    onClick={apply}
                   >
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -133,7 +149,7 @@ function Page() {
                     className="w-full rounded-none gap-1.5 h-full flex-col"
                     variant="secondary"
                     size="default"
-                    onClick={onCopyClick}
+                    onClick={copy}
                   >
                     <Copy className="w-5 h-5" />
                   </Button>
@@ -152,7 +168,7 @@ function Page() {
                     className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
                     variant="secondary"
                     size="default"
-                    onClick={onDeleteClick}
+                    onClick={deleteOne}
                   >
                     <Trash2Icon className="w-5 h-5" />
                   </Button>

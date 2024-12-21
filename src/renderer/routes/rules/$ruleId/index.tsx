@@ -9,6 +9,7 @@ import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
+import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
@@ -71,7 +72,7 @@ function Page() {
     });
   };
 
-  const toggle = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const toggle = () => {
     const isEnable = !rule.enabled;
     updator.mutate({
       data: { enabled: isEnable },
@@ -106,18 +107,34 @@ function Page() {
     }
   };
 
-  const onCopyClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const copy = () => {
     copior.mutate({
       onError: (error) => toast("복사 실패", error.message),
       onSuccess: () => router.history.back(),
     });
   };
-  const onDeleteClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const deleteThis = () => {
     deletor.mutate({
       onError: (error) => toast("삭제 실패", error.message),
       onSuccess: () => router.history.back(),
     });
   };
+
+  useShortcuts(
+    {
+      win32: {
+        "ctrl+delete": deleteThis,
+        "ctrl+d": copy,
+        "ctrl+t": toggle,
+      },
+      darwin: {
+        "meta+backspace": deleteThis,
+        "meta+d": copy,
+        "meta+t": toggle,
+      },
+    },
+    [rule],
+  );
 
   return (
     <>
@@ -260,7 +277,7 @@ function Page() {
                     className="w-full rounded-none gap-1.5 h-full flex-col"
                     variant="secondary"
                     size="default"
-                    onClick={onCopyClick}
+                    onClick={copy}
                   >
                     <Copy className="w-5 h-5" />
                   </Button>
@@ -279,7 +296,7 @@ function Page() {
                     className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
                     variant="secondary"
                     size="default"
-                    onClick={onDeleteClick}
+                    onClick={deleteThis}
                   >
                     <Trash2Icon className="w-5 h-5" />
                   </Button>
