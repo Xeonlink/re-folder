@@ -83,7 +83,6 @@ export function Pending() {
                   <Button
                     className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
                     variant="secondary"
-                    size="default"
                   >
                     <Power className="w-5 h-5" />
                   </Button>
@@ -98,7 +97,7 @@ export function Pending() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="w-full rounded-none gap-1.5 h-full flex-col" variant="secondary" size="default">
+                  <Button className="w-full rounded-none gap-1.5 h-full flex-col" variant="secondary">
                     <Copy className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
@@ -112,11 +111,7 @@ export function Pending() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
-                    variant="secondary"
-                    size="default"
-                  >
+                  <Button className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col" variant="secondary">
                     <Trash2Icon className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>

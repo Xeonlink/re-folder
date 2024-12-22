@@ -33,13 +33,13 @@ autoUpdater.on("update-cancelled", (info) => {
 });
 
 export const updater = {
-  checkForUpdates: () => {
-    autoUpdater.checkForUpdates();
+  checkForUpdates: async () => {
+    await autoUpdater.checkForUpdates();
   },
-  downloadUpdate: () => {
-    autoUpdater.downloadUpdate();
+  downloadUpdate: async () => {
+    await autoUpdater.downloadUpdate();
   },
-  installUpdate: async () => {
+  installUpdate: () => {
     autoUpdater.quitAndInstall();
   },
 };

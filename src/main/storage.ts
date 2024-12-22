@@ -54,6 +54,8 @@ export class Settings {
     openaiApiKey: z.string().default(""),
     openaiModel: z.string().default("gpt-3.5-turbo"),
     updateCheckPolicy: z.enum(["auto", "manual"]).default("auto"),
+    updateDownloadPolicy: z.enum(["auto", "manual"]).default("auto"),
+    updateInstallPolicy: z.enum(["auto", "manual"]).default("auto"),
   });
 
   private static _data: z.infer<typeof Settings.schema>;

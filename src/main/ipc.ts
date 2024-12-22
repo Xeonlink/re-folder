@@ -325,4 +325,16 @@ export const ipcApiDef = {
   setUpdateCheckPolicy: async (policy: "auto" | "manual") => {
     await Settings.set("updateCheckPolicy", policy);
   },
+  getUpdateDownloadPolicy: async () => {
+    return await Settings.get("updateDownloadPolicy");
+  },
+  setUpdateDownloadPolicy: async (policy: "auto" | "manual") => {
+    await Settings.set("updateDownloadPolicy", policy);
+  },
+  getUpdateInstallPolicy: async () => {
+    return await Settings.get("updateInstallPolicy");
+  },
+  setUpdateInstallPolicy: async (policy: "auto" | "manual") => {
+    await Settings.set("updateInstallPolicy", policy);
+  },
 } satisfies IpcDef;

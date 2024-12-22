@@ -39,6 +39,10 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   getPlatform: true,
   getUpdateCheckPolicy: true,
   setUpdateCheckPolicy: true,
+  getUpdateDownloadPolicy: true,
+  setUpdateDownloadPolicy: true,
+  getUpdateInstallPolicy: true,
+  setUpdateInstallPolicy: true,
 });
 
 // --------------------------------------------------------------

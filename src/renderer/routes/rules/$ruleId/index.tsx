@@ -257,7 +257,6 @@ function Page() {
                   <Button
                     className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
                     variant="secondary"
-                    size="default"
                     onClick={toggle}
                   >
                     {rule.enabled ? <PowerOff className="w-5 h-5" /> : <Power className="w-5 h-5" />}
@@ -273,12 +272,7 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    className="w-full rounded-none gap-1.5 h-full flex-col"
-                    variant="secondary"
-                    size="default"
-                    onClick={copy}
-                  >
+                  <Button className="w-full rounded-none gap-1.5 h-full flex-col" variant="secondary" onClick={copy}>
                     <Copy className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
@@ -295,7 +289,6 @@ function Page() {
                   <Button
                     className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
                     variant="secondary"
-                    size="default"
                     onClick={deleteThis}
                   >
                     <Trash2Icon className="w-5 h-5" />
