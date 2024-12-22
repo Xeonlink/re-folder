@@ -1,10 +1,9 @@
 import { default as IconBlack, default as IconPrimary } from "../../resources/icon1800_primary.png?asset";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
-import { autoMigrate } from "./storage";
+import { Settings, autoMigrate } from "./storage";
 import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils/utils";
 import { BrowserWindow, Tray, app, dialog, nativeImage, shell } from "electron";
-import { autoUpdater } from "electron-updater";
 import { join } from "path";
 
 function createWindow(): void {
@@ -85,6 +84,12 @@ function createWindow(): void {
   } else {
     win.loadFile(join(__dirname, "../renderer/index.html"));
   }
+
+  Settings.get("updateCheckPolicy").then((policy) => {
+    if (policy === "auto") {
+      win.webContents.send("check-update");
+    }
+  });
 }
 
 function createOrShowWindow() {
@@ -159,7 +164,6 @@ async function main() {
     initializeWatcher();
     createTray();
     createWindow();
-    autoUpdater.checkForUpdates();
   } catch (error: any) {
     const message = resolveErrorMessage(error);
     dialog.showErrorBox("Error", message);
