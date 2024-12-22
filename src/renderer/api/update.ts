@@ -99,3 +99,11 @@ export function useSetUpdateInstallPolicy() {
     },
   });
 }
+
+export function useUpdateInfo(refetchInterval: number = 1000) {
+  return useSuspenseQuery({
+    queryKey: ["update", "info"],
+    queryFn: () => api.getUpdateInfo(),
+    refetchInterval,
+  });
+}

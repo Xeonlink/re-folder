@@ -1,4 +1,5 @@
 import { applyFolderPreset } from "./exec/folderPreset";
+import { updater } from "./exec/updater";
 import { invalidateWatcher, removeWatcher } from "./exec/watcher";
 import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
 import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
@@ -336,5 +337,20 @@ export const ipcApiDef = {
   },
   setUpdateInstallPolicy: async (policy: "auto" | "manual") => {
     await Settings.set("updateInstallPolicy", policy);
+  },
+  getUpdateInfo: async () => {
+    return updater.info;
+  },
+  checkForUpdates: async () => {
+    await updater.checkForUpdates();
+  },
+  downloadUpdate: async () => {
+    await updater.downloadUpdate();
+  },
+  cancelUpdate: async () => {
+    updater.cancelUpdate();
+  },
+  installUpdate: async () => {
+    updater.installUpdate();
   },
 } satisfies IpcDef;

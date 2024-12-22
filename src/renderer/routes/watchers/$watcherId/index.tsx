@@ -1,6 +1,7 @@
 import { Pending } from "./-Pending";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
+import { api } from "@renderer/api/utils";
 import { useCopyWatcher, useDeleteWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
 import { DraggableItem } from "@renderer/components/DraggableItme";
 import { Button } from "@renderer/components/ui/button";
@@ -55,7 +56,7 @@ function Page() {
   };
 
   const onSelectFolderClick = async (e: React.MouseEvent<HTMLInputElement>) => {
-    const results = await window.api.selectFolder();
+    const results = await api.selectFolder();
     if (results.canceled) return;
     const target = e.target as HTMLInputElement;
     target.value = results.filePaths[0];

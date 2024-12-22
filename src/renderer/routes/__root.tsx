@@ -1,5 +1,6 @@
 import { Error } from "./-Error";
 import { ArrowLeftIcon, ArrowRightIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
+import { api } from "@renderer/api/utils";
 import ImgLogo from "@renderer/assets/icon.png";
 import { Button } from "@renderer/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@renderer/components/ui/dialog";
@@ -117,7 +118,7 @@ function Page() {
           <Button
             variant="secondary"
             className="h-full rounded-none w-10 p-0"
-            onClick={() => window.api.minimizeSelf()}
+            onClick={() => api.minimizeSelf()}
             tabIndex={-1}
           >
             <MinusIcon className="relative top-1 w-4 h-4" />
@@ -125,7 +126,7 @@ function Page() {
           <Button
             variant="secondary"
             className="h-full rounded-none w-10 p-0 pr-2"
-            onClick={() => window.api.closeSelf()}
+            onClick={() => api.closeSelf()}
             tabIndex={-1}
           >
             <Cross1Icon className="w-4 h-4" />

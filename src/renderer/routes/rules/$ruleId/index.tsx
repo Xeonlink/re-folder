@@ -1,5 +1,6 @@
 import { Pending } from "./-Pending";
 import { useCopyRule, useDeleteRule, useRule, useUpdateRule } from "@renderer/api/rules";
+import { api } from "@renderer/api/utils";
 import { knownExtensions } from "@renderer/assets/knownExtensions";
 import { AutoSizeInput } from "@renderer/components/AutoSizeInput";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@renderer/components/ui/accordion";
@@ -46,7 +47,7 @@ function Page() {
   };
 
   const onSelectFolderClick = async (e: React.MouseEvent<HTMLInputElement>) => {
-    const results = await window.api.selectFolder();
+    const results = await api.selectFolder();
     if (results.canceled) return;
     const target = e.target as HTMLInputElement;
     target.value = results.filePaths[0];
