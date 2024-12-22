@@ -1,4 +1,5 @@
 import { FolderUnit } from "./-FolderUnit";
+import { Pending } from "./-Pending";
 import {
   useApplyFolderPreset,
   useCopyFolderPreset,
@@ -10,12 +11,16 @@ import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import { Label } from "@renderer/components/ui/label";
+import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
+import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/folder-presets/$folderPresetId/")({
   component: Page,
+  pendingComponent: Pending,
 });
 
 type NormalKey = "name" | "description";
@@ -31,10 +36,10 @@ function Page() {
   const updateFolderPreset = useUpdateFolderPreset(folderPresetId);
   const applyFolderPreset = useApplyFolderPreset(folderPresetId);
 
-  const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+  const onModifyBlur = (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === folderPreset[key]) return;
-    await updateFolderPreset.mutateAsync({
+    updateFolderPreset.mutate({
       data: { [key]: value },
       onError: (error) => {
         toast(error.name, error.message);
@@ -43,87 +48,134 @@ function Page() {
     });
   };
 
-  const onApplyClick = async () => {
-    await applyFolderPreset.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
-      onSuccess: () => {
-        toast("적용 완료", "폴더 프리셋이 적용되었습니다.");
-      },
+  const apply = () => {
+    applyFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => toast("적용 완료", "폴더 프리셋이 적용되었습니다."),
+    });
+  };
+  const deleteOne = () => {
+    deleteFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => router.history.back(),
+    });
+  };
+  const copy = () => {
+    copyFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => router.history.back(),
     });
   };
 
-  const onDeleteClick = () => {
-    deleteFolderPreset.mutate({
-      onError: (error) => {
-        toast(error.name, error.message);
+  useShortcuts(
+    {
+      win32: {
+        "ctrl+delete": deleteOne,
+        "ctrl+d": copy,
+        "ctrl+enter": apply,
       },
-    });
-    router.history.back();
-  };
-  const onCopyClick = () => {
-    copyFolderPreset.mutate({
-      onError: (error) => {
-        toast(error.name, error.message);
+      darwin: {
+        "meta+backspace": deleteOne,
+        "meta+d": copy,
+        "meta+enter": apply,
       },
-    });
-    router.history.back();
-  };
+    },
+    [folderPreset],
+  );
 
   return (
-    <main className="w-full mb-2 space-y-2">
-      <Card className="w-96 shadow-none mx-2">
-        <ul className="m-4 space-y-2">
-          <li className="flex items-center">
-            <Label htmlFor="name" className="flex-1">
-              이름
-            </Label>
-            <Input
-              id="name"
-              className="bg-secondary border-none w-56"
-              size="sm"
-              name="name"
-              defaultValue={folderPreset.name}
-              onBlur={onModifyBlur("name")}
-            />
+    <>
+      <ScrollArea className="flex-1">
+        <main className="mb-2 space-y-2 flex-1 overflow-y-scroll">
+          <Card className="shadow-none mx-2 mt-2">
+            <ul className="m-4 space-y-2">
+              <li className="flex items-center">
+                <Label htmlFor="name" className="flex-1">
+                  이름
+                </Label>
+                <Input
+                  id="name"
+                  className="bg-secondary border-none w-56"
+                  size="sm"
+                  name="name"
+                  defaultValue={folderPreset.name}
+                  onBlur={onModifyBlur("name")}
+                />
+              </li>
+              <li className="flex items-center">
+                <Label htmlFor="description" className="flex-1">
+                  설명
+                </Label>
+                <Input
+                  id="description"
+                  className="bg-secondary border-none w-56"
+                  size="sm"
+                  name="description"
+                  defaultValue={folderPreset.description}
+                  onBlur={onModifyBlur("description")}
+                />
+              </li>
+            </ul>
+          </Card>
+          <div className="w-full overflow-x-scroll">
+            <FolderUnit folderPresetId={folderPresetId} depts={1} />
+          </div>
+        </main>
+      </ScrollArea>
+      <footer>
+        <ul className="flex h-12">
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
+                    variant="secondary"
+                    onClick={apply}
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>적용하기</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </li>
-          <li className="flex items-center">
-            <Label htmlFor="description" className="flex-1">
-              설명
-            </Label>
-            <Input
-              id="description"
-              className="bg-secondary border-none w-56"
-              size="sm"
-              name="description"
-              defaultValue={folderPreset.description}
-              onBlur={onModifyBlur("description")}
-            />
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button className="w-full rounded-none gap-1.5 h-full flex-col" variant="secondary" onClick={copy}>
+                    <Copy className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>복사하기</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </li>
-          <li className="flex items-center">
-            <Label className="flex-1">적용하기</Label>
-            <Button className="w-56" variant="secondary" size="sm" onClick={onApplyClick}>
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </li>
-          <li className="flex items-center">
-            <Label className="flex-1">복사하기</Label>
-            <Button className="w-56" variant="secondary" size="sm" onClick={onCopyClick}>
-              <Copy className="w-5 h-5" />
-            </Button>
-          </li>
-          <li className="flex items-center">
-            <Label className="flex-1">삭제하기</Label>
-            <Button className="w-56" variant="secondary" size="sm" onClick={onDeleteClick}>
-              <Trash2Icon className="w-5 h-5" />
-            </Button>
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
+                    variant="secondary"
+                    onClick={deleteOne}
+                  >
+                    <Trash2Icon className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>즉시 삭제하기</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </li>
         </ul>
-      </Card>
-      <div className="w-full overflow-x-scroll">
-        <FolderUnit folderPresetId={folderPresetId} depts={1} />
-      </div>
-    </main>
+      </footer>
+    </>
   );
 }

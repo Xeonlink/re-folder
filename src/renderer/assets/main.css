@@ -68,14 +68,14 @@
     @apply border-border;
   }
   body {
-    @apply min-h-screen bg-background font-roboto text-foreground;
+    @apply bg-background font-roboto text-foreground;
 
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
   }
   #root {
-    @apply font-gothic;
+    @apply flex h-screen w-screen flex-col font-gothic;
   }
 }
 

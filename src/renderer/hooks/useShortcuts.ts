@@ -38,7 +38,7 @@ type KeyCompose = KeyCompose1;
 
 type Options = Partial<Record<NodeJS.Platform, Partial<Record<KeyCompose, () => any>>>>;
 
-export function useShortcuts(options: Options) {
+export function useShortcuts(options: Options, deps: any[] = []) {
   const { data: platform } = usePlatform();
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function useShortcuts(options: Options) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, deps);
 }
 
 export function useSimpleShortcuts(platform: NodeJS.Platform, modifier: Modifier, key: Key, callback: () => any) {

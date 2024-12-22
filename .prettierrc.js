@@ -12,7 +12,7 @@ module.exports = {
   ],
 
   tailwindConfig: "./tailwind.config.ts",
-  tailwindFunctions: ["clsx"],
+  tailwindFunctions: ["clsx", "cva"],
 
   importOrderSeparation: false,
   importOrderSortSpecifiers: true,

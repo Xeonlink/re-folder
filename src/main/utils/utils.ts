@@ -43,23 +43,6 @@ export function resolveErrorMessage(error: any): string {
   }
 }
 
-type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
-
-export function createNotifier<TDef extends IpcSubscriptionDef>(ipcDef: TDef) {
-  const notifier = {} as any;
-  for (const channel in ipcDef) {
-    notifier[channel] = (...args: any[]) => {
-      const wins = BrowserWindow.getAllWindows();
-      for (const win of wins) {
-        win.webContents.send(channel, ...args);
-      }
-    };
-  }
-  return {
-    notify: notifier as { [P in keyof TDef]: TDef[P] },
-  };
-}
-
 export class MenuBuilder {
   private items: MenuItem[];
 

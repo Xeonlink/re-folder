@@ -1,4 +1,5 @@
 import { applyFolderPreset } from "./exec/folderPreset";
+import { updater } from "./exec/updater";
 import { invalidateWatcher, removeWatcher } from "./exec/watcher";
 import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
 import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
@@ -10,11 +11,6 @@ import OpenAI from "openai";
 import { v4 as uuid } from "uuid";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
-type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
-
-export const ipcSubscriptionDef = {
-  checkingForUpdate: (_: boolean) => {},
-} satisfies IpcSubscriptionDef;
 
 export const ipcApiDef = {
   // watcher table -----------------------------------------------------
@@ -323,5 +319,38 @@ export const ipcApiDef = {
   },
   getPlatform: async () => {
     return process.platform;
+  },
+  getUpdateCheckPolicy: async () => {
+    return await Settings.get("updateCheckPolicy");
+  },
+  setUpdateCheckPolicy: async (policy: "auto" | "manual") => {
+    await Settings.set("updateCheckPolicy", policy);
+  },
+  getUpdateDownloadPolicy: async () => {
+    return await Settings.get("updateDownloadPolicy");
+  },
+  setUpdateDownloadPolicy: async (policy: "auto" | "manual") => {
+    await Settings.set("updateDownloadPolicy", policy);
+  },
+  getUpdateInstallPolicy: async () => {
+    return await Settings.get("updateInstallPolicy");
+  },
+  setUpdateInstallPolicy: async (policy: "auto" | "manual") => {
+    await Settings.set("updateInstallPolicy", policy);
+  },
+  getUpdateInfo: async () => {
+    return updater.info;
+  },
+  checkForUpdates: async () => {
+    await updater.checkForUpdates();
+  },
+  downloadUpdate: async () => {
+    await updater.downloadUpdate();
+  },
+  cancelUpdate: async () => {
+    updater.cancelUpdate();
+  },
+  installUpdate: async () => {
+    updater.installUpdate();
   },
 } satisfies IpcDef;

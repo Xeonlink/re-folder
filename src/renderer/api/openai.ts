@@ -1,6 +1,5 @@
+import { Variables, api } from "./utils";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-
-const api = window.api;
 
 // OpenAI API Key ----------------------------------------------------------
 export function useOpenAiApiKey() {
@@ -15,7 +14,7 @@ export function useUpdateOpenAiApiKey() {
   const queryKey = ["openai", "apikey"];
 
   return useMutation({
-    mutationFn: (variables: { data: string; onError?: (error: Error) => any }) => {
+    mutationFn: (variables: Variables<{ data: string }>) => {
       return api.updateOpenAiApiKey(variables.data);
     },
     onMutate: async (variables) => {
@@ -33,8 +32,9 @@ export function useUpdateOpenAiApiKey() {
       queryClient.setQueryData<string>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }
@@ -52,7 +52,7 @@ export function useUpdateOpenAiModel() {
   const queryKey = ["openai", "model"];
 
   return useMutation({
-    mutationFn: (variables: { data: string; onError?: (error: Error) => any }) => {
+    mutationFn: (variables: Variables<{ data: string }>) => {
       return api.updateOpenAiModel(variables.data);
     },
     onMutate: async (variables) => {
@@ -70,8 +70,9 @@ export function useUpdateOpenAiModel() {
       queryClient.setQueryData<string>(queryKey, context.prev);
       variables.onError?.(error);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables, __) => {
       queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
     },
   });
 }

@@ -1,8 +1,7 @@
-import type { api, subscribe } from "./index";
+import type { api } from "./index";
 
 declare global {
   interface Window {
     api: typeof api;
-    subscribe: typeof subscribe;
   }
 }

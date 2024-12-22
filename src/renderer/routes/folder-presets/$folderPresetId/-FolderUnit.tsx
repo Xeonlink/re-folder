@@ -13,6 +13,7 @@ import {
 } from "@renderer/components/ui/context-menu";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@renderer/components/ui/dialog";
 import { Input } from "@renderer/components/ui/input";
+import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
 import { ChevronRight, Folder, FolderOpen } from "lucide-react";
@@ -36,10 +37,10 @@ export function FolderUnit(props: Props) {
   const updateFolderPreset = useUpdateFolderPreset(folderPresetId);
   const deleteFolderPreset = useDeleteFolderPreset(folderPreset.parentId, folderPresetId);
 
-  const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+  const onModifyBlur = (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === folderPreset[key]) return;
-    await updateFolderPreset.mutateAsync({
+    updateFolderPreset.mutate({
       data: { [key]: value },
       onError: (error) => {
         console.log(error);
@@ -49,22 +50,16 @@ export function FolderUnit(props: Props) {
     });
   };
 
-  const onCreateFolderPresetClick = async () => {
-    await createFolderPreset.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
-      onSuccess: () => {
-        setOpen(true);
-      },
+  const onCreateFolderPresetClick = () => {
+    createFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
+      onSuccess: () => setOpen(true),
     });
   };
 
-  const onDeleteFolderPresetClick = async () => {
-    await deleteFolderPreset.mutateAsync({
-      onError: (error) => {
-        toast(error.name, error.message);
-      },
+  const onDeleteFolderPresetClick = () => {
+    deleteFolderPreset.mutate({
+      onError: (error) => toast(error.name, error.message),
     });
   };
 
@@ -76,7 +71,6 @@ export function FolderUnit(props: Props) {
         return;
       }
     }
-
     if (e.key === "ArrowRight") {
       setOpen(true);
       return;
@@ -128,6 +122,28 @@ export function FolderUnit(props: Props) {
       <div className={cn("", { hidden: !open })}>
         {folderPreset.children?.map((id) => <FolderUnit key={id} folderPresetId={id} depts={depts + 1} />)}
       </div>
+    </div>
+  );
+}
+
+export function PendingFolderUnit() {
+  return (
+    <div>
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <Button
+            variant="ghost"
+            className="py-0 font-normal rounded-none min-w-full justify-start focus:bg-secondary focus:outline-none focus:border-none items-center h-8 focus-visible:ring-0"
+          >
+            <ChevronRight className={cn("w-4 h-4 transition-all")} />
+            &nbsp;
+            <Folder className="w-4 h-4" />
+            &nbsp;&nbsp;
+            <Skeleton className="w-52 h-6" />
+          </Button>
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-56"></ContextMenuContent>
+      </ContextMenu>
     </div>
   );
 }
