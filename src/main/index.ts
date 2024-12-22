@@ -1,4 +1,5 @@
 import { default as IconBlack, default as IconPrimary } from "../../resources/icon1800_primary.png?asset";
+import { updater } from "./exec/updater";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
 import { Settings, autoMigrate } from "./storage";
@@ -87,7 +88,7 @@ function createWindow(): void {
 
   Settings.get("updateCheckPolicy").then((policy) => {
     if (policy === "auto") {
-      win.webContents.send("check-update");
+      updater.checkForUpdates();
     }
   });
 }
