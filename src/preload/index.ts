@@ -1,5 +1,5 @@
-import type { ipcApiDef, ipcSubscriptionDef } from "../main/ipc";
-import { createApiSelector, createSubscriptionSelector } from "./utils";
+import type { ipcApiDef } from "../main/ipc";
+import { createApiSelector } from "./utils";
 import { contextBridge } from "electron";
 
 export const api = createApiSelector<typeof ipcApiDef>()({
@@ -37,23 +37,18 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   updateOpenAiApiKey: true,
   updateOpenAiModel: true,
   getPlatform: true,
-});
-
-export const subscribe = createSubscriptionSelector<typeof ipcSubscriptionDef>()({
-  checkingForUpdate: true,
+  getUpdateCheckPolicy: true,
+  setUpdateCheckPolicy: true,
 });
 
 // --------------------------------------------------------------
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld("api", api);
-    contextBridge.exposeInMainWorld("subscribe", subscribe);
   } catch (error) {
     console.error(error);
   }
 } else {
   // @ts-ignore (define in dts)
   window.api = api;
-  // @ts-ignore (define in dts)
-  window.subscribe = subscribe;
 }

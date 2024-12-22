@@ -28,26 +28,3 @@ export function createApiSelector<TDef extends IpcDef>() {
     return api as { [P in TrueKeys<TMap>]: TDef[P] };
   };
 }
-
-type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
-
-export function createSubscriptionSelector<TDef extends IpcSubscriptionDef>() {
-  return <TMap extends { [key in keyof TDef]: boolean }>(map: TMap) => {
-    const subscribeFn = {} as any;
-    for (const channel in map) {
-      subscribeFn[channel] = (callback: (...args: any[]) => void) => {
-        const listener = (_: any, ...args: any[]) => {
-          callback(...args);
-        };
-        ipcRenderer.on(channel, listener);
-        return () => {
-          ipcRenderer.removeListener(channel, listener);
-        };
-      };
-    }
-
-    return subscribeFn as {
-      [P in keyof TDef]: (callback: (...args: Parameters<TDef[P]>) => void) => () => void;
-    };
-  };
-}

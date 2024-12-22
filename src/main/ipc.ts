@@ -10,11 +10,6 @@ import OpenAI from "openai";
 import { v4 as uuid } from "uuid";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
-type IpcSubscriptionDef = Record<string, (...args: any[]) => void>;
-
-export const ipcSubscriptionDef = {
-  checkingForUpdate: (_: boolean) => {},
-} satisfies IpcSubscriptionDef;
 
 export const ipcApiDef = {
   // watcher table -----------------------------------------------------
@@ -323,5 +318,11 @@ export const ipcApiDef = {
   },
   getPlatform: async () => {
     return process.platform;
+  },
+  getUpdateCheckPolicy: async () => {
+    return await Settings.get("updateCheckPolicy");
+  },
+  setUpdateCheckPolicy: async (policy: "auto" | "manual") => {
+    await Settings.set("updateCheckPolicy", policy);
   },
 } satisfies IpcDef;
