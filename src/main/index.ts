@@ -17,6 +17,7 @@ function createWindow(): void {
   const win = new BrowserWindow({
     width: 400,
     height: 700,
+    transparent: true,
     show: false,
     resizable: false,
     title: "ReFolder",
