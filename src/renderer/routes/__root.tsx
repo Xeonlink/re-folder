@@ -1,5 +1,6 @@
 import { Error } from "./-Error";
 import { ArrowLeftIcon, ArrowRightIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
+import { usePlatform } from "@renderer/api/extra";
 import { api } from "@renderer/api/utils";
 import ImgLogo from "@renderer/assets/icon.png";
 import { Button } from "@renderer/components/ui/button";
@@ -17,6 +18,7 @@ export const Route = createRootRoute({
 function Page() {
   const router = useRouter();
   const navigate = useNavigate();
+  const { data: platform } = usePlatform();
   const [open, setOpen] = useState(false);
 
   useShortcuts({
@@ -48,24 +50,11 @@ function Page() {
   return (
     <>
       <header className="w-full flex sticky top-0 h-12">
-        <div className="flex">
-          <Button
-            variant="secondary"
-            className="p-0 w-10 pl-2 h-full rounded-none"
-            onClick={() => router.history.back()}
-            tabIndex={-1}
-          >
-            <ArrowLeftIcon className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="secondary"
-            className="p-0 w-10 h-full rounded-none pr-2"
-            onClick={() => router.history.forward()}
-            tabIndex={-1}
-          >
-            <ArrowRightIcon className="w-4 h-4" />
-          </Button>
-        </div>
+        {platform === "darwin" ? ( //
+          <div className="bg-secondary w-20" />
+        ) : (
+          <NaviagteBar />
+        )}
         <div className="flex-1 window-handle bg-secondary"></div>
 
         <Link to="/" className="py-3 bg-secondary" onContextMenu={() => setOpen(true)} tabIndex={-1}>
@@ -114,28 +103,57 @@ function Page() {
         </Dialog>
 
         <div className="flex-1 window-handle bg-secondary"></div>
-        <div className="flex">
-          <Button
-            variant="secondary"
-            className="h-full rounded-none w-10 p-0"
-            onClick={() => api.minimizeSelf()}
-            tabIndex={-1}
-          >
-            <MinusIcon className="relative top-1 w-4 h-4" />
-          </Button>
-          <Button
-            variant="secondary"
-            className="h-full rounded-none w-10 p-0 pr-2"
-            onClick={() => api.closeSelf()}
-            tabIndex={-1}
-          >
-            <Cross1Icon className="w-4 h-4" />
-          </Button>
-        </div>
+        {platform === "darwin" ? (
+          <NaviagteBar />
+        ) : (
+          <div className="flex">
+            <Button
+              variant="secondary"
+              className="h-full rounded-none w-10 p-0"
+              onClick={() => api.minimizeSelf()}
+              tabIndex={-1}
+            >
+              <MinusIcon className="relative top-1 w-4 h-4" />
+            </Button>
+            <Button
+              variant="secondary"
+              className="h-full rounded-none w-10 p-0 pr-2"
+              onClick={() => api.closeSelf()}
+              tabIndex={-1}
+            >
+              <Cross1Icon className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
       </header>
 
       <Outlet />
       <Toaster />
     </>
+  );
+}
+
+function NaviagteBar() {
+  const router = useRouter();
+
+  return (
+    <div className="flex">
+      <Button
+        variant="secondary"
+        className="p-0 w-10 pl-2 h-full rounded-none"
+        onClick={() => router.history.back()}
+        tabIndex={-1}
+      >
+        <ArrowLeftIcon className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="secondary"
+        className="p-0 w-10 h-full rounded-none pr-2"
+        onClick={() => router.history.forward()}
+        tabIndex={-1}
+      >
+        <ArrowRightIcon className="w-4 h-4" />
+      </Button>
+    </div>
   );
 }

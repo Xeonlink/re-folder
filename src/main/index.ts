@@ -21,17 +21,15 @@ function createWindow(): void {
     show: false,
     resizable: false,
     title: "ReFolder",
-    titleBarStyle: "hidden",
     frame: false,
+    titleBarStyle: "hidden",
+    trafficLightPosition: { x: 16, y: 16 },
     icon: icon,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false,
     },
   });
-  if (process.platform === "darwin") {
-    win.setWindowButtonVisibility(false);
-  }
 
   win.on("ready-to-show", () => {
     win.show();
