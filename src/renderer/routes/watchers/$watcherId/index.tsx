@@ -2,7 +2,7 @@ import { Pending } from "./-Pending";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
 import { api } from "@renderer/api/utils";
-import { useCopyWatcher, useDeleteWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
+import { useCopyWatcher, useDeleteWatcher, useRunWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
 import { DraggableItem } from "@renderer/components/DraggableItme";
 import { Button } from "@renderer/components/ui/button";
 import { Card } from "@renderer/components/ui/card";
@@ -16,7 +16,7 @@ import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { Reorder, motion } from "framer-motion";
-import { Copy, PlusIcon, Power, PowerOff, Trash2Icon } from "lucide-react";
+import { CircleFadingArrowUp, Copy, Eye, EyeClosed, PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Rule } from "src/main/schema";
 
@@ -38,6 +38,7 @@ function Page() {
   const copyWatcher = useCopyWatcher(watcherId);
   const deleteWatcher = useDeleteWatcher(watcherId);
   const updateWatcher = useUpdateWatcher(watcherId);
+  const runWatcher = useRunWatcher(watcherId);
   const createRule = useCreateRule(watcherId);
   const updateRuleOrder = useUpdateRuleOrder(watcherId);
   const [ruleOrder, setRuleOrder] = useState<Rule[]>(rules);
@@ -100,6 +101,11 @@ function Page() {
         const action = isEnable ? "활성화" : "비활성화";
         toast(`${action} 실패`, error.message);
       },
+    });
+  };
+  const run = () => {
+    runWatcher.mutate({
+      onError: (error) => toast(error.name, error.message),
     });
   };
   const onCreateRuleClick = () => {
@@ -227,11 +233,29 @@ function Page() {
                     variant="secondary"
                     onClick={toggle}
                   >
-                    {watcher.enabled ? <PowerOff className="w-5 h-5" /> : <Power className="w-5 h-5" />}
+                    {watcher.enabled ? <Eye className="w-5 h-5" /> : <EyeClosed className="w-5 h-5" />}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{watcher.enabled ? "비활성화 하기" : "활성화 하기"}</p>
+                  <p>{watcher.enabled ? "감시해제" : "감시하기"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </li>
+          <li className="w-full">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-full rounded-none items-center gap-1 flex-col h-full"
+                    variant="secondary"
+                    onClick={run}
+                  >
+                    <CircleFadingArrowUp className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>1회 실행</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

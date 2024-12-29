@@ -1,4 +1,5 @@
 import { Settings } from "../storage";
+import { app } from "electron";
 import { CancellationToken, autoUpdater } from "electron-updater";
 
 autoUpdater.autoDownload = false;
@@ -15,16 +16,6 @@ type UpdateInfo = {
   readyToInstall: boolean;
 };
 
-let updateInfo: UpdateInfo = {
-  state: "idle",
-  checking: false,
-  availableVersion: null,
-  errorMessage: null,
-  downloading: false,
-  downloadPercent: 0,
-  readyToInstall: false,
-};
-
 const defaultUpdateInfo: UpdateInfo = {
   state: "idle",
   checking: false,
@@ -38,16 +29,16 @@ const defaultUpdateInfo: UpdateInfo = {
 let cancelToken: CancellationToken | null = null;
 
 autoUpdater.on("checking-for-update", () => {
-  updateInfo = { ...defaultUpdateInfo };
-  updateInfo.state = "checking";
-  updateInfo.errorMessage = null;
-  updateInfo.checking = true;
+  updater.info = { ...defaultUpdateInfo };
+  updater.info.state = "checking";
+  updater.info.errorMessage = null;
+  updater.info.checking = true;
 });
 
 autoUpdater.on("update-available", (info) => {
-  updateInfo.state = "available";
-  updateInfo.checking = false;
-  updateInfo.availableVersion = info.version;
+  updater.info.state = "available";
+  updater.info.checking = false;
+  updater.info.availableVersion = info.version;
 
   Settings.get("updateDownloadPolicy").then((policy) => {
     if (policy === "auto") {
@@ -57,26 +48,26 @@ autoUpdater.on("update-available", (info) => {
 });
 
 autoUpdater.on("update-not-available", () => {
-  updateInfo.state = "not-available";
-  updateInfo.checking = false;
+  updater.info.state = "not-available";
+  updater.info.checking = false;
 });
 
 autoUpdater.on("error", (error, message) => {
-  updateInfo = { ...defaultUpdateInfo };
-  updateInfo.state = "error";
-  updateInfo.errorMessage = message ?? error.message;
+  updater.info = { ...defaultUpdateInfo };
+  updater.info.state = "error";
+  updater.info.errorMessage = message ?? error.message;
 });
 
 autoUpdater.on("download-progress", (progress) => {
-  updateInfo.state = "downloading";
-  updateInfo.downloading = true;
-  updateInfo.downloadPercent = progress.percent;
+  updater.info.state = "downloading";
+  updater.info.downloading = true;
+  updater.info.downloadPercent = progress.percent;
 });
 
 autoUpdater.on("update-downloaded", (_) => {
-  updateInfo.state = "ready";
-  updateInfo.downloading = false;
-  updateInfo.readyToInstall = true;
+  updater.info.state = "ready";
+  updater.info.downloading = false;
+  updater.info.readyToInstall = true;
 
   Settings.get("updateInstallPolicy").then((policy) => {
     if (policy === "auto") {
@@ -86,16 +77,30 @@ autoUpdater.on("update-downloaded", (_) => {
 });
 
 autoUpdater.on("update-cancelled", (_) => {
-  updateInfo.state = "available";
-  updateInfo.downloading = false;
+  updater.info.state = "available";
+  updater.info.downloading = false;
   cancelToken = null;
 });
 
 export const updater = {
-  info: updateInfo,
+  info: {
+    state: "idle",
+    checking: false,
+    availableVersion: null,
+    errorMessage: null,
+    downloading: false,
+    downloadPercent: 0,
+    readyToInstall: false,
+  } as UpdateInfo,
   checkForUpdates: async () => {
-    if (updateInfo.checking) return;
-    if (updateInfo.downloading) return;
+    if (!app.isPackaged) {
+      updater.info = { ...defaultUpdateInfo };
+      updater.info.state = "error";
+      updater.info.errorMessage = "Not available in development";
+      return;
+    }
+    if (updater.info.checking) return;
+    if (updater.info.downloading) return;
     const result = await autoUpdater.checkForUpdates();
     if (!result) return;
     if (!result.cancellationToken) return;

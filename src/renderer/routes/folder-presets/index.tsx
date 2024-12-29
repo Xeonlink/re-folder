@@ -92,11 +92,11 @@ export function Page() {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="grid grid-cols-2 gap-2 p-2">
+      <main className="p-2">
         {folderPresets.map((preset, index) => (
           <Button
-            variant="outline"
-            className="w-full h-28"
+            variant="ghost"
+            className="w-full h-16 flex-col items-start"
             autoFocus={index === 0}
             tabIndex={index + 1}
             key={preset.id}
@@ -113,7 +113,8 @@ export function Page() {
               }),
             )}
           >
-            {preset.name}
+            <span>{preset.name}</span>
+            <span className="text-xs">{preset.description}</span>
           </Button>
         ))}
         {creator.isPending ? ( //

@@ -112,3 +112,19 @@ export function useDeleteWatcher(watcherId: string) {
     },
   });
 }
+
+export function useRunWatcher(watcherId: string) {
+  const queryClient = useQueryClient();
+  const queryKey = ["watchers", watcherId];
+
+  return useMutation({
+    mutationFn: (_: Variables) => api.runWatcher(watcherId),
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+    onSuccess: (_, variables, __) => {
+      queryClient.invalidateQueries({ queryKey });
+      variables.onSuccess?.();
+    },
+  });
+}

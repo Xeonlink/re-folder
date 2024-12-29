@@ -1,6 +1,6 @@
 import { applyFolderPreset } from "./exec/folderPreset";
 import { updater } from "./exec/updater";
-import { invalidateWatcher, removeWatcher } from "./exec/watcher";
+import { invalidateWatcher, removeWatcher, runWatcher } from "./exec/watcher";
 import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
 import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
 import { Settings, db } from "./storage";
@@ -72,6 +72,10 @@ export const ipcApiDef = {
     removeWatcher(watcherId);
     const results = await db.delete(watcherTable).where(eq(watcherTable.id, watcherId));
     return results.changes;
+  },
+  runWatcher: async (watcherId: string): Promise<boolean> => {
+    const result = runWatcher(watcherId);
+    return result;
   },
   // rule table -----------------------------------------------------
   createRule: async (watcherId: string) => {
