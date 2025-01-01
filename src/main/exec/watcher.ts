@@ -1,4 +1,4 @@
-import { Rule, Watcher, ruleTable, watcherTable } from "../schema/v1.0.0";
+import { Rule, Watcher, ruleTable, watcherTable } from "../schema/v2.0.0";
 import { db } from "../storage";
 import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";

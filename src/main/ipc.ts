@@ -1,8 +1,8 @@
 import { applyFolderPreset } from "./exec/folderPreset";
 import { updater } from "./exec/updater";
 import { invalidateWatcher, removeWatcher, runWatcher } from "./exec/watcher";
-import type { FolderPreset, Rule, Watcher } from "./schema/v1.0.0";
-import { folderPresetTable, ruleTable, watcherTable } from "./schema/v1.0.0";
+import type { FolderPreset, Rule, Watcher } from "./schema/v2.0.0";
+import { aiwatcherTable, categoryTable, folderPresetTable, ruleTable, watcherTable } from "./schema/v2.0.0";
 import { Settings, db } from "./storage";
 import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
@@ -281,6 +281,28 @@ export const ipcApiDef = {
     const path = result.filePaths[0];
     await applyFolderPreset(folderPresetId, path);
     return path;
+  },
+  // ai-watchers -----------------------------------------------------
+  createAIWatcher: async (): Promise<string> => {
+    const results = await db.insert(aiwatcherTable).values([{}]).returning({
+      id: aiwatcherTable.id,
+    });
+    return results[0].id;
+  },
+  // category -----------------------------------------------------
+  createCategory: async (aiwatcherId: string) => {
+    const [{ order }] = await db
+      .select({ order: count() })
+      .from(categoryTable)
+      .where(eq(categoryTable.aiwatcherId, aiwatcherId));
+
+    const results = await db.insert(categoryTable).values([{ order, aiwatcherId }]).returning({
+      id: categoryTable.id,
+    });
+
+    // TODO : Implement Ai Watcher - invalidater
+
+    return results[0].id;
   },
   // window -----------------------------------------------------
   closeSelf: async () => {

@@ -41,7 +41,7 @@ function Page() {
   const runWatcher = useRunWatcher(watcherId);
   const createRule = useCreateRule(watcherId);
   const updateRuleOrder = useUpdateRuleOrder(watcherId);
-  const [ruleOrder, setRuleOrder] = useState<Rule[]>(rules);
+  const [categoryOrder, setRuleOrder] = useState<Rule[]>(rules);
   useEffect(() => setRuleOrder(rules), [rules]);
 
   const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
@@ -70,11 +70,11 @@ function Page() {
     });
   };
 
-  const onRuleDragEnd = () => {
+  const onCategoryDragEnd = () => {
     const data = {};
-    for (let i = 0; i < ruleOrder.length; i++) {
-      if (ruleOrder[i].id === rules[i].id) continue;
-      data[ruleOrder[i].id] = i;
+    for (let i = 0; i < categoryOrder.length; i++) {
+      if (categoryOrder[i].id === rules[i].id) continue;
+      data[categoryOrder[i].id] = i;
     }
     if (Object.keys(data).length === 0) return;
 
@@ -108,7 +108,7 @@ function Page() {
       onError: (error) => toast(error.name, error.message),
     });
   };
-  const onCreateRuleClick = () => {
+  const onCreateCategoryClick = () => {
     createRule.mutate({
       onError: (error) => toast(error.name, error.message),
     });
@@ -186,25 +186,20 @@ function Page() {
           </Card>
           <Reorder.Group
             axis="y"
-            values={ruleOrder}
+            values={categoryOrder}
             onReorder={setRuleOrder}
-            className={cn("space-y-2", { contents: ruleOrder.length === 0 })}
+            className={cn("space-y-2", { contents: categoryOrder.length === 0 })}
           >
-            {ruleOrder.map((rule) => (
-              <DraggableItem key={rule.id} value={rule} onDragEnd={onRuleDragEnd}>
+            {categoryOrder.map((category) => (
+              <DraggableItem key={category.id} value={category} onDragEnd={onCategoryDragEnd}>
                 <Button
                   className="h-12 w-full justify-between"
-                  variant={rule.enabled ? "secondary" : "outline"}
-                  onClick={() =>
-                    navigate({
-                      to: "/rules/$ruleId",
-                      params: { ruleId: rule.id },
-                    })
-                  }
+                  variant={category.enabled ? "secondary" : "outline"}
+                  onClick={() => navigate({ to: "/category/$categoryId", params: { categoryId: category.id } })}
                 >
                   <span>
-                    {rule.name}&nbsp;&nbsp;
-                    <span className="text-xs">{rule.path}</span>
+                    {category.name}&nbsp;&nbsp;
+                    <span className="text-xs">{category.path}</span>
                   </span>
                   <DragHandleDots2Icon className="h-full w-5" data-drag-handle />
                 </Button>
@@ -222,8 +217,12 @@ function Page() {
               </Skeleton>
             </motion.div>
           ) : (
-            <Button className="h-12 w-96 justify-between border-dashed" variant="outline" onClick={onCreateRuleClick}>
-              규칙 만들기
+            <Button
+              className="h-12 w-96 justify-between border-dashed"
+              variant="outline"
+              onClick={onCreateCategoryClick}
+            >
+              카테고리 만들기
             </Button>
           )}
         </main>

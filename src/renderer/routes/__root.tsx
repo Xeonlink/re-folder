@@ -87,9 +87,9 @@ function Page() {
           <DialogClose asChild>
             <RouteMenuButton onClick={() => navigate({ to: "/watchers" })}>감시자</RouteMenuButton>
           </DialogClose>
-          <DialogClose asChild>
+          {/* <DialogClose asChild>
             <RouteMenuButton onClick={() => navigate({ to: "/ai-watchers" })}>AI 감시자</RouteMenuButton>
-          </DialogClose>
+          </DialogClose> */}
           <DialogClose asChild>
             <RouteMenuButton onClick={() => navigate({ to: "/settings" })}>설정</RouteMenuButton>
           </DialogClose>

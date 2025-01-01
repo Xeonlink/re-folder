@@ -1,4 +1,4 @@
-import { folderPresetTable } from "../schema/v1.0.0";
+import { folderPresetTable } from "../schema/v2.0.0";
 import { db } from "../storage";
 import { eq } from "drizzle-orm";
 import { mkdirSync } from "fs";

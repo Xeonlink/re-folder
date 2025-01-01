@@ -1,5 +1,6 @@
 import * as schema_0_0_0 from "./schema/v0.0.0";
 import * as schema_1_0_0 from "./schema/v1.0.0";
+import * as schema_2_0_0 from "./schema/v2.0.0";
 import { VersionRangeMap } from "./utils/VersionRangeMap";
 import Database from "better-sqlite3";
 import { generateSQLiteDrizzleJson, generateSQLiteMigration } from "drizzle-kit/api";
@@ -21,6 +22,7 @@ export const db = drizzle(sqlite, { schema: schema_0_0_0 });
 const schemaMap = new VersionRangeMap({
   "0.0.0 - 0.2.0": schema_0_0_0,
   "0.3.0 - 1.2.0": schema_1_0_0,
+  "2.0.0 - 2.10.0": schema_2_0_0,
 });
 
 export async function autoMigrate() {

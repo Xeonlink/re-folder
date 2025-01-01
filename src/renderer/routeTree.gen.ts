@@ -25,6 +25,7 @@ import { Route as SettingsUpdateIndexImport } from "./routes/settings/update/ind
 import { Route as SettingsOpenaiIndexImport } from "./routes/settings/openai/index"
 import { Route as RulesRuleIdIndexImport } from "./routes/rules/$ruleId/index"
 import { Route as FolderPresetsFolderPresetIdIndexImport } from "./routes/folder-presets/$folderPresetId/index"
+import { Route as CategoryCategoryIdIndexImport } from "./routes/category/$categoryId/index"
 import { Route as AiWatchersAiwatcherIdIndexImport } from "./routes/ai-watchers/$aiwatcherId/index"
 
 // Create/Update Routes
@@ -114,6 +115,12 @@ const FolderPresetsFolderPresetIdIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
+const CategoryCategoryIdIndexRoute = CategoryCategoryIdIndexImport.update({
+  id: "/category/$categoryId/",
+  path: "/category/$categoryId/",
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AiWatchersAiwatcherIdIndexRoute = AiWatchersAiwatcherIdIndexImport.update(
   {
     id: "/ai-watchers/$aiwatcherId/",
@@ -194,6 +201,13 @@ declare module "@tanstack/react-router" {
       path: "/ai-watchers/$aiwatcherId"
       fullPath: "/ai-watchers/$aiwatcherId"
       preLoaderRoute: typeof AiWatchersAiwatcherIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    "/category/$categoryId/": {
+      id: "/category/$categoryId/"
+      path: "/category/$categoryId"
+      fullPath: "/category/$categoryId"
+      preLoaderRoute: typeof CategoryCategoryIdIndexImport
       parentRoute: typeof rootRoute
     }
     "/folder-presets/$folderPresetId/": {
@@ -287,6 +301,7 @@ export interface FileRoutesByFullPath {
   "/settings/": typeof SettingsIndexRoute
   "/watchers/": typeof WatchersIndexRoute
   "/ai-watchers/$aiwatcherId": typeof AiWatchersAiwatcherIdIndexRoute
+  "/category/$categoryId": typeof CategoryCategoryIdIndexRoute
   "/folder-presets/$folderPresetId": typeof FolderPresetsFolderPresetIdIndexRoute
   "/rules/$ruleId": typeof RulesRuleIdIndexRoute
   "/settings/openai": typeof SettingsOpenaiIndexRoute
@@ -303,6 +318,7 @@ export interface FileRoutesByTo {
   "/settings": typeof SettingsIndexRoute
   "/watchers": typeof WatchersIndexRoute
   "/ai-watchers/$aiwatcherId": typeof AiWatchersAiwatcherIdIndexRoute
+  "/category/$categoryId": typeof CategoryCategoryIdIndexRoute
   "/folder-presets/$folderPresetId": typeof FolderPresetsFolderPresetIdIndexRoute
   "/rules/$ruleId": typeof RulesRuleIdIndexRoute
   "/settings/openai": typeof SettingsOpenaiIndexRoute
@@ -322,6 +338,7 @@ export interface FileRoutesById {
   "/settings/": typeof SettingsIndexRoute
   "/watchers/": typeof WatchersIndexRoute
   "/ai-watchers/$aiwatcherId/": typeof AiWatchersAiwatcherIdIndexRoute
+  "/category/$categoryId/": typeof CategoryCategoryIdIndexRoute
   "/folder-presets/$folderPresetId/": typeof FolderPresetsFolderPresetIdIndexRoute
   "/rules/$ruleId/": typeof RulesRuleIdIndexRoute
   "/settings/openai/": typeof SettingsOpenaiIndexRoute
@@ -342,6 +359,7 @@ export interface FileRouteTypes {
     | "/settings/"
     | "/watchers/"
     | "/ai-watchers/$aiwatcherId"
+    | "/category/$categoryId"
     | "/folder-presets/$folderPresetId"
     | "/rules/$ruleId"
     | "/settings/openai"
@@ -357,6 +375,7 @@ export interface FileRouteTypes {
     | "/settings"
     | "/watchers"
     | "/ai-watchers/$aiwatcherId"
+    | "/category/$categoryId"
     | "/folder-presets/$folderPresetId"
     | "/rules/$ruleId"
     | "/settings/openai"
@@ -374,6 +393,7 @@ export interface FileRouteTypes {
     | "/settings/"
     | "/watchers/"
     | "/ai-watchers/$aiwatcherId/"
+    | "/category/$categoryId/"
     | "/folder-presets/$folderPresetId/"
     | "/rules/$ruleId/"
     | "/settings/openai/"
@@ -391,6 +411,7 @@ export interface RootRouteChildren {
   AiWatchersIndexRoute: typeof AiWatchersIndexRoute
   FolderPresetsIndexRoute: typeof FolderPresetsIndexRoute
   AiWatchersAiwatcherIdIndexRoute: typeof AiWatchersAiwatcherIdIndexRoute
+  CategoryCategoryIdIndexRoute: typeof CategoryCategoryIdIndexRoute
   FolderPresetsFolderPresetIdIndexRoute: typeof FolderPresetsFolderPresetIdIndexRoute
 }
 
@@ -403,6 +424,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiWatchersIndexRoute: AiWatchersIndexRoute,
   FolderPresetsIndexRoute: FolderPresetsIndexRoute,
   AiWatchersAiwatcherIdIndexRoute: AiWatchersAiwatcherIdIndexRoute,
+  CategoryCategoryIdIndexRoute: CategoryCategoryIdIndexRoute,
   FolderPresetsFolderPresetIdIndexRoute: FolderPresetsFolderPresetIdIndexRoute,
 }
 
@@ -426,6 +448,7 @@ export const routeTree = rootRoute
         "/ai-watchers/",
         "/folder-presets/",
         "/ai-watchers/$aiwatcherId/",
+        "/category/$categoryId/",
         "/folder-presets/$folderPresetId/"
       ]
     },
@@ -472,6 +495,9 @@ export const routeTree = rootRoute
     },
     "/ai-watchers/$aiwatcherId/": {
       "filePath": "ai-watchers/$aiwatcherId/index.tsx"
+    },
+    "/category/$categoryId/": {
+      "filePath": "category/$categoryId/index.tsx"
     },
     "/folder-presets/$folderPresetId/": {
       "filePath": "folder-presets/$folderPresetId/index.tsx"
