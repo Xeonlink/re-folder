@@ -86,8 +86,8 @@ function Page() {
   return (
     <>
       <ScrollArea className="flex-1">
-        <main className="mb-2 space-y-2 flex-1 overflow-y-scroll">
-          <Card className="shadow-none mx-2 mt-2">
+        <main className="mb-2 flex-1 space-y-2 overflow-y-scroll">
+          <Card className="mx-2 mt-2 shadow-none">
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
                 <Label htmlFor="name" className="flex-1">
@@ -95,7 +95,7 @@ function Page() {
                 </Label>
                 <Input
                   id="name"
-                  className="bg-secondary border-none w-56"
+                  className="w-56 border-none bg-secondary"
                   size="sm"
                   name="name"
                   defaultValue={folderPreset.name}
@@ -108,7 +108,7 @@ function Page() {
                 </Label>
                 <Input
                   id="description"
-                  className="bg-secondary border-none w-56"
+                  className="w-56 border-none bg-secondary"
                   size="sm"
                   name="description"
                   defaultValue={folderPreset.description}
@@ -129,11 +129,11 @@ function Page() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
+                    className="h-full w-full flex-col items-center gap-1 rounded-none rounded-bl-md"
                     variant="secondary"
                     onClick={apply}
                   >
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -146,8 +146,8 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="w-full rounded-none gap-1.5 h-full flex-col" variant="secondary" onClick={copy}>
-                    <Copy className="w-5 h-5" />
+                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary" onClick={copy}>
+                    <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -161,11 +161,11 @@ function Page() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
+                    className="h-full w-full flex-col gap-1.5 rounded-none rounded-br-md"
                     variant="secondary"
                     onClick={deleteOne}
                   >
-                    <Trash2Icon className="w-5 h-5" />
+                    <Trash2Icon className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>

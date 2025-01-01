@@ -87,14 +87,14 @@ export function FolderUnit(props: Props) {
         <ContextMenuTrigger>
           <Button
             variant="ghost"
-            className="py-0 font-normal rounded-none min-w-full justify-start focus:bg-secondary focus:outline-none focus:border-none items-center h-8 focus-visible:ring-0"
+            className="h-8 min-w-full items-center justify-start rounded-none py-0 font-normal focus:border-none focus:bg-secondary focus:outline-none focus-visible:ring-0"
             style={{ paddingLeft: `${depts}rem` }}
             onClick={() => setOpen((prev) => !prev)}
             onKeyDown={onButtonKeyDown}
           >
-            <ChevronRight className={cn("w-4 h-4 transition-all", { "rotate-90": open })} />
+            <ChevronRight className={cn("h-4 w-4 transition-all", { "rotate-90": open })} />
             &nbsp;
-            {open ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
+            {open ? <FolderOpen className="h-4 w-4" /> : <Folder className="h-4 w-4" />}
             &nbsp;&nbsp;
             <span>{folderPreset.name}</span>
           </Button>
@@ -114,7 +114,7 @@ export function FolderUnit(props: Props) {
         <DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogTitle>
-        <DialogContent className="w-64 bg-transparent border-none outline-none p-0" hideDefaultClose>
+        <DialogContent className="w-64 border-none bg-transparent p-0 outline-none" hideDefaultClose>
           <Input id="name" defaultValue={folderPreset.name} onBlur={onModifyBlur("name")} />
         </DialogContent>
       </Dialog>
@@ -133,13 +133,13 @@ export function PendingFolderUnit() {
         <ContextMenuTrigger>
           <Button
             variant="ghost"
-            className="py-0 font-normal rounded-none min-w-full justify-start focus:bg-secondary focus:outline-none focus:border-none items-center h-8 focus-visible:ring-0"
+            className="h-8 min-w-full items-center justify-start rounded-none py-0 font-normal focus:border-none focus:bg-secondary focus:outline-none focus-visible:ring-0"
           >
-            <ChevronRight className={cn("w-4 h-4 transition-all")} />
+            <ChevronRight className={cn("h-4 w-4 transition-all")} />
             &nbsp;
-            <Folder className="w-4 h-4" />
+            <Folder className="h-4 w-4" />
             &nbsp;&nbsp;
-            <Skeleton className="w-52 h-6" />
+            <Skeleton className="h-6 w-52" />
           </Button>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-56"></ContextMenuContent>

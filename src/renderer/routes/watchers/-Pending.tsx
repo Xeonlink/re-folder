@@ -6,12 +6,12 @@ import { Skeleton } from "@renderer/components/ui/skeleton";
 export function Pending() {
   return (
     <ScrollArea className="flex-1">
-      <main className="grid grid-cols-2 p-2 gap-2">
+      <main className="grid grid-cols-2 gap-2 p-2">
         {new Array(4).fill(0).map((_, i) => (
           <Skeleton key={i} className="h-28" />
         ))}
-        <Button variant="outline" className="h-28 border-dashed w-full">
-          <DotsHorizontalIcon className="w-8 h-8" />
+        <Button variant="outline" className="h-28 w-full border-dashed">
+          <DotsHorizontalIcon className="h-8 w-8" />
         </Button>
       </main>
     </ScrollArea>

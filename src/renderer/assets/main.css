@@ -75,7 +75,7 @@
       "calt" 1;
   }
   #root {
-    @apply bg-background flex w-screen h-screen flex-col rounded-md overflow-hidden;
+    @apply flex h-screen w-screen flex-col overflow-hidden rounded-md bg-background;
   }
 }
 

@@ -77,7 +77,7 @@ function Page() {
   return (
     <>
       <ScrollArea className="flex-1">
-        <main className="p-2 space-y-2">
+        <main className="space-y-2 p-2">
           <Card className="shadow-none">
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
@@ -89,7 +89,7 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-tr-none rounded-br-none"
+                          className="w-full rounded-br-none rounded-tr-none"
                           size="sm"
                           variant={updateCheckPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeCheckPolicy("auto")}
@@ -122,7 +122,7 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-tr-none rounded-br-none"
+                          className="w-full rounded-br-none rounded-tr-none"
                           size="sm"
                           variant={updateDownloadPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeDownloadPolicy("auto")}
@@ -155,7 +155,7 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-tr-none rounded-br-none"
+                          className="w-full rounded-br-none rounded-tr-none"
                           size="sm"
                           variant={updateInstallPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeInstallPolicy("auto")}
@@ -183,7 +183,7 @@ function Page() {
           </Card>
 
           <Textarea
-            className="h-80 focus-visible:ring-0 border-none resize-none text-sm"
+            className="h-80 resize-none border-none text-sm focus-visible:ring-0"
             value={updateState2Text()}
             readOnly
           />
@@ -194,8 +194,8 @@ function Page() {
           {["idle", "error", "not-available"].includes(update.state) ? (
             <li className="w-full">
               <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.checkForUpdates()}>
-                <Server className="w-4 h-4" /> &nbsp; 업데이트 확인 &nbsp;
-                <MagnifyingGlassIcon className="w-4 h-4" />
+                <Server className="h-4 w-4" /> &nbsp; 업데이트 확인 &nbsp;
+                <MagnifyingGlassIcon className="h-4 w-4" />
               </Button>
             </li>
           ) : null}
@@ -203,7 +203,7 @@ function Page() {
           {update.state === "checking" ? (
             <li className="w-full">
               <Button className="size-full rounded-none rounded-bl-md" variant="secondary" disabled>
-                <MagnifyingGlassIcon className="w-5 h-5" />
+                <MagnifyingGlassIcon className="h-5 w-5" />
                 &nbsp;확인 중<Dot3 interval={400} />
               </Button>
             </li>
@@ -212,7 +212,7 @@ function Page() {
           {update.state === "available" ? (
             <li className="w-full">
               <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.downloadUpdate()}>
-                <DownloadIcon className="w-5 h-5" /> &nbsp; 업데이트 다운로드
+                <DownloadIcon className="h-5 w-5" /> &nbsp; 업데이트 다운로드
               </Button>
             </li>
           ) : null}
@@ -220,7 +220,7 @@ function Page() {
           {update.state === "downloading" ? (
             <li className="w-full">
               <Button className="size-full rounded-none rounded-bl-md" variant="secondary" disabled>
-                <DownloadIcon className="w-5 h-5" />
+                <DownloadIcon className="h-5 w-5" />
                 &nbsp;다운로드 중<Dot3 interval={400} />
               </Button>
             </li>
@@ -232,7 +232,7 @@ function Page() {
                 variant="secondary"
                 onClick={() => api.cancelUpdate()}
               >
-                <X className="w-5 h-5" /> &nbsp;취소
+                <X className="h-5 w-5" /> &nbsp;취소
               </Button>
             </li>
           ) : null}
@@ -240,7 +240,7 @@ function Page() {
           {update.state === "ready" ? (
             <li className="w-full">
               <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.installUpdate()}>
-                <FolderDown className="w-5 h-5" /> &nbsp; 설치 및 재시작
+                <FolderDown className="h-5 w-5" /> &nbsp; 설치 및 재시작
               </Button>
             </li>
           ) : null}

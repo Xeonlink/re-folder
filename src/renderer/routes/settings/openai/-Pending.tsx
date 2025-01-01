@@ -14,7 +14,7 @@ import {
 export function Pending() {
   return (
     <ScrollArea className="flex-1">
-      <main className="p-2 space-y-2">
+      <main className="space-y-2 p-2">
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
@@ -26,7 +26,7 @@ export function Pending() {
               <Label htmlFor="apikey" className="flex-1">
                 api key
               </Label>
-              <Input id="apikey" name="apikey" className="bg-secondary border-none w-56" size="sm" />
+              <Input id="apikey" name="apikey" className="w-56 border-none bg-secondary" size="sm" />
             </li>
             <li className="flex items-center">
               <Label htmlFor="model" className="flex-1">

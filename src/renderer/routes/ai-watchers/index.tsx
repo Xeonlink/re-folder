@@ -10,7 +10,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
 
-export const Route = createFileRoute("/watchers/")({
+export const Route = createFileRoute("/ai-watchers/")({
   component: Page,
   pendingComponent: Pending,
 });
@@ -27,8 +27,8 @@ function Page() {
     });
   };
 
-  const gotoWatcher = (watcherId: string) => () => {
-    navigate({ to: "/watchers/$watcherId", params: { watcherId } });
+  const gotoAIWatcher = (aiwatcherId: string) => () => {
+    navigate({ to: "/ai-watchers/$aiwatcherId", params: { aiwatcherId } });
   };
 
   useShortcuts({
@@ -50,7 +50,7 @@ function Page() {
             autoFocus={index === 0}
             tabIndex={index + 1}
             key={watcher.id}
-            onClick={gotoWatcher(watcher.id)}
+            onClick={gotoAIWatcher(watcher.id)}
             onKeyDown={arrowFocusEventHandler({
               hasUp: index > 1,
               hasRight: index % 2 === 0,

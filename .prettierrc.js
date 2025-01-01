@@ -4,16 +4,9 @@ module.exports = {
   semi: true,
   printWidth: 120,
   trailingComma: "all",
-  plugins: [
-    //
-    "prettier-plugin-tailwindcss",
-    "prettier-plugin-sort-json",
-    "@trivago/prettier-plugin-sort-imports",
-  ],
+  plugins: ["prettier-plugin-tailwindcss"],
 
+  // prettier-plugin-tailwindcss options
   tailwindConfig: "./tailwind.config.ts",
   tailwindFunctions: ["clsx", "cva"],
-
-  importOrderSeparation: false,
-  importOrderSortSpecifiers: true,
 };

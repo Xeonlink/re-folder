@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
-import { SyntheticEvent } from "react";
+import React, { SyntheticEvent } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -54,9 +54,49 @@ export function wait(ms: number) {
 }
 
 export const eventSplitor =
-  <T extends SyntheticEvent>(...args: ((e: T) => any)[]) =>
+  <T extends SyntheticEvent>(...args: (((e: T) => any) | undefined)[]) =>
   (e: T) => {
     for (const arg of args) {
-      arg(e);
+      arg?.(e);
     }
   };
+
+export const arrowFocusEventHandler =
+  (options: Partial<Record<"enabled" | "hasUp" | "hasRight" | "hasDown" | "hasLeft", boolean>>) =>
+  (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const { enabled = true } = options;
+    if (!enabled) return;
+    if (options.hasUp && e.key === "ArrowUp") {
+      const element = e.currentTarget.previousElementSibling?.previousElementSibling as HTMLElement;
+      element?.focus();
+      return;
+    }
+    if (options.hasRight && e.key === "ArrowRight") {
+      const element = e.currentTarget.nextElementSibling as HTMLElement;
+      element?.focus();
+      return;
+    }
+    if (options.hasDown && e.key === "ArrowDown") {
+      const element = e.currentTarget.nextElementSibling?.nextElementSibling as HTMLElement;
+      element?.focus();
+      return;
+    }
+    if (options.hasLeft && e.key === "ArrowLeft") {
+      const element = e.currentTarget.previousElementSibling as HTMLElement;
+      element?.focus();
+      return;
+    }
+  };
+
+export const onArrowKeyDown = <T extends Element>(e: React.KeyboardEvent<T>) => {
+  if (e.key === "ArrowDown") {
+    const element = e.currentTarget.nextElementSibling as HTMLElement;
+    element?.focus();
+    return;
+  }
+  if (e.key === "ArrowUp") {
+    const element = e.currentTarget.previousElementSibling as HTMLElement;
+    element?.focus();
+    return;
+  }
+};

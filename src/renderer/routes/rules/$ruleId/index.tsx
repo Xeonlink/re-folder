@@ -140,13 +140,13 @@ function Page() {
   return (
     <>
       <ScrollArea className="flex-1">
-        <main className="p-2 space-y-2">
+        <main className="space-y-2 p-2">
           <Card className={cn("shadow-none", { "border-primary": rule.enabled })}>
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
                 <Label className="flex-1">이름</Label>
                 <Input
-                  className="bg-secondary border-none w-56"
+                  className="w-56 border-none bg-secondary"
                   size="sm"
                   defaultValue={rule.name}
                   onBlur={onModifyBlur("name")}
@@ -155,7 +155,7 @@ function Page() {
               <li className="flex items-center">
                 <Label className="flex-1">설명</Label>
                 <Input
-                  className="bg-secondary border-none w-56"
+                  className="w-56 border-none bg-secondary"
                   size="sm"
                   defaultValue={rule.description}
                   onBlur={onModifyBlur("description")}
@@ -164,7 +164,7 @@ function Page() {
               <li className="flex items-center">
                 <Label className="flex-1">출력경로</Label>
                 <Input
-                  className="bg-secondary border-none w-56"
+                  className="w-56 border-none bg-secondary"
                   size="sm"
                   onClick={onSelectFolderClick}
                   defaultValue={rule.path}
@@ -178,18 +178,18 @@ function Page() {
               <Button className="h-12 justify-between" variant="secondary" asChild>
                 <AccordionTrigger>접두사</AccordionTrigger>
               </Button>
-              <AccordionContent className="my-1 mx-2 flex flex-row flex-wrap gap-1 pb-0">
+              <AccordionContent className="mx-2 my-1 flex flex-row flex-wrap gap-1 pb-0">
                 {rule.prefix.map((prefix, index) => (
                   <AutoSizeInput
                     key={prefix}
-                    className="min-w-14 h-8 focus:min-w-20 transition-all"
+                    className="h-8 min-w-14 transition-all focus:min-w-20"
                     defaultValue={prefix}
                     widthOffset={20}
                     onBlur={modify("prefix", index)}
                   />
                 ))}
                 <AutoSizeInput
-                  className="min-w-14 h-8 focus:min-w-20 transition-all border-dashed"
+                  className="h-8 min-w-14 border-dashed transition-all focus:min-w-20"
                   widthOffset={20}
                   onBlur={onCreateBlur("prefix")}
                 />
@@ -200,18 +200,18 @@ function Page() {
               <Button className="h-12 justify-between" variant="secondary" asChild>
                 <AccordionTrigger>접미사</AccordionTrigger>
               </Button>
-              <AccordionContent className="my-1 mx-2 flex flex-row flex-wrap gap-1 pb-0">
+              <AccordionContent className="mx-2 my-1 flex flex-row flex-wrap gap-1 pb-0">
                 {rule.suffix.map((suffix, index) => (
                   <AutoSizeInput
                     key={suffix}
-                    className="min-w-14 h-8 focus:min-w-20 transition-all"
+                    className="h-8 min-w-14 transition-all focus:min-w-20"
                     defaultValue={suffix}
                     widthOffset={20}
                     onBlur={modify("suffix", index)}
                   />
                 ))}
                 <AutoSizeInput
-                  className="min-w-14 h-8 focus:min-w-20 transition-all border-dashed"
+                  className="h-8 min-w-14 border-dashed transition-all focus:min-w-20"
                   widthOffset={20}
                   onBlur={onCreateBlur("suffix")}
                 />
@@ -222,12 +222,12 @@ function Page() {
               <Button className="h-12 justify-between" variant="secondary" asChild>
                 <AccordionTrigger>확장자</AccordionTrigger>
               </Button>
-              <AccordionContent className="my-1 mx-2 flex flex-row flex-wrap gap-1 pb-0">
+              <AccordionContent className="mx-2 my-1 flex flex-row flex-wrap gap-1 pb-0">
                 {rule.extensions.map((extension, index) => (
                   <AutoSizeInput
                     key={extension}
                     list="extensions"
-                    className="min-w-14 h-8 focus:min-w-20 transition-all"
+                    className="h-8 min-w-14 transition-all focus:min-w-20"
                     defaultValue={extension}
                     widthOffset={50}
                     onBlur={modify("extensions", index)}
@@ -235,7 +235,7 @@ function Page() {
                 ))}
                 <AutoSizeInput
                   list="extensions"
-                  className="min-w-14 h-8 focus:min-w-20 transition-all border-dashed"
+                  className="h-8 min-w-14 border-dashed transition-all focus:min-w-20"
                   widthOffset={50}
                   onBlur={onCreateBlur("extensions")}
                 />
@@ -256,11 +256,11 @@ function Page() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="w-full rounded-none rounded-bl-md items-center gap-1 flex-col h-full"
+                    className="h-full w-full flex-col items-center gap-1 rounded-none rounded-bl-md"
                     variant="secondary"
                     onClick={toggle}
                   >
-                    {rule.enabled ? <PowerOff className="w-5 h-5" /> : <Power className="w-5 h-5" />}
+                    {rule.enabled ? <PowerOff className="h-5 w-5" /> : <Power className="h-5 w-5" />}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -273,8 +273,8 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="w-full rounded-none gap-1.5 h-full flex-col" variant="secondary" onClick={copy}>
-                    <Copy className="w-5 h-5" />
+                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary" onClick={copy}>
+                    <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -288,11 +288,11 @@ function Page() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="w-full rounded-none rounded-br-md gap-1.5 h-full flex-col"
+                    className="h-full w-full flex-col gap-1.5 rounded-none rounded-br-md"
                     variant="secondary"
                     onClick={deleteThis}
                   >
-                    <Trash2Icon className="w-5 h-5" />
+                    <Trash2Icon className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>

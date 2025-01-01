@@ -13,7 +13,7 @@ function Page() {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="px-2 gap-2 mb-2 mt-1">
+      <main className="mb-2 mt-1 gap-2 px-2">
         <motion.div
           onAnimationComplete={async () => {
             await wait(1000);

@@ -20,7 +20,7 @@ import { CircleFadingArrowUp, Copy, Eye, EyeClosed, PlusIcon, Trash2Icon } from 
 import { useEffect, useState } from "react";
 import type { Rule } from "src/main/schema";
 
-export const Route = createFileRoute("/watchers/$watcherId/")({
+export const Route = createFileRoute("/ai-watchers/$aiwatcherId/")({
   component: Page,
   pendingComponent: Pending,
 });
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/watchers/$watcherId/")({
 type NormalKey = "name" | "description";
 
 function Page() {
-  const { watcherId } = Route.useParams();
+  const { aiwatcherId: watcherId } = Route.useParams();
   const { data: watcher } = useWatcher(watcherId);
   const { data: rules } = useRules(watcherId);
   const navigate = useNavigate();
@@ -195,10 +195,16 @@ function Page() {
                 <Button
                   className="h-12 w-full justify-between"
                   variant={rule.enabled ? "secondary" : "outline"}
-                  onClick={() => navigate({ to: "/rules/$ruleId", params: { ruleId: rule.id } })}
+                  onClick={() =>
+                    navigate({
+                      to: "/rules/$ruleId",
+                      params: { ruleId: rule.id },
+                    })
+                  }
                 >
                   <span>
-                    {rule.name}&nbsp;&nbsp;<span className="text-xs">{rule.path}</span>
+                    {rule.name}&nbsp;&nbsp;
+                    <span className="text-xs">{rule.path}</span>
                   </span>
                   <DragHandleDots2Icon className="h-full w-5" data-drag-handle />
                 </Button>

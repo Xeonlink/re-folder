@@ -19,7 +19,7 @@ export function AutoSizeInput(props: Props) {
   }, [content]);
 
   return createElement(as, {}, [
-    <span key="span" className="max-h-0 absolute bottom-0 left-0 text-transparent" ref={span}>
+    <span key="span" className="absolute bottom-0 left-0 max-h-0 text-transparent" ref={span}>
       {content}
     </span>,
     <Input

@@ -12,7 +12,7 @@ export function Toaster() {
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
-                <ToastDescription className="whitespace-nowrap overflow-hidden text-ellipsis">
+                <ToastDescription className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {description}
                 </ToastDescription>
               )}

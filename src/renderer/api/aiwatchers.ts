@@ -3,23 +3,23 @@ import { wait } from "@renderer/lib/utils";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import type { Watcher } from "src/main/schema";
 
-export function useWatchers() {
+export function useAIWatchers() {
   return useSuspenseQuery<Watcher[]>({
-    queryKey: ["watchers"],
+    queryKey: ["ai-watchers"],
     queryFn: () => api.getWatchers(),
   });
 }
 
-export function useWatcher(watcherId: string) {
+export function useAIWatcher(aiwatcherId: string) {
   return useSuspenseQuery<Watcher>({
-    queryKey: ["watchers", watcherId],
-    queryFn: () => api.getWatcher(watcherId),
+    queryKey: ["ai-watchers", aiwatcherId],
+    queryFn: () => api.getWatcher(aiwatcherId),
   });
 }
 
-export function useCreateWatcher() {
+export function useCreateAIWatcher() {
   const queryClient = useQueryClient();
-  const queryKey = ["watchers"];
+  const queryKey = ["ai-watchers"];
 
   return useMutation({
     mutationFn: (_: Variables) => {
@@ -35,13 +35,13 @@ export function useCreateWatcher() {
   });
 }
 
-export function useCopyWatcher(watcherId: string) {
+export function useCopyAIWatcher(aiwatcherId: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["watchers"];
+  const queryKey = ["ai-watchers"];
 
   return useMutation({
     mutationFn: (_: Variables) => {
-      return api.copyWatcher(watcherId);
+      return api.copyWatcher(aiwatcherId);
     },
     onError: (error, variables) => {
       variables.onError?.(error);
@@ -53,13 +53,13 @@ export function useCopyWatcher(watcherId: string) {
   });
 }
 
-export function useUpdateWatcher(watcherId: string) {
+export function useUpdateAIWatcher(aiwatcherId: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["watchers", watcherId];
+  const queryKey = ["ai-watchers", aiwatcherId];
 
   return useMutation({
     mutationFn: (variables: Variables<{ data: Partial<Watcher> }>) => {
-      return api.updateWatcher(watcherId, variables.data);
+      return api.updateWatcher(aiwatcherId, variables.data);
     },
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey });
@@ -83,19 +83,19 @@ export function useUpdateWatcher(watcherId: string) {
   });
 }
 
-export function useDeleteWatcher(watcherId: string) {
+export function useDeleteAIWatcher(aiwatcherId: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["watchers"];
+  const queryKey = ["ai-watchers"];
 
   return useMutation({
-    mutationFn: (_: Variables) => api.deleteWatcher(watcherId),
+    mutationFn: (_: Variables) => api.deleteWatcher(aiwatcherId),
     onMutate: async (_) => {
       queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Watcher[]>(queryKey);
       if (!prev) return;
 
       queryClient.setQueryData<Watcher[]>(queryKey, () => {
-        return prev.filter((watcher) => watcher.id !== watcherId);
+        return prev.filter((watcher) => watcher.id !== aiwatcherId);
       });
       return { prev };
     },
@@ -108,17 +108,17 @@ export function useDeleteWatcher(watcherId: string) {
       queryClient.invalidateQueries({ queryKey, exact: true });
       variables.onSuccess?.();
       await wait(1000);
-      queryClient.removeQueries({ queryKey: [...queryKey, watcherId] });
+      queryClient.removeQueries({ queryKey: [...queryKey, aiwatcherId] });
     },
   });
 }
 
-export function useRunWatcher(watcherId: string) {
+export function useRunAIWatcher(aiwatcherId: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["watchers", watcherId];
+  const queryKey = ["ai-watchers", aiwatcherId];
 
   return useMutation({
-    mutationFn: (_: Variables) => api.runWatcher(watcherId),
+    mutationFn: (_: Variables) => api.runWatcher(aiwatcherId),
     onError: (error, variables) => {
       variables.onError?.(error);
     },

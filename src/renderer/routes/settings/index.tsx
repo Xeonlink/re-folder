@@ -30,7 +30,7 @@ function Page() {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="p-2 space-y-2">
+      <main className="space-y-2 p-2">
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
@@ -59,12 +59,12 @@ function Page() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        className="w-full rounded-tr-none rounded-br-none"
+                        className="w-full rounded-br-none rounded-tr-none"
                         size="sm"
                         variant={theme === "light" ? "default" : "secondary"}
                         onClick={() => setTheme("light")}
                       >
-                        <Sun className="w-5 h-5" />
+                        <Sun className="h-5 w-5" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -82,7 +82,7 @@ function Page() {
                         variant={theme === "dark" ? "default" : "secondary"}
                         onClick={() => setTheme("dark")}
                       >
-                        <Moon className="w-5 h-5" />
+                        <Moon className="h-5 w-5" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -95,12 +95,12 @@ function Page() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        className="w-full rounded-tl-none rounded-bl-none"
+                        className="w-full rounded-bl-none rounded-tl-none"
                         size="sm"
                         variant={theme === "system" ? "default" : "secondary"}
                         onClick={() => setTheme("system")}
                       >
-                        <MonitorCog className="w-5 h-5" />
+                        <MonitorCog className="h-5 w-5" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -116,7 +116,7 @@ function Page() {
               </Label>
               <Button variant="secondary" size="sm" className="w-56" asChild>
                 <Link to="/settings/openai">
-                  <GearIcon className="w-5 h-5" />
+                  <GearIcon className="h-5 w-5" />
                 </Link>
               </Button>
             </li>
@@ -126,25 +126,25 @@ function Page() {
               </Label>
               <Button variant="secondary" size="sm" className="w-56" asChild>
                 <Link to="/settings/update">
-                  <GearIcon className="w-5 h-5" />
+                  <GearIcon className="h-5 w-5" />
                 </Link>
               </Button>
             </li>
           </ul>
         </Card>
 
-        <Card className="shadow-none border-none">
+        <Card className="border-none shadow-none">
           <div className="m-4 grid grid-cols-6 gap-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="w-full font-normal col-span-2"
+                    className="col-span-2 w-full font-normal"
                     size="sm"
                     variant="secondary"
                     onClick={linkTo(URL.GITHUB)}
                   >
-                    <GitHubLogoIcon className="w-5 h-5" />
+                    <GitHubLogoIcon className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -168,12 +168,12 @@ function Page() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="w-full font-normal col-span-2"
+                    className="col-span-2 w-full font-normal"
                     size="sm"
                     variant="secondary"
                     onClick={linkTo(URL.MAILTO)}
                   >
-                    <Mail className="w-5 h-5" />
+                    <Mail className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -183,7 +183,7 @@ function Page() {
             </TooltipProvider>
 
             <Button
-              className="w-full font-normal col-span-3"
+              className="col-span-3 w-full font-normal"
               size="sm"
               variant="secondary"
               onClick={() => {
@@ -194,7 +194,7 @@ function Page() {
               개인정보처리방침
             </Button>
             <Button
-              className="w-full font-normal col-span-3"
+              className="col-span-3 w-full font-normal"
               size="sm"
               variant="secondary"
               onClick={linkTo(URL.LICENSE)}
@@ -213,13 +213,13 @@ const WifiButton = React.forwardRef<HTMLButtonElement, ButtonProps>((_, ref) => 
 
   return (
     <Button
-      className="w-full font-normal col-span-2"
+      className="col-span-2 w-full font-normal"
       size="sm"
       variant="secondary"
       onClick={() => setWifiCount((prev) => prev + 1)}
       ref={ref}
     >
-      <WifiSignal count={wifiCount} className="w-5 h-5" />
+      <WifiSignal count={wifiCount} className="h-5 w-5" />
     </Button>
   );
 });

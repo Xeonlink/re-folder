@@ -96,7 +96,7 @@ export function Page() {
         {folderPresets.map((preset, index) => (
           <Button
             variant="ghost"
-            className="w-full h-16 flex-col items-start"
+            className="h-16 w-full flex-col items-start"
             autoFocus={index === 0}
             tabIndex={index + 1}
             key={preset.id}
@@ -123,14 +123,14 @@ export function Page() {
             animate={{ scale: 1 }}
             transition={{ ease: "linear", type: "spring", duration: 0.5 }}
           >
-            <Skeleton className="h-28 w-full flex justify-center items-center">
+            <Skeleton className="flex h-28 w-full items-center justify-center">
               <PlusIcon className="animate-spin" />
             </Skeleton>
           </motion.div>
         ) : (
           <Button
             variant="outline"
-            className="h-28 border-dashed w-full"
+            className="h-28 w-full border-dashed"
             onClick={createFolderPreset}
             tabIndex={folderPresets.length}
             onKeyDown={arrowFocusEventHandler({
