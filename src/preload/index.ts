@@ -10,6 +10,7 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   getWatcher: true,
   updateWatcher: true,
   deleteWatcher: true,
+  runWatcher: true,
   // rule ----------------
   createRule: true,
   copyRule: true,
@@ -26,6 +27,10 @@ export const api = createApiSelector<typeof ipcApiDef>()({
   updateFolderPreset: true,
   deleteFolderPreset: true,
   applyFolderPreset: true,
+  // ai-watcher ----------------
+  createAIWatcher: true,
+  // category ----------------
+  createCategory: true,
   // window ----------------
   closeSelf: true,
   minimizeSelf: true,

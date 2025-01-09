@@ -1,4 +1,4 @@
-import { Rule, ruleTable, watcherTable } from "../schema/v1.0.0";
+import { Rule, Watcher, ruleTable, watcherTable } from "../schema/v2.0.0";
 import { db } from "../storage";
 import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";
@@ -82,7 +82,7 @@ export function removeWatcher(watcherId: string): boolean {
 /**
  * 주어진 감시자 ID에 해당하는 감시자를 활성화합니다.
  *
- * @param {string} watcherId - 활성화할 감시자의 ID.
+ * @param {string} watcherId 활성화할 감시자의 ID.
  * @returns {boolean} 감시자가 성공적으로 활성화되었는지 여부.
  * @author 오지민
  */
@@ -93,15 +93,7 @@ export function createWatcher(watcherId: string): boolean {
     return false;
   }
 
-  const results = db
-    .select()
-    .from(watcherTable)
-    .leftJoin(ruleTable, eq(watcherTable.id, ruleTable.watcherId))
-    .where(eq(watcherTable.id, watcherId))
-    .all();
-
-  const watcher = results[0].watcher;
-  const rules = results.map((result) => result.rule);
+  const { watcher, rules } = getWatcher(watcherId);
 
   if (!watcher.enabled) {
     console.log("watcher is not enabled");
@@ -129,9 +121,6 @@ export function createWatcher(watcherId: string): boolean {
     }
 
     for (const rule of rules) {
-      if (rule === null) continue;
-      if (!rule.enabled) continue;
-
       const ruleTester = rule2RegEx(rule);
       if (ruleTester.test(filename.normalize("NFC"))) {
         const exportedFilename = join(rule.path, filename);
@@ -145,33 +134,28 @@ export function createWatcher(watcherId: string): boolean {
       }
     }
   });
-
   watcherMap.set(watcherId, fsWatcher);
 
-  const readResults = readdirSync(watcher.path);
-  for (const filename of readResults) {
-    const fullPath = join(watcher.path, filename);
-
-    for (const rule of rules) {
-      if (rule === null) continue;
-      if (!rule.enabled) continue;
-
-      const ruleTester = rule2RegEx(rule);
-      if (ruleTester.test(filename.normalize("NFC"))) {
-        const exportedFilename = join(rule.path, filename);
-        rename(fullPath, exportedFilename, (err) => {
-          if (err) {
-            console.error(err);
-            // TODO: save error log to db
-          }
-        });
-        break;
-      }
-    }
-  }
+  const result = executeOneShot(watcher, rules);
 
   // TODO: save success to db log
-  return true;
+  return result;
+}
+
+/**
+ * 주어진 감시자 ID에 해당하는 감시자를 1회 실행한다.
+ *
+ * @param {string} watcherId 활성화할 감시자의 ID.
+ * @returns {boolean} 감시자가 성공적으로 실행되었는지 여부.
+ * @author 오지민
+ */
+export function runWatcher(watcherId: string): boolean {
+  const { watcher, rules } = getWatcher(watcherId);
+
+  const result = executeOneShot(watcher, rules);
+
+  // TODO: save success to db log
+  return result;
 }
 
 /**
@@ -192,5 +176,66 @@ export async function initializeWatcher() {
     if (watcher.enabled) {
       createWatcher(watcher.id);
     }
+  }
+}
+
+// helper functions ---------------------------------------------------------
+/**
+ * 감지사의 활성화 여부와 관계없이, 감시자 ID에 맞는 감시자를 DB에서 검색하여 찾음
+ *
+ * @param {string} watcherId 활성화할 감시자의 ID.
+ * @returns 감시자와 규칙들을 반환. 규칙들은 활성화된 것만 반환한다.
+ * @author 오지민
+ */
+function getWatcher(watcherId: string): { watcher: Watcher; rules: (Omit<Rule, "enabled"> & { enabled: true })[] } {
+  const results = db
+    .select()
+    .from(watcherTable)
+    .leftJoin(ruleTable, eq(watcherTable.id, ruleTable.watcherId))
+    .where(eq(watcherTable.id, watcherId))
+    .all();
+
+  const watcher = results[0].watcher;
+  const rules = results
+    .map((result) => result.rule)
+    .filter((rule) => rule !== null)
+    .filter((rule) => typeof rule.enabled === "boolean" && rule.enabled === true) as (Omit<Rule, "enabled"> & {
+    enabled: true;
+  })[];
+
+  return { watcher, rules };
+}
+
+/**
+ * 감시자를 1회만 실행한다.
+ *
+ * @param watcher 실행할 감시자의 정보
+ * @param rules 실행할 감시자의 규칙들
+ * @returns 감시자가 성공적으로 실행되었는지 여부
+ * @author 오지민
+ */
+function executeOneShot(watcher: Watcher, rules: Rule[]): boolean {
+  try {
+    const readResults = readdirSync(watcher.path);
+    for (const filename of readResults) {
+      const fullPath = join(watcher.path, filename);
+
+      for (const rule of rules) {
+        const ruleTester = rule2RegEx(rule);
+        if (ruleTester.test(filename.normalize("NFC"))) {
+          const exportedFilename = join(rule.path, filename);
+          rename(fullPath, exportedFilename, (err) => {
+            if (err) {
+              console.error(err);
+              // TODO: save error log to db
+            }
+          });
+          break;
+        }
+      }
+    }
+    return true;
+  } catch (_) {
+    return false;
   }
 }

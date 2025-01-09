@@ -18,6 +18,8 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
+import { on } from "@renderer/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { DownloadIcon, FolderDown, Server, X } from "lucide-react";
 
@@ -77,7 +79,7 @@ function Page() {
   return (
     <>
       <ScrollArea className="flex-1">
-        <main className="p-2 space-y-2">
+        <main className="space-y-2 p-2">
           <Card className="shadow-none">
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
@@ -89,10 +91,12 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-tr-none rounded-br-none"
+                          className="w-full rounded-br-none rounded-tr-none"
                           size="sm"
                           variant={updateCheckPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeCheckPolicy("auto")}
+                          tabIndex={1}
+                          onKeyDown={on(Key2FocusIndex("ArrowRight", 2), Key2FocusIndex("ArrowDown", 3))}
                         >
                           자동
                         </Button>
@@ -108,6 +112,8 @@ function Page() {
                     size="sm"
                     variant={updateCheckPolicy === "manual" ? "default" : "secondary"}
                     onClick={changeCheckPolicy("manual")}
+                    tabIndex={2}
+                    onKeyDown={on(Key2FocusIndex("ArrowLeft", 1), Key2FocusIndex("ArrowDown", 4))}
                   >
                     수동
                   </Button>
@@ -122,10 +128,16 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-tr-none rounded-br-none"
+                          className="w-full rounded-br-none rounded-tr-none"
                           size="sm"
                           variant={updateDownloadPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeDownloadPolicy("auto")}
+                          tabIndex={3}
+                          onKeyDown={on(
+                            Key2FocusIndex("ArrowUp", 1),
+                            Key2FocusIndex("ArrowRight", 4),
+                            Key2FocusIndex("ArrowDown", 5),
+                          )}
                         >
                           자동
                         </Button>
@@ -141,6 +153,12 @@ function Page() {
                     size="sm"
                     variant={updateDownloadPolicy === "manual" ? "default" : "secondary"}
                     onClick={changeDownloadPolicy("manual")}
+                    tabIndex={4}
+                    onKeyDown={on(
+                      Key2FocusIndex("ArrowUp", 2),
+                      Key2FocusIndex("ArrowLeft", 3),
+                      Key2FocusIndex("ArrowDown", 6),
+                    )}
                   >
                     수동
                   </Button>
@@ -155,10 +173,16 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-tr-none rounded-br-none"
+                          className="w-full rounded-br-none rounded-tr-none"
                           size="sm"
                           variant={updateInstallPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeInstallPolicy("auto")}
+                          tabIndex={5}
+                          onKeyDown={on(
+                            Key2FocusIndex("ArrowUp", 3),
+                            Key2FocusIndex("ArrowRight", 6),
+                            Key2FocusIndex("ArrowDown", 7),
+                          )}
                         >
                           자동
                         </Button>
@@ -174,6 +198,12 @@ function Page() {
                     size="sm"
                     variant={updateInstallPolicy === "manual" ? "default" : "secondary"}
                     onClick={changeInstallPolicy("manual")}
+                    tabIndex={6}
+                    onKeyDown={on(
+                      Key2FocusIndex("ArrowUp", 4),
+                      Key2FocusIndex("ArrowLeft", 5),
+                      Key2FocusIndex("ArrowDown", 7),
+                    )}
                   >
                     수동
                   </Button>
@@ -183,9 +213,11 @@ function Page() {
           </Card>
 
           <Textarea
-            className="h-80 focus-visible:ring-0 border-none resize-none text-sm"
+            className="h-80 resize-none border-none text-sm focus-visible:ring-0"
             value={updateState2Text()}
             readOnly
+            tabIndex={8}
+            onKeyDown={on(Key2FocusIndex("ArrowUp", 7))}
           />
         </main>
       </ScrollArea>
@@ -193,17 +225,29 @@ function Page() {
         <ul className="flex h-12">
           {["idle", "error", "not-available"].includes(update.state) ? (
             <li className="w-full">
-              <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.checkForUpdates()}>
-                <Server className="w-4 h-4" /> &nbsp; 업데이트 확인 &nbsp;
-                <MagnifyingGlassIcon className="w-4 h-4" />
+              <Button
+                className="size-full rounded-t-none"
+                variant="secondary"
+                onClick={() => api.checkForUpdates()}
+                tabIndex={1}
+                onKeyDown={on(Key2FocusIndex("ArrowRight", 2))}
+              >
+                <Server className="h-4 w-4" /> &nbsp; 업데이트 확인 &nbsp;
+                <MagnifyingGlassIcon className="h-4 w-4" />
               </Button>
             </li>
           ) : null}
 
           {update.state === "checking" ? (
             <li className="w-full">
-              <Button className="size-full rounded-none rounded-bl-md" variant="secondary" disabled>
-                <MagnifyingGlassIcon className="w-5 h-5" />
+              <Button
+                className="size-full rounded-none rounded-bl-md"
+                variant="secondary"
+                disabled
+                tabIndex={2}
+                onKeyDown={on(Key2FocusIndex("ArrowLeft", 1))}
+              >
+                <MagnifyingGlassIcon className="h-5 w-5" />
                 &nbsp;확인 중<Dot3 interval={400} />
               </Button>
             </li>
@@ -211,8 +255,14 @@ function Page() {
 
           {update.state === "available" ? (
             <li className="w-full">
-              <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.downloadUpdate()}>
-                <DownloadIcon className="w-5 h-5" /> &nbsp; 업데이트 다운로드
+              <Button
+                className="size-full rounded-t-none"
+                variant="secondary"
+                onClick={() => api.downloadUpdate()}
+                tabIndex={3}
+                onKeyDown={on(Key2FocusIndex("ArrowLeft", 2))}
+              >
+                <DownloadIcon className="h-5 w-5" /> &nbsp; 업데이트 다운로드
               </Button>
             </li>
           ) : null}
@@ -220,7 +270,7 @@ function Page() {
           {update.state === "downloading" ? (
             <li className="w-full">
               <Button className="size-full rounded-none rounded-bl-md" variant="secondary" disabled>
-                <DownloadIcon className="w-5 h-5" />
+                <DownloadIcon className="h-5 w-5" />
                 &nbsp;다운로드 중<Dot3 interval={400} />
               </Button>
             </li>
@@ -232,7 +282,7 @@ function Page() {
                 variant="secondary"
                 onClick={() => api.cancelUpdate()}
               >
-                <X className="w-5 h-5" /> &nbsp;취소
+                <X className="h-5 w-5" /> &nbsp;취소
               </Button>
             </li>
           ) : null}
@@ -240,7 +290,7 @@ function Page() {
           {update.state === "ready" ? (
             <li className="w-full">
               <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.installUpdate()}>
-                <FolderDown className="w-5 h-5" /> &nbsp; 설치 및 재시작
+                <FolderDown className="h-5 w-5" /> &nbsp; 설치 및 재시작
               </Button>
             </li>
           ) : null}

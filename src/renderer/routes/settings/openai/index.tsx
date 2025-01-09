@@ -50,7 +50,7 @@ function Page() {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="p-2 space-y-2">
+      <main className="space-y-2 p-2">
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
@@ -60,7 +60,7 @@ function Page() {
               <Input
                 id="apikey"
                 name="apikey"
-                className="bg-secondary border-none w-56"
+                className="w-56 border-none bg-secondary"
                 size="sm"
                 defaultValue={apiKey}
                 onBlur={onApiKeyBlur}

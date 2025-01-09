@@ -53,10 +53,10 @@ export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export const eventSplitor =
-  <T extends SyntheticEvent>(...args: ((e: T) => any)[]) =>
+export const on =
+  <T extends SyntheticEvent>(...args: (((e: T) => any) | undefined)[]) =>
   (e: T) => {
     for (const arg of args) {
-      arg(e);
+      arg?.(e);
     }
   };

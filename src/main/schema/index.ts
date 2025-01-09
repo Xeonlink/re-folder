@@ -1,4 +1,4 @@
-export type { Rule, Watcher, Log, FolderPreset } from "./v1.0.0";
+export type { Rule, Watcher, Log, FolderPreset } from "./v2.0.0";
 
 /**
  * 무작위 16진수 색상 코드 생성함.
