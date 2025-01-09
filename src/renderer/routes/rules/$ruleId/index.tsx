@@ -15,6 +15,8 @@ import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Copy, Power, PowerOff, Trash2Icon } from "lucide-react";
+import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
+import { on } from "@renderer/lib/utils";
 
 export const Route = createFileRoute("/rules/$ruleId/")({
   component: Page,
@@ -259,6 +261,8 @@ function Page() {
                     className="h-full w-full flex-col items-center gap-1 rounded-none rounded-bl-md"
                     variant="secondary"
                     onClick={toggle}
+                    tabIndex={1}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowRight", 2))}
                   >
                     {rule.enabled ? <PowerOff className="h-5 w-5" /> : <Power className="h-5 w-5" />}
                   </Button>
@@ -273,7 +277,13 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary" onClick={copy}>
+                  <Button
+                    className="h-full w-full flex-col gap-1.5 rounded-none"
+                    variant="secondary"
+                    onClick={copy}
+                    tabIndex={2}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 1), keyboardMoveToTabIndex("ArrowRight", 3))}
+                  >
                     <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -291,6 +301,8 @@ function Page() {
                     className="h-full w-full flex-col gap-1.5 rounded-none rounded-br-md"
                     variant="secondary"
                     onClick={deleteThis}
+                    tabIndex={3}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 2))}
                   >
                     <Trash2Icon className="h-5 w-5" />
                   </Button>

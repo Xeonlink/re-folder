@@ -8,7 +8,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Pending } from "./-Pending";
 import { on } from "@renderer/lib/utils";
-import { keyboardMoveFocus } from "@renderer/lib/arrowNavigation";
+import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
 
 export const Route = createFileRoute("/watchers/")({
   component: Page,
@@ -54,8 +54,8 @@ function Page() {
                   tabIndex={index + 1}
                   onClick={gotoWatcher(watcher.id)}
                   onKeyDown={on(
-                    keyboardMoveFocus("ArrowUp", ["parent", "prev", "child"]),
-                    keyboardMoveFocus("ArrowDown", ["parent", "next", "child"]),
+                    keyboardMoveToTabIndex("ArrowUp", index),
+                    keyboardMoveToTabIndex("ArrowDown", index + 2),
                   )}
                 >
                   <h5 className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{watcher.name}</h5>

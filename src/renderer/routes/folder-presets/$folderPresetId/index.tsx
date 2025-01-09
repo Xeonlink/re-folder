@@ -15,6 +15,8 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
+import { on } from "@renderer/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
 
@@ -132,6 +134,8 @@ function Page() {
                     className="h-full w-full flex-col items-center gap-1 rounded-none rounded-bl-md"
                     variant="secondary"
                     onClick={apply}
+                    tabIndex={1}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowRight", 2))}
                   >
                     <ArrowRight className="h-5 w-5" />
                   </Button>
@@ -146,7 +150,13 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary" onClick={copy}>
+                  <Button
+                    className="h-full w-full flex-col gap-1.5 rounded-none"
+                    variant="secondary"
+                    onClick={copy}
+                    tabIndex={2}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 1), keyboardMoveToTabIndex("ArrowRight", 3))}
+                  >
                     <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -164,6 +174,8 @@ function Page() {
                     className="h-full w-full flex-col gap-1.5 rounded-none rounded-br-md"
                     variant="secondary"
                     onClick={deleteOne}
+                    tabIndex={3}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 2))}
                   >
                     <Trash2Icon className="h-5 w-5" />
                   </Button>

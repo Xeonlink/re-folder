@@ -5,7 +5,8 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { arrowFocusEventHandler } from "@renderer/lib/utils";
+import { on } from "@renderer/lib/utils";
+import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
@@ -42,26 +43,24 @@ function Page() {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="grid grid-cols-2 gap-2 p-2">
-        {watchers.map((watcher, index) => (
-          <Button
-            variant="outline"
-            className="h-28 w-full"
-            autoFocus={index === 0}
-            tabIndex={index + 1}
-            key={watcher.id}
-            onClick={gotoAIWatcher(watcher.id)}
-            onKeyDown={arrowFocusEventHandler({
-              hasUp: index > 1,
-              hasRight: index % 2 === 0,
-              hasDown: index < watchers.length - 1,
-              hasLeft: index % 2 === 1,
-            })}
-          >
-            {watcher.name}
-          </Button>
-        ))}
-        {creator.isPending ? ( //
+      <main className="p-2">
+        <ol className="contents">
+          {watchers.map((watcher, index) => (
+            <li className="contents" key={watcher.id}>
+              <Button
+                variant="outline"
+                className="h-28 w-full"
+                autoFocus={index === 0}
+                tabIndex={index + 1}
+                onClick={gotoAIWatcher(watcher.id)}
+                onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", index), keyboardMoveToTabIndex("ArrowDown", index + 2))}
+              >
+                {watcher.name}
+              </Button>
+            </li>
+          ))}
+        </ol>
+        {creator.isPending ? (
           <motion.div
             initial={{ scale: 0.3 }}
             animate={{ scale: 1 }}
@@ -77,10 +76,10 @@ function Page() {
             className="h-28 w-full border-dashed"
             onClick={createWatcher}
             tabIndex={watchers.length}
-            onKeyDown={arrowFocusEventHandler({
-              hasUp: watchers.length > 1,
-              hasLeft: watchers.length % 2 === 1,
-            })}
+            onKeyDown={on(
+              keyboardMoveToTabIndex("ArrowUp", watchers.length),
+              keyboardMoveToTabIndex("ArrowDown", watchers.length + 1),
+            )}
           >
             <PlusIcon />
           </Button>

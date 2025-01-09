@@ -5,7 +5,7 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { on } from "@renderer/lib/utils";
-import { keyboardMoveFocus } from "@renderer/lib/arrowNavigation";
+import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Pending } from "./-Pending";
@@ -54,8 +54,8 @@ export function Page() {
                   tabIndex={index + 1}
                   onClick={gotoFolderPreset(preset.id)}
                   onKeyDown={on(
-                    keyboardMoveFocus("ArrowUp", ["parent", "prev", "child"]),
-                    keyboardMoveFocus("ArrowDown", ["parent", "next", "child"]),
+                    keyboardMoveToTabIndex("ArrowUp", index),
+                    keyboardMoveToTabIndex("ArrowDown", index + 2),
                   )}
                 >
                   <span>{preset.name}</span>

@@ -18,6 +18,8 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Textarea } from "@renderer/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
+import { on } from "@renderer/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { DownloadIcon, FolderDown, Server, X } from "lucide-react";
 
@@ -93,6 +95,11 @@ function Page() {
                           size="sm"
                           variant={updateCheckPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeCheckPolicy("auto")}
+                          tabIndex={1}
+                          onKeyDown={on(
+                            keyboardMoveToTabIndex("ArrowRight", 2),
+                            keyboardMoveToTabIndex("ArrowDown", 3),
+                          )}
                         >
                           자동
                         </Button>
@@ -108,6 +115,8 @@ function Page() {
                     size="sm"
                     variant={updateCheckPolicy === "manual" ? "default" : "secondary"}
                     onClick={changeCheckPolicy("manual")}
+                    tabIndex={2}
+                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 1), keyboardMoveToTabIndex("ArrowDown", 4))}
                   >
                     수동
                   </Button>
@@ -126,6 +135,12 @@ function Page() {
                           size="sm"
                           variant={updateDownloadPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeDownloadPolicy("auto")}
+                          tabIndex={3}
+                          onKeyDown={on(
+                            keyboardMoveToTabIndex("ArrowUp", 1),
+                            keyboardMoveToTabIndex("ArrowRight", 4),
+                            keyboardMoveToTabIndex("ArrowDown", 5),
+                          )}
                         >
                           자동
                         </Button>
@@ -141,6 +156,12 @@ function Page() {
                     size="sm"
                     variant={updateDownloadPolicy === "manual" ? "default" : "secondary"}
                     onClick={changeDownloadPolicy("manual")}
+                    tabIndex={4}
+                    onKeyDown={on(
+                      keyboardMoveToTabIndex("ArrowUp", 2),
+                      keyboardMoveToTabIndex("ArrowLeft", 3),
+                      keyboardMoveToTabIndex("ArrowDown", 6),
+                    )}
                   >
                     수동
                   </Button>
@@ -159,6 +180,12 @@ function Page() {
                           size="sm"
                           variant={updateInstallPolicy === "auto" ? "default" : "secondary"}
                           onClick={changeInstallPolicy("auto")}
+                          tabIndex={5}
+                          onKeyDown={on(
+                            keyboardMoveToTabIndex("ArrowUp", 3),
+                            keyboardMoveToTabIndex("ArrowRight", 6),
+                            keyboardMoveToTabIndex("ArrowDown", 7),
+                          )}
                         >
                           자동
                         </Button>
@@ -174,6 +201,12 @@ function Page() {
                     size="sm"
                     variant={updateInstallPolicy === "manual" ? "default" : "secondary"}
                     onClick={changeInstallPolicy("manual")}
+                    tabIndex={6}
+                    onKeyDown={on(
+                      keyboardMoveToTabIndex("ArrowUp", 4),
+                      keyboardMoveToTabIndex("ArrowLeft", 5),
+                      keyboardMoveToTabIndex("ArrowDown", 7),
+                    )}
                   >
                     수동
                   </Button>
@@ -186,6 +219,8 @@ function Page() {
             className="h-80 resize-none border-none text-sm focus-visible:ring-0"
             value={updateState2Text()}
             readOnly
+            tabIndex={8}
+            onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 7))}
           />
         </main>
       </ScrollArea>
@@ -193,7 +228,13 @@ function Page() {
         <ul className="flex h-12">
           {["idle", "error", "not-available"].includes(update.state) ? (
             <li className="w-full">
-              <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.checkForUpdates()}>
+              <Button
+                className="size-full rounded-t-none"
+                variant="secondary"
+                onClick={() => api.checkForUpdates()}
+                tabIndex={1}
+                onKeyDown={on(keyboardMoveToTabIndex("ArrowRight", 2))}
+              >
                 <Server className="h-4 w-4" /> &nbsp; 업데이트 확인 &nbsp;
                 <MagnifyingGlassIcon className="h-4 w-4" />
               </Button>
@@ -202,7 +243,13 @@ function Page() {
 
           {update.state === "checking" ? (
             <li className="w-full">
-              <Button className="size-full rounded-none rounded-bl-md" variant="secondary" disabled>
+              <Button
+                className="size-full rounded-none rounded-bl-md"
+                variant="secondary"
+                disabled
+                tabIndex={2}
+                onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 1))}
+              >
                 <MagnifyingGlassIcon className="h-5 w-5" />
                 &nbsp;확인 중<Dot3 interval={400} />
               </Button>
@@ -211,7 +258,13 @@ function Page() {
 
           {update.state === "available" ? (
             <li className="w-full">
-              <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.downloadUpdate()}>
+              <Button
+                className="size-full rounded-t-none"
+                variant="secondary"
+                onClick={() => api.downloadUpdate()}
+                tabIndex={3}
+                onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 2))}
+              >
                 <DownloadIcon className="h-5 w-5" /> &nbsp; 업데이트 다운로드
               </Button>
             </li>
