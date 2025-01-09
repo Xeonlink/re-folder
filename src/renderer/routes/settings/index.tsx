@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@rende
 import { URL } from "@renderer/constants";
 import { useClipboard } from "@renderer/hooks/useTextClipboard";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
 import { on } from "@renderer/lib/utils";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Mail, MonitorCog, Moon, Sun } from "lucide-react";
@@ -46,7 +46,7 @@ function Page() {
                       variant="secondary"
                       size="sm"
                       onClick={() => copy(version)}
-                      onKeyDown={on(keyboardMoveToTabIndex("ArrowDown", 2))}
+                      onKeyDown={on(Key2FocusIndex("ArrowDown", 2))}
                       tabIndex={1}
                     >
                       {version}
@@ -72,9 +72,9 @@ function Page() {
                         variant={theme === "light" ? "default" : "secondary"}
                         onClick={() => setTheme("light")}
                         onKeyDown={on(
-                          keyboardMoveToTabIndex("ArrowUp", 1),
-                          keyboardMoveToTabIndex("ArrowRight", 3),
-                          keyboardMoveToTabIndex("ArrowDown", 5),
+                          Key2FocusIndex("ArrowUp", 1),
+                          Key2FocusIndex("ArrowRight", 3),
+                          Key2FocusIndex("ArrowDown", 5),
                         )}
                         tabIndex={2}
                       >
@@ -96,10 +96,10 @@ function Page() {
                         variant={theme === "dark" ? "default" : "secondary"}
                         onClick={() => setTheme("dark")}
                         onKeyDown={on(
-                          keyboardMoveToTabIndex("ArrowUp", 1),
-                          keyboardMoveToTabIndex("ArrowLeft", 2),
-                          keyboardMoveToTabIndex("ArrowRight", 4),
-                          keyboardMoveToTabIndex("ArrowDown", 5),
+                          Key2FocusIndex("ArrowUp", 1),
+                          Key2FocusIndex("ArrowLeft", 2),
+                          Key2FocusIndex("ArrowRight", 4),
+                          Key2FocusIndex("ArrowDown", 5),
                         )}
                         tabIndex={3}
                       >
@@ -121,9 +121,9 @@ function Page() {
                         variant={theme === "system" ? "default" : "secondary"}
                         onClick={() => setTheme("system")}
                         onKeyDown={on(
-                          keyboardMoveToTabIndex("ArrowUp", 1),
-                          keyboardMoveToTabIndex("ArrowLeft", 3),
-                          keyboardMoveToTabIndex("ArrowDown", 5),
+                          Key2FocusIndex("ArrowUp", 1),
+                          Key2FocusIndex("ArrowLeft", 3),
+                          Key2FocusIndex("ArrowDown", 5),
                         )}
                         tabIndex={4}
                       >
@@ -147,7 +147,7 @@ function Page() {
                 className="w-56"
                 asChild
                 tabIndex={5}
-                onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 4), keyboardMoveToTabIndex("ArrowDown", 6))}
+                onKeyDown={on(Key2FocusIndex("ArrowUp", 4), Key2FocusIndex("ArrowDown", 6))}
               >
                 <Link to="/settings/openai">
                   <GearIcon className="h-5 w-5" />
@@ -164,7 +164,7 @@ function Page() {
                 className="w-56"
                 asChild
                 tabIndex={6}
-                onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 5), keyboardMoveToTabIndex("ArrowDown", 7))}
+                onKeyDown={on(Key2FocusIndex("ArrowUp", 5), Key2FocusIndex("ArrowDown", 7))}
               >
                 <Link to="/settings/update">
                   <GearIcon className="h-5 w-5" />
@@ -186,9 +186,9 @@ function Page() {
                     onClick={linkTo(URL.GITHUB)}
                     tabIndex={7}
                     onKeyDown={on(
-                      keyboardMoveToTabIndex("ArrowUp", 6),
-                      keyboardMoveToTabIndex("ArrowRight", 8),
-                      keyboardMoveToTabIndex("ArrowDown", 10),
+                      Key2FocusIndex("ArrowUp", 6),
+                      Key2FocusIndex("ArrowRight", 8),
+                      Key2FocusIndex("ArrowDown", 10),
                     )}
                   >
                     <GitHubLogoIcon className="h-5 w-5" />
@@ -206,10 +206,10 @@ function Page() {
                   <WifiButton
                     tabIndex={8}
                     onKeyDown={on(
-                      keyboardMoveToTabIndex("ArrowUp", 6),
-                      keyboardMoveToTabIndex("ArrowLeft", 7),
-                      keyboardMoveToTabIndex("ArrowRight", 9),
-                      keyboardMoveToTabIndex("ArrowDown", 10),
+                      Key2FocusIndex("ArrowUp", 6),
+                      Key2FocusIndex("ArrowLeft", 7),
+                      Key2FocusIndex("ArrowRight", 9),
+                      Key2FocusIndex("ArrowDown", 10),
                     )}
                   />
                 </TooltipTrigger>
@@ -229,9 +229,9 @@ function Page() {
                     onClick={linkTo(URL.MAILTO)}
                     tabIndex={9}
                     onKeyDown={on(
-                      keyboardMoveToTabIndex("ArrowUp", 6),
-                      keyboardMoveToTabIndex("ArrowLeft", 8),
-                      keyboardMoveToTabIndex("ArrowDown", 11),
+                      Key2FocusIndex("ArrowUp", 6),
+                      Key2FocusIndex("ArrowLeft", 8),
+                      Key2FocusIndex("ArrowDown", 11),
                     )}
                   >
                     <Mail className="h-5 w-5" />
@@ -251,7 +251,7 @@ function Page() {
                 toast("준비중", "개인정보처리방침을 작성중입니다.");
               }}
               tabIndex={10}
-              onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 8), keyboardMoveToTabIndex("ArrowRight", 11))}
+              onKeyDown={on(Key2FocusIndex("ArrowUp", 8), Key2FocusIndex("ArrowRight", 11))}
             >
               개인정보처리방침
             </Button>
@@ -261,7 +261,7 @@ function Page() {
               variant="secondary"
               onClick={linkTo(URL.LICENSE)}
               tabIndex={11}
-              onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 8), keyboardMoveToTabIndex("ArrowLeft", 10))}
+              onKeyDown={on(Key2FocusIndex("ArrowUp", 8), Key2FocusIndex("ArrowLeft", 10))}
             >
               소프트웨어 라이센스
             </Button>

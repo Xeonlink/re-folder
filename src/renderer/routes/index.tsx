@@ -2,7 +2,7 @@ import ImgLogo from "@renderer/assets/icon.png";
 import { Button } from "@renderer/components/ui/button";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { on } from "@renderer/lib/utils";
-import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
@@ -67,7 +67,7 @@ function Page() {
               autoFocus
               tabIndex={1}
               onClick={() => navigate({ to: "/folder-presets" })}
-              onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 3), keyboardMoveToTabIndex("ArrowDown", 2))}
+              onKeyDown={on(Key2FocusIndex("ArrowUp", 3), Key2FocusIndex("ArrowDown", 2))}
             >
               폴더 프리셋
             </Button>
@@ -80,7 +80,7 @@ function Page() {
               className="w-full text-lg"
               tabIndex={2}
               onClick={() => navigate({ to: "/watchers" })}
-              onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 1), keyboardMoveToTabIndex("ArrowDown", 3))}
+              onKeyDown={on(Key2FocusIndex("ArrowUp", 1), Key2FocusIndex("ArrowDown", 3))}
             >
               감시자
             </Button>
@@ -93,7 +93,7 @@ function Page() {
               className="w-full text-lg"
               tabIndex={3}
               onClick={() => navigate({ to: "/settings" })}
-              onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", 2), keyboardMoveToTabIndex("ArrowDown", 1))}
+              onKeyDown={on(Key2FocusIndex("ArrowUp", 2), Key2FocusIndex("ArrowDown", 1))}
             >
               설정
             </Button>

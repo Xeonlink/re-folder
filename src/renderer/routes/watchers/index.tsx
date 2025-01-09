@@ -4,11 +4,11 @@ import { Button } from "@renderer/components/ui/button";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
+import { on } from "@renderer/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Pending } from "./-Pending";
-import { on } from "@renderer/lib/utils";
-import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
 
 export const Route = createFileRoute("/watchers/")({
   component: Page,
@@ -16,7 +16,6 @@ export const Route = createFileRoute("/watchers/")({
 });
 
 function Page() {
-  const navigate = useNavigate();
   const { toast } = useToastWithDismiss();
   const { data: watchers } = useWatchers();
   const creator = useCreateWatcher();
@@ -25,10 +24,6 @@ function Page() {
     creator.mutate({
       onError: (error) => toast(error.name, error.message),
     });
-  };
-
-  const gotoWatcher = (watcherId: string) => () => {
-    navigate({ to: "/watchers/$watcherId", params: { watcherId } });
   };
 
   useShortcuts({
@@ -47,21 +42,18 @@ function Page() {
           <ol className="contents">
             {watchers.map((watcher, index) => (
               <li className="contents" key={watcher.id}>
-                <Button
-                  variant="ghost"
-                  className="h-16 w-full flex-col items-start"
-                  autoFocus={index === 0}
-                  tabIndex={index + 1}
-                  onClick={gotoWatcher(watcher.id)}
-                  onKeyDown={on(
-                    keyboardMoveToTabIndex("ArrowUp", index),
-                    keyboardMoveToTabIndex("ArrowDown", index + 2),
-                  )}
-                >
-                  <h5 className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{watcher.name}</h5>
-                  <p className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs">
-                    {watcher.description}
-                  </p>
+                <Button variant="ghost" className="h-16 w-full flex-col items-start" asChild>
+                  <Link
+                    to="/watchers/$watcherId"
+                    params={{ watcherId: watcher.id }}
+                    tabIndex={index + 1}
+                    onKeyDown={on(Key2FocusIndex("ArrowUp", index), Key2FocusIndex("ArrowDown", index + 2))}
+                  >
+                    <h5 className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{watcher.name}</h5>
+                    <p className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs">
+                      {watcher.description}
+                    </p>
+                  </Link>
                 </Button>
               </li>
             ))}

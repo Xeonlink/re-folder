@@ -1,15 +1,13 @@
-import { Pending } from "./-Pending";
 import { useCreateWatcher, useWatchers } from "@renderer/api/watchers";
 import { Button } from "@renderer/components/ui/button";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
 import { on } from "@renderer/lib/utils";
-import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
+import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/ai-watchers/")({
   component: Page,
@@ -17,7 +15,6 @@ export const Route = createFileRoute("/ai-watchers/")({
 });
 
 function Page() {
-  const navigate = useNavigate();
   const { toast } = useToastWithDismiss();
   const { data: watchers } = useWatchers();
   const creator = useCreateWatcher();
@@ -26,10 +23,6 @@ function Page() {
     creator.mutate({
       onError: (error) => toast(error.name, error.message),
     });
-  };
-
-  const gotoAIWatcher = (aiwatcherId: string) => () => {
-    navigate({ to: "/ai-watchers/$aiwatcherId", params: { aiwatcherId } });
   };
 
   useShortcuts({
@@ -42,49 +35,53 @@ function Page() {
   });
 
   return (
-    <ScrollArea className="flex-1">
-      <main className="p-2">
-        <ol className="contents">
-          {watchers.map((watcher, index) => (
-            <li className="contents" key={watcher.id}>
-              <Button
-                variant="outline"
-                className="h-28 w-full"
-                autoFocus={index === 0}
-                tabIndex={index + 1}
-                onClick={gotoAIWatcher(watcher.id)}
-                onKeyDown={on(keyboardMoveToTabIndex("ArrowUp", index), keyboardMoveToTabIndex("ArrowDown", index + 2))}
-              >
-                {watcher.name}
+    <>
+      <ScrollArea className="flex-1">
+        <main className="p-2">
+          <ol className="contents">
+            {watchers.map((watcher, index) => (
+              <li className="contents" key={watcher.id}>
+                <Button variant="outline" className="h-28 w-full" autoFocus={index === 0} asChild>
+                  <Link
+                    to="/ai-watchers/$aiwatcherId"
+                    params={{ aiwatcherId: watcher.id }}
+                    tabIndex={index + 1}
+                    onKeyDown={on(Key2FocusIndex("ArrowUp", index), Key2FocusIndex("ArrowDown", index + 2))}
+                  >
+                    {watcher.name}
+                  </Link>
+                </Button>
+              </li>
+            ))}
+          </ol>
+        </main>
+      </ScrollArea>
+      <footer>
+        <ul className="flex h-12">
+          <li className="w-full">
+            {creator.isPending ? (
+              <Button variant="secondary" className="h-full w-full rounded-t-none" disabled>
+                <PlusIcon className="h-5 w-5 animate-spin" />
+                &nbsp;감시자&nbsp;생성 중...
               </Button>
-            </li>
-          ))}
-        </ol>
-        {creator.isPending ? (
-          <motion.div
-            initial={{ scale: 0.3 }}
-            animate={{ scale: 1 }}
-            transition={{ ease: "linear", type: "spring", duration: 0.5 }}
-          >
-            <Skeleton className="flex h-28 w-full items-center justify-center">
-              <PlusIcon className="animate-spin" />
-            </Skeleton>
-          </motion.div>
-        ) : (
-          <Button
-            variant="outline"
-            className="h-28 w-full border-dashed"
-            onClick={createWatcher}
-            tabIndex={watchers.length}
-            onKeyDown={on(
-              keyboardMoveToTabIndex("ArrowUp", watchers.length),
-              keyboardMoveToTabIndex("ArrowDown", watchers.length + 1),
+            ) : (
+              <Button
+                variant="secondary"
+                className="h-full w-full rounded-t-none"
+                onClick={createWatcher}
+                tabIndex={watchers.length}
+                onKeyDown={on(
+                  Key2FocusIndex("ArrowUp", watchers.length),
+                  Key2FocusIndex("ArrowDown", watchers.length + 1),
+                )}
+              >
+                <PlusIcon className="h-5 w-5" />
+                &nbsp;감시자&nbsp;만들기
+              </Button>
             )}
-          >
-            <PlusIcon />
-          </Button>
-        )}
-      </main>
-    </ScrollArea>
+          </li>
+        </ul>
+      </footer>
+    </>
   );
 }

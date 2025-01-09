@@ -5,8 +5,8 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { on } from "@renderer/lib/utils";
-import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Pending } from "./-Pending";
 
@@ -16,7 +16,6 @@ export const Route = createFileRoute("/folder-presets/")({
 });
 
 export function Page() {
-  const navigate = useNavigate();
   const { toast } = useToastWithDismiss();
   const { data: folderPresets } = useRootFolderPresets();
   const creator = useCreateFolderPreset(null);
@@ -25,10 +24,6 @@ export function Page() {
     creator.mutate({
       onError: (error) => toast(error.name, error.message),
     });
-  };
-
-  const gotoFolderPreset = (folderPresetId: string) => () => {
-    navigate({ to: "/folder-presets/$folderPresetId", params: { folderPresetId } });
   };
 
   useShortcuts({
@@ -47,19 +42,16 @@ export function Page() {
           <ol className="contents">
             {folderPresets.map((preset, index) => (
               <li className="contents" key={preset.id}>
-                <Button
-                  variant="ghost"
-                  className="h-16 w-full flex-col items-start"
-                  autoFocus={index === 0}
-                  tabIndex={index + 1}
-                  onClick={gotoFolderPreset(preset.id)}
-                  onKeyDown={on(
-                    keyboardMoveToTabIndex("ArrowUp", index),
-                    keyboardMoveToTabIndex("ArrowDown", index + 2),
-                  )}
-                >
-                  <span>{preset.name}</span>
-                  <span className="text-xs">{preset.description}</span>
+                <Button variant="ghost" className="h-16 w-full flex-col items-start" autoFocus={index === 0} asChild>
+                  <Link
+                    to="/folder-presets/$folderPresetId"
+                    params={{ folderPresetId: preset.id }}
+                    tabIndex={index + 1}
+                    onKeyDown={on(Key2FocusIndex("ArrowUp", index), Key2FocusIndex("ArrowDown", index + 2))}
+                  >
+                    <span>{preset.name}</span>
+                    <span className="text-xs">{preset.description}</span>
+                  </Link>
                 </Button>
               </li>
             ))}

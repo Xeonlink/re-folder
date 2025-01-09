@@ -6,7 +6,7 @@
  * @returns 키를 눌렀을 때 포커스를 이동시키는 함수
  * @author 오지민
  */
-export const keyboardMoveToTabIndex =
+export const Key2FocusIndex =
   <T extends HTMLElement>(key: string, targetTabIndex: number) =>
   (e: React.KeyboardEvent<T>) => {
     if (e.key !== key) return;

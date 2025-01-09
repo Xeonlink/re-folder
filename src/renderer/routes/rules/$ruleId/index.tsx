@@ -15,7 +15,7 @@ import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
 import { cn } from "@renderer/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Copy, Power, PowerOff, Trash2Icon } from "lucide-react";
-import { keyboardMoveToTabIndex } from "@renderer/lib/arrowNavigation";
+import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
 import { on } from "@renderer/lib/utils";
 
 export const Route = createFileRoute("/rules/$ruleId/")({
@@ -262,7 +262,7 @@ function Page() {
                     variant="secondary"
                     onClick={toggle}
                     tabIndex={1}
-                    onKeyDown={on(keyboardMoveToTabIndex("ArrowRight", 2))}
+                    onKeyDown={on(Key2FocusIndex("ArrowRight", 2))}
                   >
                     {rule.enabled ? <PowerOff className="h-5 w-5" /> : <Power className="h-5 w-5" />}
                   </Button>
@@ -282,7 +282,7 @@ function Page() {
                     variant="secondary"
                     onClick={copy}
                     tabIndex={2}
-                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 1), keyboardMoveToTabIndex("ArrowRight", 3))}
+                    onKeyDown={on(Key2FocusIndex("ArrowLeft", 1), Key2FocusIndex("ArrowRight", 3))}
                   >
                     <Copy className="h-5 w-5" />
                   </Button>
@@ -302,7 +302,7 @@ function Page() {
                     variant="secondary"
                     onClick={deleteThis}
                     tabIndex={3}
-                    onKeyDown={on(keyboardMoveToTabIndex("ArrowLeft", 2))}
+                    onKeyDown={on(Key2FocusIndex("ArrowLeft", 2))}
                   >
                     <Trash2Icon className="h-5 w-5" />
                   </Button>
