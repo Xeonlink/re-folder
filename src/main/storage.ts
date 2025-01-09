@@ -21,7 +21,7 @@ export const db = drizzle(sqlite, { schema: schema_0_0_0 });
 
 const schemaMap = new VersionRangeMap({
   "0.0.0 - 0.2.0": schema_0_0_0,
-  "0.3.0 - 1.2.0": schema_1_0_0,
+  "0.3.0 - 1.3.0": schema_1_0_0,
   "2.0.0 - 2.10.0": schema_2_0_0,
 });
 
