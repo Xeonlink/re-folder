@@ -1,14 +1,14 @@
-import { Pending } from "./-Pending";
 import { useCreateWatcher, useWatchers } from "@renderer/api/watchers";
+import { Dot3 } from "@renderer/components/Dot3";
 import { Button } from "@renderer/components/ui/button";
 import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
 import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { arrowFocusEventHandler } from "@renderer/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
+import { Pending } from "./-Pending";
+import { on } from "@renderer/lib/utils";
+import { keyboardMoveFocus } from "@renderer/lib/arrowNavigation";
 
 export const Route = createFileRoute("/watchers/")({
   component: Page,
@@ -41,51 +41,57 @@ function Page() {
   });
 
   return (
-    <ScrollArea className="flex-1">
-      <main className="grid grid-cols-2 gap-2 p-2">
-        {watchers.map((watcher, index) => (
-          <Button
-            variant="outline"
-            className="h-28 w-full"
-            autoFocus={index === 0}
-            tabIndex={index + 1}
-            key={watcher.id}
-            onClick={gotoWatcher(watcher.id)}
-            onKeyDown={arrowFocusEventHandler({
-              hasUp: index > 1,
-              hasRight: index % 2 === 0,
-              hasDown: index < watchers.length - 1,
-              hasLeft: index % 2 === 1,
-            })}
-          >
-            {watcher.name}
-          </Button>
-        ))}
-        {creator.isPending ? ( //
-          <motion.div
-            initial={{ scale: 0.3 }}
-            animate={{ scale: 1 }}
-            transition={{ ease: "linear", type: "spring", duration: 0.5 }}
-          >
-            <Skeleton className="flex h-28 w-full items-center justify-center">
-              <PlusIcon className="animate-spin" />
-            </Skeleton>
-          </motion.div>
-        ) : (
-          <Button
-            variant="outline"
-            className="h-28 w-full border-dashed"
-            onClick={createWatcher}
-            tabIndex={watchers.length}
-            onKeyDown={arrowFocusEventHandler({
-              hasUp: watchers.length > 1,
-              hasLeft: watchers.length % 2 === 1,
-            })}
-          >
-            <PlusIcon />
-          </Button>
-        )}
-      </main>
-    </ScrollArea>
+    <>
+      <ScrollArea className="flex-1">
+        <main className="p-2">
+          <ol className="contents">
+            {watchers.map((watcher, index) => (
+              <li className="contents" key={watcher.id}>
+                <Button
+                  variant="ghost"
+                  className="h-16 w-full flex-col items-start"
+                  autoFocus={index === 0}
+                  tabIndex={index + 1}
+                  onClick={gotoWatcher(watcher.id)}
+                  onKeyDown={on(
+                    keyboardMoveFocus("ArrowUp", ["parent", "prev", "child"]),
+                    keyboardMoveFocus("ArrowDown", ["parent", "next", "child"]),
+                  )}
+                >
+                  <h5 className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{watcher.name}</h5>
+                  <p className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs">
+                    {watcher.description}
+                  </p>
+                </Button>
+              </li>
+            ))}
+          </ol>
+        </main>
+      </ScrollArea>
+      <footer>
+        <ul className="flex h-12">
+          <li className="w-full">
+            <Button
+              variant="secondary"
+              className="h-full w-full rounded-t-none"
+              onClick={createWatcher}
+              disabled={creator.isPending}
+            >
+              {creator.isPending ? (
+                <>
+                  <PlusIcon className="h-5 w-5 animate-spin" />
+                  &nbsp;감시자&nbsp;생성 중<Dot3 />
+                </>
+              ) : (
+                <>
+                  <PlusIcon className="h-5 w-5" />
+                  &nbsp;감시자&nbsp;만들기
+                </>
+              )}
+            </Button>
+          </li>
+        </ul>
+      </footer>
+    </>
   );
 }

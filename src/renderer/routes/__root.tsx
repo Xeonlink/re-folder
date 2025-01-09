@@ -6,7 +6,7 @@ import { Button, ButtonProps } from "@renderer/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@renderer/components/ui/dialog";
 import { Toaster } from "@renderer/components/ui/toaster";
 import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { cn, eventSplitor, onArrowKeyDown } from "@renderer/lib/utils";
+import { cn, on, onArrowKeyDown } from "@renderer/lib/utils";
 import { Link, Outlet, createRootRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Error } from "./-Error";
@@ -134,7 +134,7 @@ function RouteMenuButton(props: ButtonProps) {
       variant="ghost"
       size="lg"
       className={cn("h-16 text-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2", className)}
-      onKeyDown={eventSplitor(onKeyDown, onArrowKeyDown)}
+      onKeyDown={on(onKeyDown, onArrowKeyDown)}
       {...other}
     >
       {props.children}
