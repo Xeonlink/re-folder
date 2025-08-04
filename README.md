@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="resources/icon1800_primary.png" alt="Logo" width="100"><br />
-  <img src="publish/readme/title.png" alt="Logo" width="140">
+  <img src="publish/readme/title.png" alt="title" width="140">
 </div>
 
 # 📋 개요
