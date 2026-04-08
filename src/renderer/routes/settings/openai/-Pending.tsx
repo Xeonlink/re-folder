@@ -1,7 +1,7 @@
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import { Card } from "@/renderer/components/ui/card";
+import { Input } from "@/renderer/components/ui/input";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@renderer/components/ui/select";
+} from "@/renderer/components/ui/select";
 
 export function Pending() {
   return (
@@ -18,18 +18,23 @@ export function Pending() {
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
-              <Label htmlFor="apikey" className="flex-1 font-bold">
+              <Label className="flex-1 font-bold" htmlFor="apikey">
                 Open AI
               </Label>
             </li>
             <li className="flex items-center">
-              <Label htmlFor="apikey" className="flex-1">
+              <Label className="flex-1" htmlFor="apikey">
                 api key
               </Label>
-              <Input id="apikey" name="apikey" className="w-56 border-none bg-secondary" size="sm" />
+              <Input
+                className="bg-secondary w-56 border-none"
+                id="apikey"
+                name="apikey"
+                size="sm"
+              />
             </li>
             <li className="flex items-center">
-              <Label htmlFor="model" className="flex-1">
+              <Label className="flex-1" htmlFor="model">
                 모델
               </Label>
               <Select name="model">
@@ -38,7 +43,9 @@ export function Pending() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="gpt-3.5-turbo">gpt 3.5 Turobo</SelectItem>
+                    <SelectItem value="gpt-3.5-turbo">
+                      gpt 3.5 Turobo
+                    </SelectItem>
                     <SelectItem value="gpt-4o-mini">gpt 4o mini</SelectItem>
                   </SelectGroup>
                 </SelectContent>

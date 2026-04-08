@@ -1,14 +1,20 @@
-import { applyFolderPreset } from "./exec/folderPreset";
-import { updater } from "./exec/updater";
-import { invalidateWatcher, removeWatcher, runWatcher } from "./exec/watcher";
-import type { FolderPreset, Rule, Watcher } from "./schema/v2.0.0";
-import { aiwatcherTable, categoryTable, folderPresetTable, ruleTable, watcherTable } from "./schema/v2.0.0";
-import { Settings, db } from "./storage";
 import { and, asc, count, eq, gt, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import { BrowserWindow, app, dialog } from "electron/main";
 import OpenAI from "openai";
 import { v4 as uuid } from "uuid";
+import { applyFolderPreset } from "./exec/folderPreset";
+import { updater } from "./exec/updater";
+import { invalidateWatcher, removeWatcher, runWatcher } from "./exec/watcher";
+import type { FolderPreset, Rule, Watcher } from "./schema/v2.0.0";
+import {
+  aiwatcherTable,
+  categoryTable,
+  folderPresetTable,
+  ruleTable,
+  watcherTable,
+} from "./schema/v2.0.0";
+import { Settings, db } from "./storage";
 
 type IpcDef = Record<string, (...args: any[]) => Promise<any>>;
 
@@ -37,7 +43,9 @@ export const ipcApiDef = {
         .returning({ id: watcherTable.id });
 
       for (const r of raw) {
-        if (r.rule === null) continue;
+        if (r.rule === null) {
+          continue;
+        }
         const { id, createdAt, updatedAt, ...rawRule } = r.rule;
         rawRule.watcherId = newWatherId;
         await tx.insert(ruleTable).values([rawRule]);
@@ -52,15 +60,24 @@ export const ipcApiDef = {
     return await db.select().from(watcherTable);
   },
   getWatcher: async (watcherId: string): Promise<Watcher> => {
-    const results = await db.select().from(watcherTable).where(eq(watcherTable.id, watcherId));
+    const results = await db
+      .select()
+      .from(watcherTable)
+      .where(eq(watcherTable.id, watcherId));
     return results[0];
   },
-  updateWatcher: async (watcherId: string, data: Partial<Watcher>): Promise<number> => {
+  updateWatcher: async (
+    watcherId: string,
+    data: Partial<Watcher>,
+  ): Promise<number> => {
     if (Object.keys(data).length === 0) {
       return 0;
     }
 
-    const results = await db.update(watcherTable).set(data).where(eq(watcherTable.id, watcherId));
+    const results = await db
+      .update(watcherTable)
+      .set(data)
+      .where(eq(watcherTable.id, watcherId));
 
     if (data.enabled !== undefined && typeof data.enabled === "boolean") {
       invalidateWatcher(watcherId);
@@ -70,7 +87,9 @@ export const ipcApiDef = {
   },
   deleteWatcher: async (watcherId: string): Promise<number> => {
     removeWatcher(watcherId);
-    const results = await db.delete(watcherTable).where(eq(watcherTable.id, watcherId));
+    const results = await db
+      .delete(watcherTable)
+      .where(eq(watcherTable.id, watcherId));
     return results.changes;
   },
   runWatcher: async (watcherId: string): Promise<boolean> => {
@@ -79,18 +98,28 @@ export const ipcApiDef = {
   },
   // rule table -----------------------------------------------------
   createRule: async (watcherId: string) => {
-    const [{ order }] = await db.select({ order: count() }).from(ruleTable).where(eq(ruleTable.watcherId, watcherId));
+    const [{ order }] = await db
+      .select({ order: count() })
+      .from(ruleTable)
+      .where(eq(ruleTable.watcherId, watcherId));
 
-    const results = await db.insert(ruleTable).values([{ order, watcherId }]).returning({
-      id: ruleTable.id,
-    });
+    const results = await db
+      .insert(ruleTable)
+      .values([{ order, watcherId }])
+      .returning({
+        id: ruleTable.id,
+      });
 
     invalidateWatcher(watcherId);
 
     return results[0].id;
   },
   copyRule: async (ruleId: string) => {
-    const raw = await db.select().from(ruleTable).where(eq(ruleTable.id, ruleId)).limit(1);
+    const raw = await db
+      .select()
+      .from(ruleTable)
+      .where(eq(ruleTable.id, ruleId))
+      .limit(1);
 
     const { id, createdAt, updatedAt, ...rawRule } = raw[0];
 
@@ -112,10 +141,17 @@ export const ipcApiDef = {
     return result[0].id;
   },
   getRules: async (watcherId: string) => {
-    return await db.select().from(ruleTable).where(eq(ruleTable.watcherId, watcherId)).orderBy(asc(ruleTable.order));
+    return await db
+      .select()
+      .from(ruleTable)
+      .where(eq(ruleTable.watcherId, watcherId))
+      .orderBy(asc(ruleTable.order));
   },
   getRule: async (ruleId: string) => {
-    const results = await db.select().from(ruleTable).where(eq(ruleTable.id, ruleId));
+    const results = await db
+      .select()
+      .from(ruleTable)
+      .where(eq(ruleTable.id, ruleId));
     return results[0];
   },
   updateRule: async (ruleId: string, data: Partial<Rule>) => {
@@ -138,7 +174,10 @@ export const ipcApiDef = {
     const changes = await db.transaction(async (tx) => {
       let changes = 0;
       for (const id in data) {
-        const result = await tx.update(ruleTable).set({ order: data[id] }).where(eq(ruleTable.id, id));
+        const result = await tx
+          .update(ruleTable)
+          .set({ order: data[id] })
+          .where(eq(ruleTable.id, id));
         changes += result.changes;
       }
       return changes;
@@ -158,7 +197,9 @@ export const ipcApiDef = {
     const reOrderTargets = await db
       .select()
       .from(ruleTable)
-      .where(and(eq(ruleTable.watcherId, watcherId), gt(ruleTable.order, order)));
+      .where(
+        and(eq(ruleTable.watcherId, watcherId), gt(ruleTable.order, order)),
+      );
 
     for (const target of reOrderTargets) {
       await db
@@ -186,10 +227,20 @@ export const ipcApiDef = {
       });
     return result[0].id;
   },
-  copyFolderPreset: async (parentId: string | null, folderPresetId: string): Promise<string> => {
+  copyFolderPreset: async (
+    parentId: string | null,
+    folderPresetId: string,
+  ): Promise<string> => {
     return await db.transaction(async (tx) => {
-      const copy = async (parentId: string | null, folderPresetId: string, depth: number) => {
-        const raw = await db.select().from(folderPresetTable).where(eq(folderPresetTable.id, folderPresetId));
+      const copy = async (
+        parentId: string | null,
+        folderPresetId: string,
+        depth: number,
+      ) => {
+        const raw = await db
+          .select()
+          .from(folderPresetTable)
+          .where(eq(folderPresetTable.id, folderPresetId));
 
         const { id, createdAt, updatedAt, ...rawFolderPreset } = raw[0];
         rawFolderPreset.parentId = parentId;
@@ -202,7 +253,10 @@ export const ipcApiDef = {
           .values([{ ...rawFolderPreset, parentId }])
           .returning({ id: folderPresetTable.id });
 
-        const raw1 = await db.select().from(folderPresetTable).where(eq(folderPresetTable.parentId, id));
+        const raw1 = await db
+          .select()
+          .from(folderPresetTable)
+          .where(eq(folderPresetTable.parentId, id));
 
         for (const r of raw1) {
           await copy(newFolderPresetId, r.id, depth + 1);
@@ -212,8 +266,13 @@ export const ipcApiDef = {
       return await copy(parentId, folderPresetId, 0);
     });
   },
-  getFolderPresets: async (parentId: string | null): Promise<FolderPreset[]> => {
-    const builder = db.select().from(folderPresetTable).orderBy(asc(folderPresetTable.name));
+  getFolderPresets: async (
+    parentId: string | null,
+  ): Promise<FolderPreset[]> => {
+    const builder = db
+      .select()
+      .from(folderPresetTable)
+      .orderBy(asc(folderPresetTable.name));
 
     if (parentId === null) {
       return await builder.where(isNull(folderPresetTable.parentId));
@@ -229,7 +288,9 @@ export const ipcApiDef = {
       .leftJoin(child, eq(child.parentId, folderPresetTable.id))
       .where(eq(folderPresetTable.id, folderPresetId));
 
-    const raw1 = rows.reduce<Record<string, FolderPreset & { children: string[] }>>((acc, row) => {
+    const raw1 = rows.reduce<
+      Record<string, FolderPreset & { children: string[] }>
+    >((acc, row) => {
       const { folder_preset, child } = row;
       if (!acc[folder_preset.id]) {
         acc[folder_preset.id] = { ...folder_preset, children: [] };
@@ -243,7 +304,10 @@ export const ipcApiDef = {
     const result = Object.values(raw1);
     return result[0];
   },
-  updateFolderPreset: async (folderPresetId: string, data: Partial<FolderPreset>) => {
+  updateFolderPreset: async (
+    folderPresetId: string,
+    data: Partial<FolderPreset>,
+  ) => {
     if (Object.keys(data).length === 0) {
       return 0;
     }
@@ -256,7 +320,10 @@ export const ipcApiDef = {
         .limit(1);
 
       if (parentId !== null) {
-        const raw = await db.select().from(folderPresetTable).where(eq(folderPresetTable.parentId, parentId));
+        const raw = await db
+          .select()
+          .from(folderPresetTable)
+          .where(eq(folderPresetTable.parentId, parentId));
 
         if (raw.map((r) => r.name).includes(data.name)) {
           console.log(raw.map((r) => r.name));
@@ -265,19 +332,26 @@ export const ipcApiDef = {
       }
     }
 
-    const result = await db.update(folderPresetTable).set(data).where(eq(folderPresetTable.id, folderPresetId));
+    const result = await db
+      .update(folderPresetTable)
+      .set(data)
+      .where(eq(folderPresetTable.id, folderPresetId));
 
     return result.changes;
   },
   deleteFolderPreset: async (folderPresetId: string) => {
-    const result = await db.delete(folderPresetTable).where(eq(folderPresetTable.id, folderPresetId));
+    const result = await db
+      .delete(folderPresetTable)
+      .where(eq(folderPresetTable.id, folderPresetId));
     return result.changes;
   },
   applyFolderPreset: async (folderPresetId: string) => {
     const result = await dialog.showOpenDialog({
       properties: ["openDirectory", "createDirectory", "dontAddToRecent"],
     });
-    if (result.canceled) return;
+    if (result.canceled) {
+      return;
+    }
     const path = result.filePaths[0];
     await applyFolderPreset(folderPresetId, path);
     return path;
@@ -296,9 +370,12 @@ export const ipcApiDef = {
       .from(categoryTable)
       .where(eq(categoryTable.aiwatcherId, aiwatcherId));
 
-    const results = await db.insert(categoryTable).values([{ order, aiwatcherId }]).returning({
-      id: categoryTable.id,
-    });
+    const results = await db
+      .insert(categoryTable)
+      .values([{ order, aiwatcherId }])
+      .returning({
+        id: categoryTable.id,
+      });
 
     // TODO : Implement Ai Watcher - invalidater
 

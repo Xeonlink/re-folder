@@ -1,15 +1,25 @@
-import { useCopyRule, useDeleteRule, useRule, useUpdateRule } from "@renderer/api/rules";
-import { api } from "@renderer/api/utils";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Textarea } from "@renderer/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
-import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { cn } from "@renderer/lib/utils";
+import {
+  useCopyRule,
+  useDeleteRule,
+  useRule,
+  useUpdateRule,
+} from "@/renderer/api/rules";
+import { api } from "@/renderer/api/utils";
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Input } from "@/renderer/components/ui/input";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { Textarea } from "@/renderer/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
+import { useShortcuts } from "@/renderer/hooks/useShortcuts";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { cn } from "@/renderer/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Copy, Power, PowerOff, Trash2Icon } from "lucide-react";
 import { Pending } from "./-Pending";
@@ -46,21 +56,27 @@ function Page() {
   const updator = useUpdateRule(categoryId);
   const deletor = useDeleteRule(rule.watcherId, categoryId);
 
-  const onModifyBlur = (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    if (value === rule[key]) return;
-    updator.mutate({
-      data: { [key]: value },
-      onError: (error) => {
-        toast(`${key} 변경 실패`, error.message);
-        e.target.value = rule[key];
-      },
-    });
-  };
+  const onModifyBlur =
+    (key: NormalKey) =>
+    (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      if (value === rule[key]) {
+        return;
+      }
+      updator.mutate({
+        data: { [key]: value },
+        onError: (error) => {
+          toast(`${key} 변경 실패`, error.message);
+          e.target.value = rule[key];
+        },
+      });
+    };
 
   const onSelectFolderClick = async (e: React.MouseEvent<HTMLInputElement>) => {
     const results = await api.selectFolder();
-    if (results.canceled) return;
+    if (results.canceled) {
+      return;
+    }
     const target = e.target as HTMLInputElement;
     target.value = results.filePaths[0];
     updator.mutate({
@@ -116,12 +132,14 @@ function Page() {
     <>
       <ScrollArea className="flex-1">
         <main className="flex h-full flex-col space-y-2 p-2">
-          <Card className={cn("shadow-none", { "border-primary": rule.enabled })}>
+          <Card
+            className={cn("shadow-none", { "border-primary": rule.enabled })}
+          >
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
                 <Label className="flex-1">이름</Label>
                 <Input
-                  className="w-56 border-none bg-secondary"
+                  className="bg-secondary w-56 border-none"
                   size="sm"
                   defaultValue={rule.name}
                   onBlur={onModifyBlur("name")}
@@ -130,7 +148,7 @@ function Page() {
               <li className="flex items-center">
                 <Label className="flex-1">출력경로</Label>
                 <Input
-                  className="w-56 border-none bg-secondary"
+                  className="bg-secondary w-56 border-none"
                   size="sm"
                   onClick={onSelectFolderClick}
                   defaultValue={rule.path}
@@ -159,7 +177,11 @@ function Page() {
                     variant="secondary"
                     onClick={toggle}
                   >
-                    {rule.enabled ? <PowerOff className="h-5 w-5" /> : <Power className="h-5 w-5" />}
+                    {rule.enabled ? (
+                      <PowerOff className="h-5 w-5" />
+                    ) : (
+                      <Power className="h-5 w-5" />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -172,7 +194,11 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary" onClick={copy}>
+                  <Button
+                    className="h-full w-full flex-col gap-1.5 rounded-none"
+                    variant="secondary"
+                    onClick={copy}
+                  >
                     <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>

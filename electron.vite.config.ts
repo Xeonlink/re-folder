@@ -1,25 +1,30 @@
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react";
-import { defineConfig, externalizeDepsPlugin } from "electron-vite";
+import tailwindcss from "@tailwindcss/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import viteReact from "@vitejs/plugin-react";
+import { defineConfig } from "electron-vite";
 import { resolve } from "path";
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [],
     publicDir: resolve("src/main/assets"),
     build: {
       copyPublicDir: true,
+      externalizeDeps: true,
     },
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [],
+    build: {
+      externalizeDeps: true,
+    },
   },
   renderer: {
     resolve: {
       alias: {
-        "@renderer": resolve("src/renderer"),
+        "@": resolve("src"),
       },
     },
-    plugins: [react(), TanStackRouterVite()],
+    plugins: [viteReact(), tanstackRouter(), tailwindcss()],
   },
 });

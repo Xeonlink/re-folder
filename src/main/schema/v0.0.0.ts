@@ -1,8 +1,8 @@
-import { getRandomHexColor } from ".";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { InferSelectModel } from "drizzle-orm/table";
 import { app } from "electron";
 import { v4 as uuid } from "uuid";
+import { getRandomHexColor } from ".";
 
 export const watcherTable = sqliteTable("watcher", {
   id: text("id", { mode: "text" })

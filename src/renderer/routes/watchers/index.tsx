@@ -1,11 +1,11 @@
-import { useCreateWatcher, useWatchers } from "@renderer/api/watchers";
-import { Dot3 } from "@renderer/components/Dot3";
-import { Button } from "@renderer/components/ui/button";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
-import { on } from "@renderer/lib/utils";
+import { useCreateWatcher, useWatchers } from "@/renderer/api/watchers";
+import { Dot3 } from "@/renderer/components/Dot3";
+import { Button } from "@/renderer/components/ui/button";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { useShortcuts } from "@/renderer/hooks/useShortcuts";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@/renderer/lib/arrowNavigation";
+import { on } from "@/renderer/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Pending } from "./-Pending";
@@ -42,15 +42,24 @@ function Page() {
           <ol className="contents">
             {watchers.map((watcher, index) => (
               <li className="contents" key={watcher.id}>
-                <Button variant="ghost" className="h-16 w-full flex-col items-start" asChild>
+                <Button
+                  className="h-16 w-full flex-col items-start"
+                  variant="ghost"
+                  asChild
+                >
                   <Link
                     to="/watchers/$watcherId"
                     params={{ watcherId: watcher.id }}
                     tabIndex={index + 1}
-                    onKeyDown={on(Key2FocusIndex("ArrowUp", index), Key2FocusIndex("ArrowDown", index + 2))}
+                    onKeyDown={on(
+                      Key2FocusIndex("ArrowUp", index),
+                      Key2FocusIndex("ArrowDown", index + 2),
+                    )}
                   >
-                    <h5 className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{watcher.name}</h5>
-                    <p className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs">
+                    <h5 className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                      {watcher.name}
+                    </h5>
+                    <p className="max-w-full overflow-hidden text-xs text-ellipsis whitespace-nowrap">
                       {watcher.description}
                     </p>
                   </Link>
@@ -64,8 +73,8 @@ function Page() {
         <ul className="flex h-12">
           <li className="w-full">
             <Button
-              variant="secondary"
               className="h-full w-full rounded-t-none"
+              variant="secondary"
               onClick={createWatcher}
               disabled={creator.isPending}
             >

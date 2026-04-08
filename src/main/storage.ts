@@ -1,9 +1,8 @@
-import * as schema_0_0_0 from "./schema/v0.0.0";
-import * as schema_1_0_0 from "./schema/v1.0.0";
-import * as schema_2_0_0 from "./schema/v2.0.0";
-import { VersionRangeMap } from "./utils/VersionRangeMap";
 import Database from "better-sqlite3";
-import { generateSQLiteDrizzleJson, generateSQLiteMigration } from "drizzle-kit/api";
+import {
+  generateSQLiteDrizzleJson,
+  generateSQLiteMigration,
+} from "drizzle-kit/api";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { app, safeStorage } from "electron";
 import { existsSync } from "fs";
@@ -11,13 +10,17 @@ import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { cwd } from "process";
 import { z } from "zod";
+import * as schema_0_0_0 from "./schema/v0.0.0";
+import * as schema_1_0_0 from "./schema/v1.0.0";
+import * as schema_2_0_0 from "./schema/v2.0.0";
+import { VersionRangeMap } from "./utils/VersionRangeMap";
 
 const dbPath = app.isPackaged //
   ? join(app.getPath("userData"), "data.db")
   : join(cwd(), "dev", "data.db");
 
 const sqlite = new Database(dbPath);
-export const db = drizzle(sqlite, { schema: schema_0_0_0 });
+export const db = drizzle(sqlite, { schema: schema_1_0_0 });
 
 const schemaMap = new VersionRangeMap({
   "0.0.0 - 0.2.0": schema_0_0_0,
@@ -49,7 +52,9 @@ export async function autoMigrate() {
  * @author 오지민
  */
 export class Settings {
-  public static PATH = app.isPackaged ? join(app.getPath("userData"), "flags") : join(cwd(), "dev", "flags.json");
+  public static PATH = app.isPackaged
+    ? join(app.getPath("userData"), "flags")
+    : join(cwd(), "dev", "flags.json");
 
   public static schema = z.object({
     dbVersion: z.string().optional(),
@@ -70,7 +75,9 @@ export class Settings {
     await this.saveData(this._data);
   }
 
-  public static async get<K extends keyof z.infer<typeof Settings.schema>>(key: K) {
+  public static async get<K extends keyof z.infer<typeof Settings.schema>>(
+    key: K,
+  ) {
     if (!this._data) {
       this._data = await this.loadData();
     }
@@ -104,7 +111,9 @@ export class Settings {
     }
   }
 
-  private static parseRawData(rawData: string): z.infer<typeof Settings.schema> {
+  private static parseRawData(
+    rawData: string,
+  ): z.infer<typeof Settings.schema> {
     const jsonRawData = JSON.parse(rawData);
     const { success, data } = Settings.schema.safeParse(jsonRawData);
     if (success) {

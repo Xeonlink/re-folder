@@ -1,11 +1,14 @@
-import { useCreateFolderPreset, useRootFolderPresets } from "@renderer/api/folderPresets";
-import { Dot3 } from "@renderer/components/Dot3";
-import { Button } from "@renderer/components/ui/button";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { on } from "@renderer/lib/utils";
-import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
+import {
+  useCreateFolderPreset,
+  useRootFolderPresets,
+} from "@/renderer/api/folderPresets";
+import { Dot3 } from "@/renderer/components/Dot3";
+import { Button } from "@/renderer/components/ui/button";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { useShortcuts } from "@/renderer/hooks/useShortcuts";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@/renderer/lib/arrowNavigation";
+import { on } from "@/renderer/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Pending } from "./-Pending";
@@ -42,12 +45,20 @@ export function Page() {
           <ol className="contents">
             {folderPresets.map((preset, index) => (
               <li className="contents" key={preset.id}>
-                <Button variant="ghost" className="h-16 w-full flex-col items-start" autoFocus={index === 0} asChild>
+                <Button
+                  className="h-16 w-full flex-col items-start"
+                  variant="ghost"
+                  autoFocus={index === 0}
+                  asChild
+                >
                   <Link
                     to="/folder-presets/$folderPresetId"
                     params={{ folderPresetId: preset.id }}
                     tabIndex={index + 1}
-                    onKeyDown={on(Key2FocusIndex("ArrowUp", index), Key2FocusIndex("ArrowDown", index + 2))}
+                    onKeyDown={on(
+                      Key2FocusIndex("ArrowUp", index),
+                      Key2FocusIndex("ArrowDown", index + 2),
+                    )}
                   >
                     <span>{preset.name}</span>
                     <span className="text-xs">{preset.description}</span>
@@ -62,8 +73,8 @@ export function Page() {
         <ul className="flex h-12">
           <li className="w-full">
             <Button
-              variant="secondary"
               className="h-full w-full rounded-t-none"
+              variant="secondary"
               onClick={createFolderPreset}
               disabled={creator.isPending}
             >

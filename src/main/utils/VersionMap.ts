@@ -8,8 +8,16 @@ export class VersionMap<T = any> extends Map<string, T> {
   private static parseVersion(version: string): string {
     const versions = version.split(".").map((t) => parseInt(t, 10));
 
-    if (versions.length !== 3) throw new Error('유효하지 않은 버전 형식입니다. "x.y.z" 형식이어야 합니다.');
-    if (versions.some(isNaN)) throw new Error("유효하지 않은 버전 형식입니다. 버전은 숫자로 이루어져야 합니다.");
+    if (versions.length !== 3) {
+      throw new Error(
+        '유효하지 않은 버전 형식입니다. "x.y.z" 형식이어야 합니다.',
+      );
+    }
+    if (versions.some(isNaN)) {
+      throw new Error(
+        "유효하지 않은 버전 형식입니다. 버전은 숫자로 이루어져야 합니다.",
+      );
+    }
 
     return versions.join(".");
   }
@@ -20,7 +28,9 @@ export class VersionMap<T = any> extends Map<string, T> {
    */
   constructor(entries?: Record<string, T>) {
     super();
-    if (!entries) return;
+    if (!entries) {
+      return;
+    }
 
     for (const [key, value] of Object.entries(entries)) {
       this.set(key, value);
@@ -35,7 +45,9 @@ export class VersionMap<T = any> extends Map<string, T> {
    * @throws 유효하지 않은 버전인 경우
    */
   public set(key: string, value: T): this {
-    if (value === undefined) return this;
+    if (value === undefined) {
+      return this;
+    }
     const version = VersionMap.parseVersion(key);
     return super.set(version, value);
   }

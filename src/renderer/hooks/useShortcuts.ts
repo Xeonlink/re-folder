@@ -1,4 +1,4 @@
-import { usePlatform } from "@renderer/api/extra";
+import { usePlatform } from "@/renderer/api/extra";
 import { useEffect } from "react";
 
 type Modifier = "ctrl" | "shift" | "alt" | "meta";
@@ -36,7 +36,9 @@ type Key = Alphabet | Arrow | ExtraKey;
 type KeyCompose1 = `${Modifier}+${Key}`;
 type KeyCompose = KeyCompose1;
 
-type Options = Partial<Record<NodeJS.Platform, Partial<Record<KeyCompose, () => any>>>>;
+type Options = Partial<
+  Record<NodeJS.Platform, Partial<Record<KeyCompose, () => any>>>
+>;
 
 export function useShortcuts(options: Options, deps: any[] = []) {
   const { data: platform } = usePlatform();
@@ -66,17 +68,34 @@ export function useShortcuts(options: Options, deps: any[] = []) {
   }, deps);
 }
 
-export function useSimpleShortcuts(platform: NodeJS.Platform, modifier: Modifier, key: Key, callback: () => any) {
+export function useSimpleShortcuts(
+  platform: NodeJS.Platform,
+  modifier: Modifier,
+  key: Key,
+  callback: () => any,
+) {
   const { data: actualPlatform } = usePlatform();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (platform != actualPlatform) return;
-      if (modifier === "ctrl" && !e.ctrlKey) return;
-      if (modifier === "shift" && !e.shiftKey) return;
-      if (modifier === "alt" && !e.altKey) return;
-      if (modifier === "meta" && !e.metaKey) return;
-      if (key !== e.key.toLowerCase()) return;
+      if (platform != actualPlatform) {
+        return;
+      }
+      if (modifier === "ctrl" && !e.ctrlKey) {
+        return;
+      }
+      if (modifier === "shift" && !e.shiftKey) {
+        return;
+      }
+      if (modifier === "alt" && !e.altKey) {
+        return;
+      }
+      if (modifier === "meta" && !e.metaKey) {
+        return;
+      }
+      if (key !== e.key.toLowerCase()) {
+        return;
+      }
       callback();
     };
 

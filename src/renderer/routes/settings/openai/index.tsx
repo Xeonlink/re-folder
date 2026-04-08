@@ -1,9 +1,13 @@
-import { Pending } from "./-Pending";
-import { useOpenAiApiKey, useOpenAiModel, useUpdateOpenAiApiKey, useUpdateOpenAiModel } from "@renderer/api/openai";
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
+import {
+  useOpenAiApiKey,
+  useOpenAiModel,
+  useUpdateOpenAiApiKey,
+  useUpdateOpenAiModel,
+} from "@/renderer/api/openai";
+import { Card } from "@/renderer/components/ui/card";
+import { Input } from "@/renderer/components/ui/input";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -11,9 +15,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@renderer/components/ui/select";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
+} from "@/renderer/components/ui/select";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
 import { createFileRoute } from "@tanstack/react-router";
+import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/settings/openai/")({
   component: Page,
@@ -28,7 +33,9 @@ function Page() {
   const updateOpenAiModel = useUpdateOpenAiModel();
 
   const onApiKeyBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.value === apiKey) return;
+    if (e.target.value === apiKey) {
+      return;
+    }
     updateOpenAiApiKey.mutate({
       data: e.target.value,
       onError: () => {
@@ -39,7 +46,9 @@ function Page() {
   };
 
   const onModelChange = (value: string) => {
-    if (value === model) return;
+    if (value === model) {
+      return;
+    }
     updateOpenAiModel.mutate({
       data: value,
       onError: () => {
@@ -54,29 +63,35 @@ function Page() {
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
-              <Label htmlFor="apikey" className="flex-1">
+              <Label className="flex-1" htmlFor="apikey">
                 api key
               </Label>
               <Input
+                className="bg-secondary w-56 border-none"
                 id="apikey"
                 name="apikey"
-                className="w-56 border-none bg-secondary"
                 size="sm"
                 defaultValue={apiKey}
                 onBlur={onApiKeyBlur}
               />
             </li>
             <li className="flex items-center">
-              <Label htmlFor="model" className="flex-1">
+              <Label className="flex-1" htmlFor="model">
                 모델
               </Label>
-              <Select name="model" defaultValue={model} onValueChange={onModelChange}>
+              <Select
+                name="model"
+                defaultValue={model}
+                onValueChange={onModelChange}
+              >
                 <SelectTrigger className="w-56">
                   <SelectValue placeholder="모델 선택" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="gpt-3.5-turbo">gpt 3.5 Turobo</SelectItem>
+                    <SelectItem value="gpt-3.5-turbo">
+                      gpt 3.5 Turobo
+                    </SelectItem>
                     <SelectItem value="gpt-4o-mini">gpt 4o mini</SelectItem>
                   </SelectGroup>
                 </SelectContent>

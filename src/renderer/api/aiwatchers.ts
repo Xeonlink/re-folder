@@ -1,7 +1,11 @@
+import type { Watcher } from "@/main/schema";
+import { wait } from "@/renderer/lib/utils";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { type Variables, api } from "./utils";
-import { wait } from "@renderer/lib/utils";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import type { Watcher } from "src/main/schema";
 
 export function useAIWatchers() {
   return useSuspenseQuery<Watcher[]>({
@@ -64,7 +68,9 @@ export function useUpdateAIWatcher(aiwatcherId: string) {
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Watcher>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<Watcher>(queryKey, () => {
         return { ...prev, ...data };
@@ -72,7 +78,9 @@ export function useUpdateAIWatcher(aiwatcherId: string) {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<Watcher>(queryKey, context.prev);
       variables.onError?.(error);
     },
@@ -92,7 +100,9 @@ export function useDeleteAIWatcher(aiwatcherId: string) {
     onMutate: async (_) => {
       queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Watcher[]>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<Watcher[]>(queryKey, () => {
         return prev.filter((watcher) => watcher.id !== aiwatcherId);
@@ -100,7 +110,9 @@ export function useDeleteAIWatcher(aiwatcherId: string) {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<Watcher[]>(queryKey, context.prev);
       variables.onError?.(error);
     },

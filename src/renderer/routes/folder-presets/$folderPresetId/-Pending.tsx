@@ -1,11 +1,16 @@
-import { PendingFolderUnit } from "./-FolderUnit";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Input } from "@/renderer/components/ui/input";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
 import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
+import { PendingFolderUnit } from "./-FolderUnit";
 
 export function Pending() {
   return (
@@ -15,16 +20,26 @@ export function Pending() {
           <Card className="mx-2 mt-2 shadow-none">
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
-                <Label htmlFor="name" className="flex-1">
+                <Label className="flex-1" htmlFor="name">
                   이름
                 </Label>
-                <Input id="name" className="w-56 border-none bg-secondary" size="sm" name="name" />
+                <Input
+                  className="bg-secondary w-56 border-none"
+                  id="name"
+                  size="sm"
+                  name="name"
+                />
               </li>
               <li className="flex items-center">
-                <Label htmlFor="description" className="flex-1">
+                <Label className="flex-1" htmlFor="description">
                   설명
                 </Label>
-                <Input id="description" className="w-56 border-none bg-secondary" size="sm" name="description" />
+                <Input
+                  className="bg-secondary w-56 border-none"
+                  id="description"
+                  size="sm"
+                  name="description"
+                />
               </li>
             </ul>
           </Card>
@@ -56,7 +71,10 @@ export function Pending() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary">
+                  <Button
+                    className="h-full w-full flex-col gap-1.5 rounded-none"
+                    variant="secondary"
+                  >
                     <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -70,7 +88,10 @@ export function Pending() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="h-full w-full flex-col gap-1.5 rounded-none rounded-br-md" variant="secondary">
+                  <Button
+                    className="h-full w-full flex-col gap-1.5 rounded-none rounded-br-md"
+                    variant="secondary"
+                  >
                     <Trash2Icon className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>

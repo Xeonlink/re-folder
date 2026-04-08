@@ -12,7 +12,10 @@ export function createApiSelector<TDef extends IpcDef>() {
     for (const channel in map) {
       if (map[channel]) {
         api[channel] = async (...args: any[]) => {
-          const [success, resultOrError] = await ipcRenderer.invoke(channel, ...args);
+          const [success, resultOrError] = await ipcRenderer.invoke(
+            channel,
+            ...args,
+          );
           if (success) {
             return resultOrError;
           } else {

@@ -1,13 +1,23 @@
-import { ArrowLeftIcon, ArrowRightIcon, Cross1Icon, MinusIcon } from "@radix-ui/react-icons";
-import { usePlatform } from "@renderer/api/extra";
-import { api } from "@renderer/api/utils";
-import ImgLogo from "@renderer/assets/icon.png";
-import { Button } from "@renderer/components/ui/button";
-import { Toaster } from "@renderer/components/ui/toaster";
-import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { Link, Outlet, createRootRoute, useRouter } from "@tanstack/react-router";
+import { usePlatform } from "@/renderer/api/extra";
+import { api } from "@/renderer/api/utils";
+import ImgLogo from "@/renderer/assets/icon.png";
+import { Button } from "@/renderer/components/ui/button";
+import { Toaster } from "@/renderer/components/ui/toaster";
+import { useShortcuts } from "@/renderer/hooks/useShortcuts";
+import { cn } from "@/renderer/lib/utils";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  Cross1Icon,
+  MinusIcon,
+} from "@radix-ui/react-icons";
+import {
+  Link,
+  Outlet,
+  createRootRoute,
+  useRouter,
+} from "@tanstack/react-router";
 import { Error } from "./-Error";
-import { cn } from "@renderer/lib/utils";
 
 export const Route = createRootRoute({
   component: Page,
@@ -31,19 +41,23 @@ function Page() {
 
   return (
     <>
-      <header className={cn("sticky top-0 flex h-12 w-full", { "flex-row-reverse": platform === "darwin" })}>
+      <header
+        className={cn("sticky top-0 flex h-12 w-full", {
+          "flex-row-reverse": platform === "darwin",
+        })}
+      >
         <div className="flex">
           <Button
-            variant="secondary"
             className="h-full w-10 rounded-none p-0 pl-2"
+            variant="secondary"
             onClick={() => router.history.back()}
             tabIndex={-1}
           >
             <ArrowLeftIcon className="h-4 w-4" />
           </Button>
           <Button
-            variant="secondary"
             className="h-full w-10 rounded-none p-0 pr-2"
+            variant="secondary"
             onClick={() => router.history.forward()}
             tabIndex={-1}
           >
@@ -51,29 +65,29 @@ function Page() {
           </Button>
         </div>
 
-        <div className="window-handle flex-1 bg-secondary"></div>
+        <div className="window-handle bg-secondary flex-1"></div>
 
-        <Link to="/" className="bg-secondary py-3" tabIndex={-1}>
-          <img src={ImgLogo} alt="re-folder" className="h-6" />
+        <Link className="bg-secondary py-3" to="/" tabIndex={-1}>
+          <img className="h-6" src={ImgLogo} alt="re-folder" />
         </Link>
 
-        <div className="window-handle flex-1 bg-secondary"></div>
+        <div className="window-handle bg-secondary flex-1"></div>
 
         {platform === "darwin" ? (
-          <div className="w-20 bg-secondary" />
+          <div className="bg-secondary w-20" />
         ) : (
           <div className="flex">
             <Button
-              variant="secondary"
               className="h-full w-10 rounded-none p-0"
+              variant="secondary"
               onClick={() => api.minimizeSelf()}
               tabIndex={-1}
             >
               <MinusIcon className="relative top-1 h-4 w-4" />
             </Button>
             <Button
-              variant="secondary"
               className="h-full w-10 rounded-none p-0 pr-2"
+              variant="secondary"
               onClick={() => api.closeSelf()}
               tabIndex={-1}
             >

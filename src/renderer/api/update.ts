@@ -1,5 +1,9 @@
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Variables, api } from "./utils";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 
 export function useUpdateCheckPolicy() {
   return useSuspenseQuery({
@@ -23,7 +27,9 @@ export function useSetUpdateCheckPolicy() {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<"auto" | "manual">(queryKey, context.prev);
       variables.onError?.(error);
     },
@@ -56,7 +62,9 @@ export function useSetUpdateDownloadPolicy() {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<"auto" | "manual">(queryKey, context.prev);
       variables.onError?.(error);
     },
@@ -89,7 +97,9 @@ export function useSetUpdateInstallPolicy() {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<"auto" | "manual">(queryKey, context.prev);
       variables.onError?.(error);
     },

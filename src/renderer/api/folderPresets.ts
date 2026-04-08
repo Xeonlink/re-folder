@@ -1,7 +1,12 @@
+import type { FolderPreset } from "@/main/schema";
+import { wait } from "@/renderer/lib/utils";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Variables, api } from "./utils";
-import { wait } from "@renderer/lib/utils";
-import { QueryClient, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import type { FolderPreset } from "src/main/schema";
 
 type FolderPresetWithChildren = FolderPreset & { children: string[] };
 
@@ -64,8 +69,13 @@ export function useUpdateFolderPreset(id: string) {
       return api.updateFolderPreset(id, variables.data);
     },
     onMutate: async (variables) => {
-      const prev = queryClient.getQueryData<FolderPreset>(["folderPresets", id]);
-      if (!prev) return;
+      const prev = queryClient.getQueryData<FolderPreset>([
+        "folderPresets",
+        id,
+      ]);
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<FolderPreset>(["folderPresets", id], () => {
         return { ...prev, ...variables.data };
@@ -73,8 +83,13 @@ export function useUpdateFolderPreset(id: string) {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
-      queryClient.setQueryData<FolderPreset>(["folderPresets", id], context.prev);
+      if (!context?.prev) {
+        return;
+      }
+      queryClient.setQueryData<FolderPreset>(
+        ["folderPresets", id],
+        context.prev,
+      );
       variables.onError?.(error);
     },
     onSuccess: (_, variables, __) => {
@@ -108,14 +123,19 @@ export function useDeleteFolderPresetById() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: Variables<{ parentId: string | null; id: string }>) => {
+    mutationFn: (
+      variables: Variables<{ parentId: string | null; id: string }>,
+    ) => {
       return api.deleteFolderPreset(variables.id);
     },
     onError: (error, variables) => {
       variables.onError?.(error);
     },
     onSuccess: async (_, variables, __) => {
-      await queryClient.invalidateQueries({ queryKey: ["folderPresets", variables.parentId], exact: true });
+      await queryClient.invalidateQueries({
+        queryKey: ["folderPresets", variables.parentId],
+        exact: true,
+      });
       variables.onSuccess?.();
       await wait(1000);
       removeQueries(queryClient, variables.id);
@@ -129,8 +149,13 @@ export function useDeleteFolderPresetById() {
  * @author 오지민
  */
 function removeQueries(queryClient: QueryClient, id: string) {
-  const folderPreset = queryClient.getQueryData<FolderPresetWithChildren>(["folderPresets", id]);
-  if (!folderPreset) return;
+  const folderPreset = queryClient.getQueryData<FolderPresetWithChildren>([
+    "folderPresets",
+    id,
+  ]);
+  if (!folderPreset) {
+    return;
+  }
 
   for (const childId of folderPreset.children) {
     removeQueries(queryClient, childId);

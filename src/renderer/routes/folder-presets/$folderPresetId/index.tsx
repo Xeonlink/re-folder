@@ -1,24 +1,29 @@
-import { FolderUnit } from "./-FolderUnit";
-import { Pending } from "./-Pending";
 import {
   useApplyFolderPreset,
   useCopyFolderPreset,
   useDeleteFolderPreset,
   useFolderPreset,
   useUpdateFolderPreset,
-} from "@renderer/api/folderPresets";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
-import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
-import { on } from "@renderer/lib/utils";
+} from "@/renderer/api/folderPresets";
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Input } from "@/renderer/components/ui/input";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
+import { useShortcuts } from "@/renderer/hooks/useShortcuts";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@/renderer/lib/arrowNavigation";
+import { on } from "@/renderer/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Copy, Trash2Icon } from "lucide-react";
+import { FolderUnit } from "./-FolderUnit";
+import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/folder-presets/$folderPresetId/")({
   component: Page,
@@ -33,22 +38,28 @@ function Page() {
   const router = useRouter();
   const { toast } = useToastWithDismiss();
   const { data: folderPreset } = useFolderPreset(folderPresetId);
-  const copyFolderPreset = useCopyFolderPreset(folderPreset.parentId, folderPresetId);
+  const copyFolderPreset = useCopyFolderPreset(
+    folderPreset.parentId,
+    folderPresetId,
+  );
   const deleteFolderPreset = useDeleteFolderPreset(null, folderPresetId);
   const updateFolderPreset = useUpdateFolderPreset(folderPresetId);
   const applyFolderPreset = useApplyFolderPreset(folderPresetId);
 
-  const onModifyBlur = (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === folderPreset[key]) return;
-    updateFolderPreset.mutate({
-      data: { [key]: value },
-      onError: (error) => {
-        toast(error.name, error.message);
-        e.target.value = folderPreset[key];
-      },
-    });
-  };
+  const onModifyBlur =
+    (key: NormalKey) => (e: React.FocusEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (value === folderPreset[key]) {
+        return;
+      }
+      updateFolderPreset.mutate({
+        data: { [key]: value },
+        onError: (error) => {
+          toast(error.name, error.message);
+          e.target.value = folderPreset[key];
+        },
+      });
+    };
 
   const apply = () => {
     applyFolderPreset.mutate({
@@ -92,12 +103,12 @@ function Page() {
           <Card className="mx-2 mt-2 shadow-none">
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
-                <Label htmlFor="name" className="flex-1">
+                <Label className="flex-1" htmlFor="name">
                   이름
                 </Label>
                 <Input
+                  className="bg-secondary w-56 border-none"
                   id="name"
-                  className="w-56 border-none bg-secondary"
                   size="sm"
                   name="name"
                   defaultValue={folderPreset.name}
@@ -105,12 +116,12 @@ function Page() {
                 />
               </li>
               <li className="flex items-center">
-                <Label htmlFor="description" className="flex-1">
+                <Label className="flex-1" htmlFor="description">
                   설명
                 </Label>
                 <Input
+                  className="bg-secondary w-56 border-none"
                   id="description"
-                  className="w-56 border-none bg-secondary"
                   size="sm"
                   name="description"
                   defaultValue={folderPreset.description}
@@ -155,7 +166,10 @@ function Page() {
                     variant="secondary"
                     onClick={copy}
                     tabIndex={2}
-                    onKeyDown={on(Key2FocusIndex("ArrowLeft", 1), Key2FocusIndex("ArrowRight", 3))}
+                    onKeyDown={on(
+                      Key2FocusIndex("ArrowLeft", 1),
+                      Key2FocusIndex("ArrowRight", 3),
+                    )}
                   >
                     <Copy className="h-5 w-5" />
                   </Button>

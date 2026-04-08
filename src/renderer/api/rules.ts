@@ -1,7 +1,11 @@
+import type { Rule } from "@/main/schema";
+import { wait } from "@/renderer/lib/utils";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Variables, api } from "./utils";
-import { wait } from "@renderer/lib/utils";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import type { Rule } from "src/main/schema";
 
 export function useCreateRule(watcherId: string) {
   const queryClient = useQueryClient();
@@ -61,7 +65,9 @@ export function useUpdateRule(ruleId: string) {
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Rule>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<Rule>(queryKey, () => {
         return { ...prev, ...variables.data };
@@ -69,7 +75,9 @@ export function useUpdateRule(ruleId: string) {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<Rule>(queryKey, context.prev);
       variables.onError?.(error);
     },
@@ -91,17 +99,24 @@ export function useUpdateRuleOrder(watcherId: string) {
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Rule[]>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<Rule[]>(queryKey, () => {
         return prev
-          .map((rule) => ({ ...rule, order: variables.data[rule.id] ?? rule.order }))
+          .map((rule) => ({
+            ...rule,
+            order: variables.data[rule.id] ?? rule.order,
+          }))
           .sort((a, b) => a.order - b.order);
       });
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<Rule[]>(queryKey, context.prev);
       variables.onError?.(error);
     },
@@ -123,7 +138,9 @@ export function useDeleteRule(watcherId: string, ruleId: string) {
     onMutate: async (_) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<Rule[]>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<Rule[]>(queryKey, () => {
         return prev.filter((rule) => rule.id !== ruleId);
@@ -131,7 +148,9 @@ export function useDeleteRule(watcherId: string, ruleId: string) {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<Rule[]>(queryKey, context.prev);
       variables.onError?.(error);
     },

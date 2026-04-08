@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mcp-hub": {
+      "command": "npx",
+      "args": ["mcp-hub-mcp", "--config-file", "./.cursor/mcp-hub.json"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    }
+  }
+}

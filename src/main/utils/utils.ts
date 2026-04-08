@@ -71,10 +71,15 @@ export class MenuBuilder {
 }
 
 type BrowserWindowConstructorOptions = Partial<
-  Record<NodeJS.Platform | "all", Electron.BrowserWindowConstructorOptions | undefined>
+  Record<
+    NodeJS.Platform | "all",
+    Electron.BrowserWindowConstructorOptions | undefined
+  >
 >;
 
-export function createBrowserWindow(options: BrowserWindowConstructorOptions): BrowserWindow {
+export function createBrowserWindow(
+  options: BrowserWindowConstructorOptions,
+): BrowserWindow {
   const platform = process.platform;
   const all = options.all ?? {};
   const platformOptions = options[platform] ?? {};
