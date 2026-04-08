@@ -1,4 +1,11 @@
-import { LucideProps, Wifi, WifiHigh, WifiLow, WifiOff, WifiZero } from "lucide-react";
+import {
+  LucideProps,
+  Wifi,
+  WifiHigh,
+  WifiLow,
+  WifiOff,
+  WifiZero,
+} from "lucide-react";
 
 const length = 5;
 

@@ -1,4 +1,7 @@
-import type { ToastActionElement, ToastProps } from "@renderer/components/ui/toast";
+import type {
+  ToastActionElement,
+  ToastProps,
+} from "@/renderer/components/ui/toast";
 import * as React from "react";
 
 const TOAST_LIMIT = 1;
@@ -78,7 +81,9 @@ export const reducer = (state: State, action: Action): State => {
     case "UPDATE_TOAST":
       return {
         ...state,
-        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } : t)),
+        toasts: state.toasts.map((t) =>
+          t.id === action.toast.id ? { ...t, ...action.toast } : t,
+        ),
       };
 
     case "DISMISS_TOAST": {
@@ -150,7 +155,9 @@ function toast({ ...props }: Toast) {
       id,
       open: true,
       onOpenChange: (open) => {
-        if (!open) dismiss();
+        if (!open) {
+          dismiss();
+        }
       },
     },
   });
@@ -182,4 +189,4 @@ function useToast() {
   };
 }
 
-export { useToast, toast };
+export { toast, useToast };

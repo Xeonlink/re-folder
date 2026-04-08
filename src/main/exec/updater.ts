@@ -1,13 +1,20 @@
-import { Settings } from "../storage";
 import { app } from "electron";
 import { CancellationToken, autoUpdater } from "electron-updater";
+import { Settings } from "../storage";
 
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 autoUpdater.autoRunAppAfterInstall = true;
 
 type UpdateInfo = {
-  state: "idle" | "checking" | "available" | "not-available" | "error" | "downloading" | "ready";
+  state:
+    | "idle"
+    | "checking"
+    | "available"
+    | "not-available"
+    | "error"
+    | "downloading"
+    | "ready";
   checking: boolean;
   availableVersion: string | null;
   errorMessage: string | null;
@@ -99,11 +106,19 @@ export const updater = {
       updater.info.errorMessage = "Not available in development";
       return;
     }
-    if (updater.info.checking) return;
-    if (updater.info.downloading) return;
+    if (updater.info.checking) {
+      return;
+    }
+    if (updater.info.downloading) {
+      return;
+    }
     const result = await autoUpdater.checkForUpdates();
-    if (!result) return;
-    if (!result.cancellationToken) return;
+    if (!result) {
+      return;
+    }
+    if (!result.cancellationToken) {
+      return;
+    }
     cancelToken = result.cancellationToken;
   },
   downloadUpdate: async () => {

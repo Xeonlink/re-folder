@@ -1,5 +1,4 @@
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { useVersion } from "@renderer/api/extra";
+import { useVersion } from "@/renderer/api/extra";
 import {
   useSetUpdateCheckPolicy,
   useSetUpdateDownloadPolicy,
@@ -8,18 +7,24 @@ import {
   useUpdateDownloadPolicy,
   useUpdateInfo,
   useUpdateInstallPolicy,
-} from "@renderer/api/update";
-import { api } from "@renderer/api/utils";
-import { Dot3 } from "@renderer/components/Dot3";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Textarea } from "@renderer/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
-import { on } from "@renderer/lib/utils";
+} from "@/renderer/api/update";
+import { api } from "@/renderer/api/utils";
+import { Dot3 } from "@/renderer/components/Dot3";
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { Textarea } from "@/renderer/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@/renderer/lib/arrowNavigation";
+import { on } from "@/renderer/lib/utils";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { DownloadIcon, FolderDown, Server, X } from "lucide-react";
 
@@ -83,7 +88,7 @@ function Page() {
           <Card className="shadow-none">
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
-                <Label htmlFor="check-update" className="flex-1">
+                <Label className="flex-1" htmlFor="check-update">
                   확인 정책
                 </Label>
                 <div className="flex w-56">
@@ -91,12 +96,19 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-br-none rounded-tr-none"
+                          className="w-full rounded-tr-none rounded-br-none"
                           size="sm"
-                          variant={updateCheckPolicy === "auto" ? "default" : "secondary"}
+                          variant={
+                            updateCheckPolicy === "auto"
+                              ? "default"
+                              : "secondary"
+                          }
                           onClick={changeCheckPolicy("auto")}
                           tabIndex={1}
-                          onKeyDown={on(Key2FocusIndex("ArrowRight", 2), Key2FocusIndex("ArrowDown", 3))}
+                          onKeyDown={on(
+                            Key2FocusIndex("ArrowRight", 2),
+                            Key2FocusIndex("ArrowDown", 3),
+                          )}
                         >
                           자동
                         </Button>
@@ -110,17 +122,22 @@ function Page() {
                   <Button
                     className="w-full rounded-l-none"
                     size="sm"
-                    variant={updateCheckPolicy === "manual" ? "default" : "secondary"}
+                    variant={
+                      updateCheckPolicy === "manual" ? "default" : "secondary"
+                    }
                     onClick={changeCheckPolicy("manual")}
                     tabIndex={2}
-                    onKeyDown={on(Key2FocusIndex("ArrowLeft", 1), Key2FocusIndex("ArrowDown", 4))}
+                    onKeyDown={on(
+                      Key2FocusIndex("ArrowLeft", 1),
+                      Key2FocusIndex("ArrowDown", 4),
+                    )}
                   >
                     수동
                   </Button>
                 </div>
               </li>
               <li className="flex items-center">
-                <Label htmlFor="check-update" className="flex-1">
+                <Label className="flex-1" htmlFor="check-update">
                   다운로드 정책
                 </Label>
                 <div className="flex w-56">
@@ -128,9 +145,13 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-br-none rounded-tr-none"
+                          className="w-full rounded-tr-none rounded-br-none"
                           size="sm"
-                          variant={updateDownloadPolicy === "auto" ? "default" : "secondary"}
+                          variant={
+                            updateDownloadPolicy === "auto"
+                              ? "default"
+                              : "secondary"
+                          }
                           onClick={changeDownloadPolicy("auto")}
                           tabIndex={3}
                           onKeyDown={on(
@@ -151,7 +172,11 @@ function Page() {
                   <Button
                     className="w-full rounded-l-none"
                     size="sm"
-                    variant={updateDownloadPolicy === "manual" ? "default" : "secondary"}
+                    variant={
+                      updateDownloadPolicy === "manual"
+                        ? "default"
+                        : "secondary"
+                    }
                     onClick={changeDownloadPolicy("manual")}
                     tabIndex={4}
                     onKeyDown={on(
@@ -165,7 +190,7 @@ function Page() {
                 </div>
               </li>
               <li className="flex items-center">
-                <Label htmlFor="check-update" className="flex-1">
+                <Label className="flex-1" htmlFor="check-update">
                   설치 정책
                 </Label>
                 <div className="flex w-56">
@@ -173,9 +198,13 @@ function Page() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className="w-full rounded-br-none rounded-tr-none"
+                          className="w-full rounded-tr-none rounded-br-none"
                           size="sm"
-                          variant={updateInstallPolicy === "auto" ? "default" : "secondary"}
+                          variant={
+                            updateInstallPolicy === "auto"
+                              ? "default"
+                              : "secondary"
+                          }
                           onClick={changeInstallPolicy("auto")}
                           tabIndex={5}
                           onKeyDown={on(
@@ -196,7 +225,9 @@ function Page() {
                   <Button
                     className="w-full rounded-l-none"
                     size="sm"
-                    variant={updateInstallPolicy === "manual" ? "default" : "secondary"}
+                    variant={
+                      updateInstallPolicy === "manual" ? "default" : "secondary"
+                    }
                     onClick={changeInstallPolicy("manual")}
                     tabIndex={6}
                     onKeyDown={on(
@@ -269,7 +300,11 @@ function Page() {
 
           {update.state === "downloading" ? (
             <li className="w-full">
-              <Button className="size-full rounded-none rounded-bl-md" variant="secondary" disabled>
+              <Button
+                className="size-full rounded-none rounded-bl-md"
+                variant="secondary"
+                disabled
+              >
                 <DownloadIcon className="h-5 w-5" />
                 &nbsp;다운로드 중<Dot3 interval={400} />
               </Button>
@@ -289,7 +324,11 @@ function Page() {
 
           {update.state === "ready" ? (
             <li className="w-full">
-              <Button className="size-full rounded-t-none" variant="secondary" onClick={() => api.installUpdate()}>
+              <Button
+                className="size-full rounded-t-none"
+                variant="secondary"
+                onClick={() => api.installUpdate()}
+              >
                 <FolderDown className="h-5 w-5" /> &nbsp; 설치 및 재시작
               </Button>
             </li>

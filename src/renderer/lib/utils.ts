@@ -37,7 +37,11 @@ export function invertHexColor(hex: string) {
   return `#${invertedR}${invertedG}${invertedB}`;
 }
 
-export function testPromise<T>(promise: Promise<T>, delay: number = 3000, fail: boolean = false): Promise<T> {
+export function testPromise<T>(
+  promise: Promise<T>,
+  delay: number = 3000,
+  fail: boolean = false,
+): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (fail) {

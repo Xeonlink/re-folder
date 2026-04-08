@@ -1,17 +1,22 @@
+import { useVersion } from "@/renderer/api/extra";
+import { useTheme } from "@/renderer/components/ThemeProvider";
+import { WifiButton } from "@/renderer/components/WifiButton";
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
+import { URL } from "@/renderer/constants";
+import { useClipboard } from "@/renderer/hooks/useTextClipboard";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { Key2FocusIndex } from "@/renderer/lib/arrowNavigation";
+import { on } from "@/renderer/lib/utils";
 import { GearIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
-import { useVersion } from "@renderer/api/extra";
-import { useTheme } from "@renderer/components/ThemeProvider";
-import { WifiButton } from "@renderer/components/WifiButton";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
-import { URL } from "@renderer/constants";
-import { useClipboard } from "@renderer/hooks/useTextClipboard";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
-import { on } from "@renderer/lib/utils";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Mail, MonitorCog, Moon, Sun } from "lucide-react";
 
@@ -35,7 +40,7 @@ function Page() {
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
-              <Label htmlFor="version" className="flex-1">
+              <Label className="flex-1" htmlFor="version">
                 버전
               </Label>
               <TooltipProvider>
@@ -59,7 +64,7 @@ function Page() {
               </TooltipProvider>
             </li>
             <li className="flex items-center">
-              <Label htmlFor="theme" className="flex-1">
+              <Label className="flex-1" htmlFor="theme">
                 테마
               </Label>
               <div className="flex w-56">
@@ -67,7 +72,7 @@ function Page() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        className="w-full rounded-br-none rounded-tr-none"
+                        className="w-full rounded-tr-none rounded-br-none"
                         size="sm"
                         variant={theme === "light" ? "default" : "secondary"}
                         onClick={() => setTheme("light")}
@@ -116,7 +121,7 @@ function Page() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        className="w-full rounded-bl-none rounded-tl-none"
+                        className="w-full rounded-tl-none rounded-bl-none"
                         size="sm"
                         variant={theme === "system" ? "default" : "secondary"}
                         onClick={() => setTheme("system")}
@@ -138,16 +143,19 @@ function Page() {
               </div>
             </li>
             <li className="flex items-center">
-              <Label htmlFor="apikey" className="flex-1">
+              <Label className="flex-1" htmlFor="apikey">
                 Open AI
               </Label>
               <Button
+                className="w-56"
                 variant="secondary"
                 size="sm"
-                className="w-56"
                 asChild
                 tabIndex={5}
-                onKeyDown={on(Key2FocusIndex("ArrowUp", 4), Key2FocusIndex("ArrowDown", 6))}
+                onKeyDown={on(
+                  Key2FocusIndex("ArrowUp", 4),
+                  Key2FocusIndex("ArrowDown", 6),
+                )}
               >
                 <Link to="/settings/openai">
                   <GearIcon className="h-5 w-5" />
@@ -155,16 +163,19 @@ function Page() {
               </Button>
             </li>
             <li className="flex items-center">
-              <Label htmlFor="apikey" className="flex-1">
+              <Label className="flex-1" htmlFor="apikey">
                 업데이트
               </Label>
               <Button
+                className="w-56"
                 variant="secondary"
                 size="sm"
-                className="w-56"
                 asChild
                 tabIndex={6}
-                onKeyDown={on(Key2FocusIndex("ArrowUp", 5), Key2FocusIndex("ArrowDown", 7))}
+                onKeyDown={on(
+                  Key2FocusIndex("ArrowUp", 5),
+                  Key2FocusIndex("ArrowDown", 7),
+                )}
               >
                 <Link to="/settings/update">
                   <GearIcon className="h-5 w-5" />
@@ -251,7 +262,10 @@ function Page() {
                 toast("준비중", "개인정보처리방침을 작성중입니다.");
               }}
               tabIndex={10}
-              onKeyDown={on(Key2FocusIndex("ArrowUp", 8), Key2FocusIndex("ArrowRight", 11))}
+              onKeyDown={on(
+                Key2FocusIndex("ArrowUp", 8),
+                Key2FocusIndex("ArrowRight", 11),
+              )}
             >
               개인정보처리방침
             </Button>
@@ -261,7 +275,10 @@ function Page() {
               variant="secondary"
               onClick={linkTo(URL.LICENSE)}
               tabIndex={11}
-              onKeyDown={on(Key2FocusIndex("ArrowUp", 8), Key2FocusIndex("ArrowLeft", 10))}
+              onKeyDown={on(
+                Key2FocusIndex("ArrowUp", 8),
+                Key2FocusIndex("ArrowLeft", 10),
+              )}
             >
               소프트웨어 라이센스
             </Button>

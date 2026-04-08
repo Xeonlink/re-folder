@@ -1,11 +1,15 @@
-import { useToast } from "./use-toast";
+import { ToastAction } from "@/renderer/components/ui/toast";
 import { Cross1Icon } from "@radix-ui/react-icons";
-import { ToastAction } from "@renderer/components/ui/toast";
+import { useToast } from "./use-toast";
 
 export function useToastWithDismiss() {
   const { toast, dismiss, toasts } = useToast();
 
-  const doToast = (title: string, description: string, dismissDelay: number = 1000 * 2) => {
+  const doToast = (
+    title: string,
+    description: string,
+    dismissDelay: number = 1000 * 2,
+  ) => {
     const toastResult = toast({
       title,
       description,

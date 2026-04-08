@@ -1,11 +1,14 @@
-import { default as IconBlack, default as IconPrimary } from "../../resources/icon1800_primary.png?asset";
+import { BrowserWindow, Tray, app, dialog, nativeImage, shell } from "electron";
+import { join } from "path";
+import {
+  default as IconBlack,
+  default as IconPrimary,
+} from "../../resources/icon1800_primary.png?asset";
 import { updater } from "./exec/updater";
 import { initializeWatcher } from "./exec/watcher";
 import { ipcApiDef } from "./ipc";
 import { Settings, autoMigrate } from "./storage";
 import { MenuBuilder, registIpcs, resolveErrorMessage } from "./utils/utils";
-import { BrowserWindow, Tray, app, dialog, nativeImage, shell } from "electron";
-import { join } from "path";
 
 function createWindow(): void {
   const icon = nativeImage.createFromPath(IconBlack).resize({
@@ -41,7 +44,9 @@ function createWindow(): void {
   });
 
   win.webContents.on("before-input-event", (event, input) => {
-    if (input.type !== "keyDown") return;
+    if (input.type !== "keyDown") {
+      return;
+    }
 
     const disableRefreshWhenPackaged = true;
     if (disableRefreshWhenPackaged && app.isPackaged) {
@@ -73,7 +78,11 @@ function createWindow(): void {
       if (input.code === "Minus" && (input.control || input.meta)) {
         event.preventDefault();
       }
-      if (input.code === "Equal" && input.shift && (input.control || input.meta)) {
+      if (
+        input.code === "Equal" &&
+        input.shift &&
+        (input.control || input.meta)
+      ) {
         event.preventDefault();
       }
     }

@@ -13,8 +13,12 @@ export function DraggableItem(props: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const element = ref.current?.querySelector("[data-drag-handle]") as HTMLElement | null;
-    if (!element) return;
+    const element = ref.current?.querySelector(
+      "[data-drag-handle]",
+    ) as HTMLElement | null;
+    if (!element) {
+      return;
+    }
     const onPointerDown = (e: PointerEvent) => dragCtrl.start(e);
     element.addEventListener("pointerdown", onPointerDown);
     const onClick = (e: MouseEvent) => e.stopPropagation();
@@ -26,7 +30,13 @@ export function DraggableItem(props: Props) {
   }, []);
 
   return (
-    <Reorder.Item value={value} dragControls={dragCtrl} dragListener={false} onDragEnd={() => onDragEnd?.()} ref={ref}>
+    <Reorder.Item
+      value={value}
+      dragControls={dragCtrl}
+      dragListener={false}
+      onDragEnd={() => onDragEnd?.()}
+      ref={ref}
+    >
       {children}
     </Reorder.Item>
   );

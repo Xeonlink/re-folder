@@ -1,9 +1,9 @@
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { Skeleton } from "@/renderer/components/ui/skeleton";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Skeleton } from "@renderer/components/ui/skeleton";
 
 export function Pending() {
   return (
@@ -12,13 +12,13 @@ export function Pending() {
         <Card className="shadow-none">
           <ul className="m-4 space-y-2">
             <li className="flex items-center">
-              <Label htmlFor="name" className="flex-1">
+              <Label className="flex-1" htmlFor="name">
                 이름
               </Label>
               <Skeleton className="h-9 w-56" />
             </li>
             <li className="flex items-center">
-              <Label htmlFor="description" className="flex-1">
+              <Label className="flex-1" htmlFor="description">
                 설명
               </Label>
               <Skeleton className="h-9 w-56" />
@@ -39,7 +39,11 @@ export function Pending() {
         </Card>
         <div className="w-96 space-y-2">
           {new Array(3).fill(0).map((_, i) => (
-            <Button key={i} className="h-12 w-96 justify-start" variant="outline">
+            <Button
+              className="h-12 w-96 justify-start"
+              key={i}
+              variant="outline"
+            >
               <div className="flex-1 text-left">
                 <Skeleton className="inline-block h-6 w-20" />
                 &nbsp;&nbsp;
@@ -49,7 +53,10 @@ export function Pending() {
             </Button>
           ))}
         </div>
-        <Button className="h-12 w-96 justify-between border-dashed" variant="outline">
+        <Button
+          className="h-12 w-96 justify-between border-dashed"
+          variant="outline"
+        >
           <span>규칙 만들기</span>
         </Button>
       </main>

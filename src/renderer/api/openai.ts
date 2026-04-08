@@ -1,5 +1,9 @@
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Variables, api } from "./utils";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 
 // OpenAI API Key ----------------------------------------------------------
 export function useOpenAiApiKey() {
@@ -20,7 +24,9 @@ export function useUpdateOpenAiApiKey() {
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<string>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<string>(queryKey, () => {
         return variables.data;
@@ -28,7 +34,9 @@ export function useUpdateOpenAiApiKey() {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<string>(queryKey, context.prev);
       variables.onError?.(error);
     },
@@ -58,7 +66,9 @@ export function useUpdateOpenAiModel() {
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const prev = queryClient.getQueryData<string>(queryKey);
-      if (!prev) return;
+      if (!prev) {
+        return;
+      }
 
       queryClient.setQueryData<string>(queryKey, () => {
         return variables.data;
@@ -66,7 +76,9 @@ export function useUpdateOpenAiModel() {
       return { prev };
     },
     onError: (error, variables, context) => {
-      if (!context?.prev) return;
+      if (!context?.prev) {
+        return;
+      }
       queryClient.setQueryData<string>(queryKey, context.prev);
       variables.onError?.(error);
     },

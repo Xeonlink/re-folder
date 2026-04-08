@@ -2,9 +2,9 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
-      "@renderer/*": ["src/renderer/*"]
+      "@/*": ["./src/*"]
     }
   },
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",

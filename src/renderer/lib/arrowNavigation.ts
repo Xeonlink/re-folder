@@ -9,8 +9,12 @@
 export const Key2FocusIndex =
   <T extends HTMLElement>(key: string, targetTabIndex: number) =>
   (e: React.KeyboardEvent<T>) => {
-    if (e.key !== key) return;
+    if (e.key !== key) {
+      return;
+    }
 
-    const target = document.querySelector(`[tabindex="${targetTabIndex}"]`) as HTMLElement;
+    const target = document.querySelector(
+      `[tabindex="${targetTabIndex}"]`,
+    ) as HTMLElement;
     target?.focus();
   };

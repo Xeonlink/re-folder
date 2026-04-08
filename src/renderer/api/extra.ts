@@ -1,5 +1,5 @@
-import { api } from "./utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "./utils";
 
 export function useVersion() {
   return useSuspenseQuery({

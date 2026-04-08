@@ -1,8 +1,8 @@
-import ImgLogo from "@renderer/assets/icon.png";
-import { Button } from "@renderer/components/ui/button";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { on } from "@renderer/lib/utils";
-import { Key2FocusIndex } from "@renderer/lib/arrowNavigation";
+import ImgLogo from "@/renderer/assets/icon.png";
+import { Button } from "@/renderer/components/ui/button";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { Key2FocusIndex } from "@/renderer/lib/arrowNavigation";
+import { on } from "@/renderer/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
@@ -55,19 +55,27 @@ function Page() {
             bounce: 0.3,
           }}
         >
-          <img src={ImgLogo} alt="re-folder" className="h-6" />
+          <img className="h-6" src={ImgLogo} alt="re-folder" />
         </motion.div>
 
-        <motion.ol className="flex w-64 flex-col gap-2" variants={container} initial="hidden" animate="show">
+        <motion.ol
+          className="flex w-64 flex-col gap-2"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
           <motion.li variants={item}>
             <Button
+              className="w-full text-lg"
               variant="ghost"
               size="lg"
-              className="w-full text-lg"
               autoFocus
               tabIndex={1}
               onClick={() => navigate({ to: "/folder-presets" })}
-              onKeyDown={on(Key2FocusIndex("ArrowUp", 3), Key2FocusIndex("ArrowDown", 2))}
+              onKeyDown={on(
+                Key2FocusIndex("ArrowUp", 3),
+                Key2FocusIndex("ArrowDown", 2),
+              )}
             >
               폴더 프리셋
             </Button>
@@ -75,12 +83,15 @@ function Page() {
 
           <motion.li variants={item}>
             <Button
+              className="w-full text-lg"
               variant="ghost"
               size="lg"
-              className="w-full text-lg"
               tabIndex={2}
               onClick={() => navigate({ to: "/watchers" })}
-              onKeyDown={on(Key2FocusIndex("ArrowUp", 1), Key2FocusIndex("ArrowDown", 3))}
+              onKeyDown={on(
+                Key2FocusIndex("ArrowUp", 1),
+                Key2FocusIndex("ArrowDown", 3),
+              )}
             >
               감시자
             </Button>
@@ -88,12 +99,15 @@ function Page() {
 
           <motion.li variants={item}>
             <Button
+              className="w-full text-lg"
               variant="ghost"
               size="lg"
-              className="w-full text-lg"
               tabIndex={3}
               onClick={() => navigate({ to: "/settings" })}
-              onKeyDown={on(Key2FocusIndex("ArrowUp", 2), Key2FocusIndex("ArrowDown", 1))}
+              onKeyDown={on(
+                Key2FocusIndex("ArrowUp", 2),
+                Key2FocusIndex("ArrowDown", 1),
+              )}
             >
               설정
             </Button>

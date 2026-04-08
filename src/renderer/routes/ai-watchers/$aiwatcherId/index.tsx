@@ -1,24 +1,50 @@
-import { Pending } from "./-Pending";
+import type { Rule } from "@/main/schema";
+import {
+  useCreateRule,
+  useRules,
+  useUpdateRuleOrder,
+} from "@/renderer/api/rules";
+import { api } from "@/renderer/api/utils";
+import {
+  useCopyWatcher,
+  useDeleteWatcher,
+  useRunWatcher,
+  useUpdateWatcher,
+  useWatcher,
+} from "@/renderer/api/watchers";
+import { DraggableItem } from "@/renderer/components/DraggableItme";
+import { Button } from "@/renderer/components/ui/button";
+import { Card } from "@/renderer/components/ui/card";
+import { Input } from "@/renderer/components/ui/input";
+import { Label } from "@/renderer/components/ui/label";
+import { ScrollArea } from "@/renderer/components/ui/scroll-area";
+import { Skeleton } from "@/renderer/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
+import { useShortcuts } from "@/renderer/hooks/useShortcuts";
+import { useToastWithDismiss } from "@/renderer/hooks/useToastWithDismiss";
+import { cn } from "@/renderer/lib/utils";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { useCreateRule, useRules, useUpdateRuleOrder } from "@renderer/api/rules";
-import { api } from "@renderer/api/utils";
-import { useCopyWatcher, useDeleteWatcher, useRunWatcher, useUpdateWatcher, useWatcher } from "@renderer/api/watchers";
-import { DraggableItem } from "@renderer/components/DraggableItme";
-import { Button } from "@renderer/components/ui/button";
-import { Card } from "@renderer/components/ui/card";
-import { Input } from "@renderer/components/ui/input";
-import { Label } from "@renderer/components/ui/label";
-import { ScrollArea } from "@renderer/components/ui/scroll-area";
-import { Skeleton } from "@renderer/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@renderer/components/ui/tooltip";
-import { useShortcuts } from "@renderer/hooks/useShortcuts";
-import { useToastWithDismiss } from "@renderer/hooks/useToastWithDismiss";
-import { cn } from "@renderer/lib/utils";
-import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { Reorder, motion } from "framer-motion";
-import { CircleFadingArrowUp, Copy, Eye, EyeClosed, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  CircleFadingArrowUp,
+  Copy,
+  Eye,
+  EyeClosed,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import type { Rule } from "src/main/schema";
+import { Pending } from "./-Pending";
 
 export const Route = createFileRoute("/ai-watchers/$aiwatcherId/")({
   component: Page,
@@ -44,21 +70,26 @@ function Page() {
   const [categoryOrder, setRuleOrder] = useState<Rule[]>(rules);
   useEffect(() => setRuleOrder(rules), [rules]);
 
-  const onModifyBlur = (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === watcher[key]) return;
-    updateWatcher.mutate({
-      data: { [key]: value },
-      onError: (error) => {
-        toast(error.name, error.message);
-        e.target.value = watcher[key];
-      },
-    });
-  };
+  const onModifyBlur =
+    (key: NormalKey) => async (e: React.FocusEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (value === watcher[key]) {
+        return;
+      }
+      updateWatcher.mutate({
+        data: { [key]: value },
+        onError: (error) => {
+          toast(error.name, error.message);
+          e.target.value = watcher[key];
+        },
+      });
+    };
 
   const onSelectFolderClick = async (e: React.MouseEvent<HTMLInputElement>) => {
     const results = await api.selectFolder();
-    if (results.canceled) return;
+    if (results.canceled) {
+      return;
+    }
     const target = e.target as HTMLInputElement;
     target.value = results.filePaths[0];
     updateWatcher.mutate({
@@ -73,10 +104,14 @@ function Page() {
   const onCategoryDragEnd = () => {
     const data = {};
     for (let i = 0; i < categoryOrder.length; i++) {
-      if (categoryOrder[i].id === rules[i].id) continue;
+      if (categoryOrder[i].id === rules[i].id) {
+        continue;
+      }
       data[categoryOrder[i].id] = i;
     }
-    if (Object.keys(data).length === 0) return;
+    if (Object.keys(data).length === 0) {
+      return;
+    }
 
     updateRuleOrder.mutate({
       data,
@@ -140,15 +175,17 @@ function Page() {
     <>
       <ScrollArea className="flex-1">
         <main className="space-y-2 p-2">
-          <Card className={cn("shadow-none", { "border-primary": watcher.enabled })}>
+          <Card
+            className={cn("shadow-none", { "border-primary": watcher.enabled })}
+          >
             <ul className="m-4 space-y-2">
               <li className="flex items-center">
-                <Label htmlFor="name" className="flex-1">
+                <Label className="flex-1" htmlFor="name">
                   이름
                 </Label>
                 <Input
+                  className="bg-secondary w-56 border-none"
                   id="name"
-                  className="w-56 border-none bg-secondary"
                   size="sm"
                   name="name"
                   defaultValue={watcher.name}
@@ -156,12 +193,12 @@ function Page() {
                 />
               </li>
               <li className="flex items-center">
-                <Label htmlFor="description" className="flex-1">
+                <Label className="flex-1" htmlFor="description">
                   설명
                 </Label>
                 <Input
+                  className="bg-secondary w-56 border-none"
                   id="description"
-                  className="w-56 border-none bg-secondary"
                   size="sm"
                   name="description"
                   defaultValue={watcher.description}
@@ -169,13 +206,13 @@ function Page() {
                 />
               </li>
               <li className="flex items-center">
-                <Label htmlFor="path" className="flex-1">
+                <Label className="flex-1" htmlFor="path">
                   감시경로
                 </Label>
                 <Input
+                  className="bg-secondary w-56 border-none"
                   id="path"
                   name="path"
-                  className="w-56 border-none bg-secondary"
                   size="sm"
                   onClick={onSelectFolderClick}
                   defaultValue={watcher.path}
@@ -185,23 +222,37 @@ function Page() {
             </ul>
           </Card>
           <Reorder.Group
+            className={cn("space-y-2", {
+              contents: categoryOrder.length === 0,
+            })}
             axis="y"
             values={categoryOrder}
             onReorder={setRuleOrder}
-            className={cn("space-y-2", { contents: categoryOrder.length === 0 })}
           >
             {categoryOrder.map((category) => (
-              <DraggableItem key={category.id} value={category} onDragEnd={onCategoryDragEnd}>
+              <DraggableItem
+                key={category.id}
+                value={category}
+                onDragEnd={onCategoryDragEnd}
+              >
                 <Button
                   className="h-12 w-full justify-between"
                   variant={category.enabled ? "secondary" : "outline"}
-                  onClick={() => navigate({ to: "/category/$categoryId", params: { categoryId: category.id } })}
+                  onClick={() =>
+                    navigate({
+                      to: "/category/$categoryId",
+                      params: { categoryId: category.id },
+                    })
+                  }
                 >
                   <span>
                     {category.name}&nbsp;&nbsp;
                     <span className="text-xs">{category.path}</span>
                   </span>
-                  <DragHandleDots2Icon className="h-full w-5" data-drag-handle />
+                  <DragHandleDots2Icon
+                    className="h-full w-5"
+                    data-drag-handle
+                  />
                 </Button>
               </DraggableItem>
             ))}
@@ -238,7 +289,11 @@ function Page() {
                     variant="secondary"
                     onClick={toggle}
                   >
-                    {watcher.enabled ? <Eye className="h-5 w-5" /> : <EyeClosed className="h-5 w-5" />}
+                    {watcher.enabled ? (
+                      <Eye className="h-5 w-5" />
+                    ) : (
+                      <EyeClosed className="h-5 w-5" />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -269,7 +324,11 @@ function Page() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="h-full w-full flex-col gap-1.5 rounded-none" variant="secondary" onClick={copy}>
+                  <Button
+                    className="h-full w-full flex-col gap-1.5 rounded-none"
+                    variant="secondary"
+                    onClick={copy}
+                  >
                     <Copy className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>

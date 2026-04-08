@@ -14,14 +14,21 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
    */
   private static versionToNumber(version: string): number {
     const trimmedVersion = version.trim();
-    const parts = trimmedVersion.split(".").map((part) => parseInt(part.trim(), 10));
+    const parts = trimmedVersion
+      .split(".")
+      .map((part) => parseInt(part.trim(), 10));
 
-    if (parts.length !== 3 || parts.some(isNaN))
-      throw new Error('유효하지 않은 버전 형식입니다. "x.y.z" 형식이어야 합니다.');
+    if (parts.length !== 3 || parts.some(isNaN)) {
+      throw new Error(
+        '유효하지 않은 버전 형식입니다. "x.y.z" 형식이어야 합니다.',
+      );
+    }
 
     const [major, minor, patch] = parts;
 
-    if (major >= 1024 || minor >= 1024 || patch >= 1024) throw new Error("버전 번호는 각각 1024 미만이어야 합니다.");
+    if (major >= 1024 || minor >= 1024 || patch >= 1024) {
+      throw new Error("버전 번호는 각각 1024 미만이어야 합니다.");
+    }
 
     return (major << this.MAJOR_SHIFT) | (minor << this.MINOR_SHIFT) | patch;
   }
@@ -33,14 +40,22 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
   constructor(entries?: Record<string, T>) {
     super();
 
-    if (!entries) return;
+    if (!entries) {
+      return;
+    }
 
     for (const [range, value] of Object.entries(entries)) {
-      if (value === undefined) continue;
+      if (value === undefined) {
+        continue;
+      }
 
       const [start, end] = range.split("-").map((v) => v.trim());
 
-      if (!start || !end) throw new Error('유효하지 않은 버전 범위 형식입니다. "시작버전-끝버전" 형식이어야 합니다.');
+      if (!start || !end) {
+        throw new Error(
+          '유효하지 않은 버전 범위 형식입니다. "시작버전-끝버전" 형식이어야 합니다.',
+        );
+      }
 
       this.set([start, end], value);
     }
@@ -54,12 +69,18 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
    * @throws 시작버전이 끝버전보다 크거나 같은 경우 에러
    */
   public set([startVer, endVer]: [string, string], value: T): this {
-    if (value === undefined) return this;
+    if (value === undefined) {
+      return this;
+    }
 
     const startNum = VersionRangeMap.versionToNumber(startVer);
     const endNum = VersionRangeMap.versionToNumber(endVer);
 
-    if (startNum > endNum) throw new Error("유효하지 않은 범위: 시작 버전이 끝 버전보다 작아야 합니다");
+    if (startNum > endNum) {
+      throw new Error(
+        "유효하지 않은 범위: 시작 버전이 끝 버전보다 작아야 합니다",
+      );
+    }
 
     return super.set([startVer.trim(), endVer.trim()], value);
   }
@@ -73,7 +94,9 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
   public get(key: [string, string]): T | undefined;
   public get(key: string): T | undefined;
   public get(key: [string, string] | string): T | undefined {
-    if (typeof key !== "string") return super.get([key[0].trim(), key[1].trim()]);
+    if (typeof key !== "string") {
+      return super.get([key[0].trim(), key[1].trim()]);
+    }
 
     const versionNum = VersionRangeMap.versionToNumber(key);
 
@@ -81,7 +104,9 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
       const startNum = VersionRangeMap.versionToNumber(startVer);
       const endNum = VersionRangeMap.versionToNumber(endVer);
 
-      if (versionNum < startNum || versionNum > endNum) continue;
+      if (versionNum < startNum || versionNum > endNum) {
+        continue;
+      }
 
       return value;
     }
@@ -98,7 +123,9 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
   public has(key: [string, string]): boolean;
   public has(key: string): boolean;
   public has(key: [string, string] | string): boolean {
-    if (typeof key !== "string") return super.has([key[0].trim(), key[1].trim()]);
+    if (typeof key !== "string") {
+      return super.has([key[0].trim(), key[1].trim()]);
+    }
 
     const versionNum = VersionRangeMap.versionToNumber(key);
 
@@ -106,7 +133,9 @@ export class VersionRangeMap<T = any> extends Map<[string, string], T> {
       const startNum = VersionRangeMap.versionToNumber(startVer);
       const endNum = VersionRangeMap.versionToNumber(endVer);
 
-      if (versionNum < startNum || versionNum > endNum) continue;
+      if (versionNum < startNum || versionNum > endNum) {
+        continue;
+      }
 
       return true;
     }

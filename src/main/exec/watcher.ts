@@ -1,8 +1,8 @@
-import { Rule, Watcher, ruleTable, watcherTable } from "../schema/v2.0.0";
-import { db } from "../storage";
 import { eq } from "drizzle-orm";
 import type { FSWatcher } from "fs";
 import { existsSync, readdirSync, rename, watch } from "fs";
+import { Rule, Watcher, ruleTable, watcherTable } from "../schema/v2.0.0";
+import { db } from "../storage";
 // import { basename, extname, join } from "path";
 import { join } from "path";
 
@@ -20,7 +20,8 @@ import { join } from "path";
 function rule2RegEx(rule: Rule) {
   const prefix = rule.prefix.length > 0 ? rule.prefix.join("|") : ".*";
   const suffix = rule.suffix.length > 0 ? rule.suffix.join("|") : ".*";
-  const extensions = rule.extensions.length > 0 ? rule.extensions.join("|") : ".*";
+  const extensions =
+    rule.extensions.length > 0 ? rule.extensions.join("|") : ".*";
   return new RegExp(`^(${prefix}).*(${suffix})\\.(${extensions})$`);
 }
 
@@ -187,7 +188,10 @@ export async function initializeWatcher() {
  * @returns 감시자와 규칙들을 반환. 규칙들은 활성화된 것만 반환한다.
  * @author 오지민
  */
-function getWatcher(watcherId: string): { watcher: Watcher; rules: (Omit<Rule, "enabled"> & { enabled: true })[] } {
+function getWatcher(watcherId: string): {
+  watcher: Watcher;
+  rules: (Omit<Rule, "enabled"> & { enabled: true })[];
+} {
   const results = db
     .select()
     .from(watcherTable)
@@ -199,7 +203,9 @@ function getWatcher(watcherId: string): { watcher: Watcher; rules: (Omit<Rule, "
   const rules = results
     .map((result) => result.rule)
     .filter((rule) => rule !== null)
-    .filter((rule) => typeof rule.enabled === "boolean" && rule.enabled === true) as (Omit<Rule, "enabled"> & {
+    .filter(
+      (rule) => typeof rule.enabled === "boolean" && rule.enabled === true,
+    ) as (Omit<Rule, "enabled"> & {
     enabled: true;
   })[];
 

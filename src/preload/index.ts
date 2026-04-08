@@ -1,6 +1,6 @@
+import { contextBridge } from "electron";
 import type { ipcApiDef } from "../main/ipc";
 import { createApiSelector } from "./utils";
-import { contextBridge } from "electron";
 
 export const api = createApiSelector<typeof ipcApiDef>()({
   // watcher ----------------
